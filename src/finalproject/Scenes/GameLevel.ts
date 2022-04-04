@@ -20,6 +20,9 @@ import { HW5_Events } from "../hw5_enums";
 import HW5_ParticleSystem from "../HW5_ParticleSystem";
 import PlayerController from "../Player/PlayerController";
 import MainMenu from "./MainMenu";
+import In_Game_Menu from "./InGameMenu";
+import Layer from "../../Wolfie2D/Scene/Layer";
+import Button from "../../Wolfie2D/Nodes/UIElements/Button";
 
 // HOMEWORK 5 - TODO
 /**
@@ -33,6 +36,9 @@ export default class GameLevel extends Scene {
     protected playerSpawn: Vec2;
     protected player: AnimatedSprite;
     protected respawnTimer: Timer;
+
+    protected ui_layer: Layer;
+    protected game: Layer;
 
     // Labels for the UI
     protected static livesCount: number = 3;
@@ -51,31 +57,39 @@ export default class GameLevel extends Scene {
     // Custom particle sysyem
     protected system: HW5_ParticleSystem;
 
-    // Cooldown timer for changing suits
-    protected suitChangeTimer: Timer;
+    //Cooldown timer for ultimate skill
+    protected ultimateCooldown: Timer;
 
     // Total ballons and amount currently popped
-    protected totalBalloons: number;
-    protected balloonLabel: Label;
-    protected balloonsPopped: number;
+    //protected totalBalloons: number;
+    //protected balloonLabel: Label;
+    //protected balloonsPopped: number;
 
     // Total switches and amount currently pressed
-    protected totalSwitches: number;
-    protected switchLabel: Label;
-    protected switchesPressed: number;
+    //protected totalSwitches: number;
+    //protected switchLabel: Label;
+    //protected switchesPressed: number;
 
     startScene(): void {
-        this.balloonsPopped = 0;
-        this.switchesPressed = 0;
+        //this.balloonsPopped = 0;
+        //this.switchesPressed = 0;
 
         // Do the game level standard initializations
         this.initLayers();
         this.initViewport();
+        /////////////////////////////////////////////////
         this.initPlayer();
         this.subscribeToEvents();
+        /////////////////////////////////////////////////
         this.addUI();
 
+        // 10 second cooldown for ultimate
+        this.ultimateCooldown = new Timer(2000);
+
+        this.levelTransitionScreen.tweens.play("fadeOut");
+
         // Initialize the timers
+        /*
         this.respawnTimer = new Timer(1000, () => {
             if(GameLevel.livesCount === 0){
                 this.sceneManager.changeToScene(MainMenu);
@@ -85,21 +99,23 @@ export default class GameLevel extends Scene {
                 this.player.unfreeze();
             }
         });
+
+
         this.levelTransitionTimer = new Timer(500);
         this.levelEndTimer = new Timer(3000, () => {
             // After the level end timer ends, fade to black and then go to the next scene
             this.levelTransitionScreen.tweens.play("fadeIn");
         });
 
-        // 3 second cooldown for changing suits
-        this.suitChangeTimer = new Timer(3000);
+
 
         // Start the black screen fade out
-        this.levelTransitionScreen.tweens.play("fadeOut");
+        
 
         // Initially disable player movement
         Input.disableInput();
-        this.emitter.fireEvent(HW5_Events.SUIT_COLOR_CHANGE, {color: HW5_Color.RED});
+        //this.emitter.fireEvent(HW5_Events.SUIT_COLOR_CHANGE, {color: HW5_Color.RED});
+        */
     }
 
 
@@ -108,17 +124,24 @@ export default class GameLevel extends Scene {
         while(this.receiver.hasNextEvent()){
             let event = this.receiver.getNextEvent();
             
+            if(event.type === "ingame_menu"){
+                this.sceneManager.changeToScene(In_Game_Menu, {});
+            }
+            if(event.type === "back_to_scene"){
+                this.game.enable();
+                console.log("yes");
+            }      
             switch(event.type){
-                case HW5_Events.PLAYER_HIT_SWITCH:
+                /*case HW5_Events.PLAYER_HIT_SWITCH:
                     {
                         // Hit a switch block, so update the label and count
                         this.switchesPressed++;
                         this.switchLabel.text = "Switches Left: " + (this.totalSwitches - this.switchesPressed)
                         this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "switch", loop: false, holdReference: false});
                     }
-                    break;
+                    break;*/
 
-                case HW5_Events.PLAYER_HIT_BALLOON:
+               /*  case HW5_Events.PLAYER_HIT_BALLOON:
                     {
                         let node = this.sceneGraph.getNode(event.data.get("node"));
                         let other = this.sceneGraph.getNode(event.data.get("other"));
@@ -134,7 +157,7 @@ export default class GameLevel extends Scene {
                     }
                     break;
 
-                case HW5_Events.BALLOON_POPPED:
+               case HW5_Events.BALLOON_POPPED:
                     {
                         // An balloon collided with the player, destroy it and use the particle system
                         this.balloonsPopped++;
@@ -156,17 +179,15 @@ export default class GameLevel extends Scene {
                         node.destroy();
                     }
                     break;
-                    
+                    */
                 case HW5_Events.PLAYER_ENTERED_LEVEL_END:
                     {
                         //Check if the player has pressed all the switches and popped all of the balloons
-                        if (this.switchesPressed >= this.totalSwitches && this.balloonsPopped >= this.totalBalloons){
                             if(!this.levelEndTimer.hasRun() && this.levelEndTimer.isStopped()){
                                 // The player has reached the end of the level
                                 this.levelEndTimer.start();
                                 this.levelEndLabel.tweens.play("slideIn");
                             }
-                        }
                     }
                     break;
 
@@ -175,6 +196,13 @@ export default class GameLevel extends Scene {
                         // Re-enable controls
                         Input.enableInput();
                     }
+                    break;
+
+                case HW5_Events.LEVEL_PAUSED:
+                        {
+                            // Re-enable controls
+                            Input.disableInput();
+                        }
                     break;
                 
                 case HW5_Events.LEVEL_END:
@@ -209,6 +237,7 @@ export default class GameLevel extends Scene {
          * Pressing 2 switches our suit to BLUE
          * Pressing 3 switches our suit to GREEN
          */
+        /*
         if (this.suitChangeTimer.isStopped()) {
             if (Input.isKeyJustPressed("1")) {
                 this.emitter.fireEvent(HW5_Events.SUIT_COLOR_CHANGE, {color: HW5_Color.RED});
@@ -223,6 +252,12 @@ export default class GameLevel extends Scene {
                 this.suitChangeTimer.start();
             }
         }
+
+        */
+        
+        if(Input.isKeyJustPressed("escape")){
+            this.emitter.fireEvent("ingame_menu");
+        }
     }
 
     /**
@@ -230,10 +265,12 @@ export default class GameLevel extends Scene {
      */
     protected initLayers(): void {
         // Add a layer for UI
-        this.addUILayer("UI");
-
+        this.ui_layer=this.addUILayer("UI");
+        
         // Add a layer for players and enemies
-        this.addLayer("primary", 1);
+        this.game=this.addLayer("primary", 1);
+
+
     }
 
     /**
@@ -249,13 +286,15 @@ export default class GameLevel extends Scene {
     protected subscribeToEvents(){
         this.receiver.subscribe([
             HW5_Events.PLAYER_HIT_SWITCH,
-            HW5_Events.PLAYER_HIT_BALLOON,
-            HW5_Events.BALLOON_POPPED,
             HW5_Events.PLAYER_ENTERED_LEVEL_END,
             HW5_Events.LEVEL_START,
+            HW5_Events.LEVEL_PAUSED,
             HW5_Events.LEVEL_END,
             HW5_Events.PLAYER_KILLED
         ]);
+        this.receiver.subscribe("ingame_menu");
+        this.receiver.subscribe("back_to_scene");
+        
     }
 
     /**
@@ -263,6 +302,7 @@ export default class GameLevel extends Scene {
      */
     protected addUI(){
         // In-game labels
+        /*    
         this.balloonLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(80, 30), text: "Balloons Left: " + (this.totalBalloons - this.balloonsPopped)});
         this.balloonLabel.textColor = Color.BLACK
         this.balloonLabel.font = "PixelSimple";
@@ -270,6 +310,8 @@ export default class GameLevel extends Scene {
         this.switchLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(80, 50), text: "Switches Left: " + (this.totalSwitches - this.switchesPressed)});
         this.switchLabel.textColor = Color.BLACK;
         this.switchLabel.font = "PixelSimple";
+
+        */
 
         this.livesCountLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(500, 30), text: "Lives: " + GameLevel.livesCount});
         this.livesCountLabel.textColor = Color.BLACK;
@@ -341,7 +383,7 @@ export default class GameLevel extends Scene {
     protected initPlayer(): void {
         // Add the player
         this.player = this.add.animatedSprite("player", "primary");
-        this.player.scale.set(2, 2);
+        this.player.scale.set(1, 1);
         if(!this.playerSpawn){
             console.warn("Player spawn was never set - setting spawn to (0, 0)");
             this.playerSpawn = Vec2.ZERO;
@@ -349,7 +391,7 @@ export default class GameLevel extends Scene {
         this.player.position.copy(this.playerSpawn);
         this.player.addPhysics(new AABB(Vec2.ZERO, new Vec2(14, 14)));
         this.player.colliderOffset.set(0, 2);
-        this.player.addAI(PlayerController, {playerType: "platformer", tilemap: "Main", color: HW5_Color.RED});
+        this.player.addAI(PlayerController, {playerType: "platformer", tilemap: "Main"});
 
         this.player.setGroup("player");
 
@@ -415,6 +457,7 @@ export default class GameLevel extends Scene {
      * of it in this class.
      * 
      */
+    /*
     protected handlePlayerBalloonCollision(player: AnimatedSprite, balloon: AnimatedSprite) {
         if(typeof balloon !== "undefined"){
             if ((<PlayerController>player._ai).suitColor != (<BalloonController>balloon._ai).color){
@@ -441,7 +484,7 @@ export default class GameLevel extends Scene {
             this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "pop", loop: false, holdReference: false});
         }
     }
-
+    */
     /**
      * Increments the amount of life the player has
      * @param amt The amount to add to the player life

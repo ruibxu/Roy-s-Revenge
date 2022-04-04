@@ -35,7 +35,6 @@ export default class PlayerController extends StateMachineAI {
 	MIN_SPEED: number = 200;
     MAX_SPEED: number = 300;
     tilemap: OrthogonalTilemap;
-    suitColor: HW5_Color;
 
     // HOMEWORK 5 - TODO
     /**
@@ -51,25 +50,10 @@ export default class PlayerController extends StateMachineAI {
         this.owner = owner;
 
         this.initializePlatformer();
-
         this.tilemap = this.owner.getScene().getTilemap(options.tilemap) as OrthogonalTilemap;
 
-        this.suitColor = options.color;
+        //this.receiver.subscribe(HW5_Events.SUIT_COLOR_CHANGE);
 
-        this.receiver.subscribe(HW5_Events.SUIT_COLOR_CHANGE);
-
-        owner.tweens.add("flip", {
-            startDelay: 0,
-            duration: 500,
-            effects: [
-                {
-                    property: "rotation",
-                    start: 0,
-                    end: 2*Math.PI,
-                    ease: EaseFunctionType.IN_OUT_QUAD
-                }
-            ]
-        });
         owner.tweens.add("death", {
             startDelay: 0,
             duration: 500,
@@ -133,11 +117,11 @@ export default class PlayerController extends StateMachineAI {
     update(deltaT: number): void {
 		super.update(deltaT);
         
-        let switch_location=new Vec2(this.owner.position.x, this.owner.position.y+32);
-        if(this.tilemap.getTileAtWorldPosition(switch_location)==8){
-            this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(switch_location),9);
-            this.emitter.fireEvent(HW5_Events.PLAYER_HIT_SWITCH);
-        }
+        // let switch_location=new Vec2(this.owner.position.x, this.owner.position.y+32);
+        // if(this.tilemap.getTileAtWorldPosition(switch_location)==8){
+        //     this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(switch_location),9);
+        //     this.emitter.fireEvent(HW5_Events.PLAYER_HIT_SWITCH);
+        // }
 
 		if(this.currentState instanceof Jump){
 			Debug.log("playerstate", "Player State: Jump");

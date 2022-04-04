@@ -6,6 +6,7 @@ export enum HW5_Events {
     BALLOON_POPPED = "BalloonPopped",
     PLAYER_ENTERED_LEVEL_END = "PlayerEnteredLevelEnd",
     LEVEL_START = "LevelStart",
+    LEVEL_PAUSED = "LevelPaused",
     LEVEL_END = "LevelEnd",
     PLAYER_KILLED = "PlayerKilled",
     SUIT_COLOR_CHANGE = "SuitColorChange",

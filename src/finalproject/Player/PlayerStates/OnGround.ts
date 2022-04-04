@@ -24,9 +24,9 @@ export default class OnGround extends PlayerState {
 		if(Input.isJustPressed("jump")){
 			this.finished("jump");
 			this.parent.velocity.y = -500;
-			if(this.parent.velocity.x !== 0){
-				this.owner.tweens.play("flip");
-			}
+			// if(this.parent.velocity.x !== 0){
+			// 	//this.owner.tweens.play("flip");
+			// }
 		} else if(!this.owner.onGround){
 			this.finished("fall");
 		}

@@ -13,15 +13,7 @@ export default class Idle extends OnGround {
 
 	
 	updateSuit() {
-		if (this.parent.suitColor == HW5_Color.RED){ 
-			this.owner.animation.playIfNotAlready("RED_IDLE", true);
-		}
-		else if (this.parent.suitColor == HW5_Color.GREEN){
-			this.owner.animation.playIfNotAlready("GREEN_IDLE", true);
-		}
-		else if (this.parent.suitColor == HW5_Color.BLUE){
-			this.owner.animation.playIfNotAlready("BLUE_IDLE", true);
-		}
+		this.owner.animation.playIfNotAlready("IDLE", true);
 	}
 
 	update(deltaT: number): void {
