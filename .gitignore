@@ -14,5 +14,5 @@ dist/*
 !dist/hw5_assets/
 
 ### IF YOU ARE MAKING A PROJECT, YOU MAY WANT TO UNCOMMENT THIS LINE ###
-# !dist/assets/
+!dist/final_project_assets/
 
