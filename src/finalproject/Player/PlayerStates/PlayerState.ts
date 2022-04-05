@@ -5,7 +5,7 @@ import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import Input from "../../../Wolfie2D/Input/Input";
 import GameNode from "../../../Wolfie2D/Nodes/GameNode";
 import Timer from "../../../Wolfie2D/Timing/Timer";
-import { HW5_Events } from "../../hw5_enums";
+import { finalproject_Events } from "../../finalproject_constants";
 import PlayerController from "../PlayerController";
 
 
@@ -14,12 +14,15 @@ export default abstract class PlayerState extends State {
 	gravity: number = 1000;
 	parent: PlayerController;
 	positionTimer: Timer;
+	faceDirection: Vec2;
+
 
 	constructor(parent: StateMachine, owner: GameNode){
 		super(parent);
 		this.owner = owner;
 		this.positionTimer = new Timer(250);
 		this.positionTimer.start();
+		this.faceDirection=new Vec2(1,0);
 	}
 
 	// Change the suit color on receiving a suit color change event
@@ -33,11 +36,13 @@ export default abstract class PlayerState extends State {
 		let direction = Vec2.ZERO;
 		direction.x = (Input.isPressed("left") ? -1 : 0) + (Input.isPressed("right") ? 1 : 0);
 		direction.y = (Input.isJustPressed("jump") ? -1 : 0);
+		if(Input.isPressed("left")) this.faceDirection.x=-1;
+		else if(Input.isPressed("right")) this.faceDirection.x=1;
 		return direction;
 	}
 
 	/**This function is left to be overrided by any of the classes that extend this base class. That way, each
-	 * class can swap their animations accordingly.
+	 * class can swap their animation1,s accordingly.
 	*/
 	updateSuit() {
 		
@@ -47,9 +52,13 @@ export default abstract class PlayerState extends State {
 		// Do gravity
 		this.updateSuit();
 		if (this.positionTimer.isStopped()){
-			this.emitter.fireEvent(HW5_Events.PLAYER_MOVE, {position: this.owner.position.clone()});
+			this.emitter.fireEvent(finalproject_Events.PLAYER_MOVE, {position: this.owner.position.clone()});
 			this.positionTimer.start();
 		}
-		this.parent.velocity.y += this.gravity*deltaT;
+		if(Input.isMouseJustPressed())
+		{
+			this.emitter.fireEvent(finalproject_Events.ATTACK,{position:this.owner.position.clone(),direction:this.faceDirection});}
+		
+			this.parent.velocity.y += this.gravity*deltaT;
 	}
 }

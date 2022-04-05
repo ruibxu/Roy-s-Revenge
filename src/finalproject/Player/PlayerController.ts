@@ -6,13 +6,14 @@ import Sprite from "../../Wolfie2D/Nodes/Sprites/Sprite";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
 import { HW5_Color } from "../hw5_color";
-import { HW5_Events } from "../hw5_enums";
+import { finalproject_Events } from "../finalproject_constants";
 import Fall from "./PlayerStates/Fall";
 import Idle from "./PlayerStates/Idle";
 import InAir from "./PlayerStates/InAir";
 import Jump from "./PlayerStates/Jump";
 import Run from "./PlayerStates/Run";
 import Walk from "./PlayerStates/Walk";
+import InventoryManager from "../GameSystems/InventoryManager";
 
 export enum PlayerType {
     PLATFORMER = "platformer",
@@ -35,6 +36,8 @@ export default class PlayerController extends StateMachineAI {
 	MIN_SPEED: number = 200;
     MAX_SPEED: number = 300;
     tilemap: OrthogonalTilemap;
+     //add inverntory
+   // inventory: InventoryManager;
 
     // HOMEWORK 5 - TODO
     /**
@@ -52,7 +55,7 @@ export default class PlayerController extends StateMachineAI {
         this.initializePlatformer();
         this.tilemap = this.owner.getScene().getTilemap(options.tilemap) as OrthogonalTilemap;
 
-        //this.receiver.subscribe(HW5_Events.SUIT_COLOR_CHANGE);
+        this.receiver.subscribe(finalproject_Events.ATTACK);
 
         owner.tweens.add("death", {
             startDelay: 0,
@@ -71,7 +74,7 @@ export default class PlayerController extends StateMachineAI {
                     ease: EaseFunctionType.IN_OUT_QUAD
                 }
             ],
-            onEnd: (HW5_Events.PLAYER_KILLED)
+            onEnd: (finalproject_Events.PLAYER_KILLED)
         });
 
     }
@@ -134,5 +137,17 @@ export default class PlayerController extends StateMachineAI {
 		} else if(this.currentState instanceof Fall){
             Debug.log("playerstate", "Player State: Fall");
         }
-	}
+
+        // while(this.receiver.hasNextEvent()){
+        //     let event=this.receiver.getNextEvent()
+        //     if(event.type===finalproject_Events.ATTACK){this.attack();}
+        // }
+    }
+    
+    // attack(): void {
+    //     if(this.inventory.getItem()!=null) {this.inventory.getItem().use(this.owner);}
+          
+    //     }
+
+          	
 }

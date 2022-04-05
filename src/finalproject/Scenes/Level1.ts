@@ -14,7 +14,7 @@ export default class Level1 extends GameLevel {
     loadScene(): void {
         // Load resources
         this.load.tilemap("level1", "final_project_assets/tilemaps/level1.tmj");
-        this.load.spritesheet("player", "final_project_assets/spritesheets/roy.json");
+        this.load.spritesheet("player", "final_project_assets/spritesheets/Roy_with_lightsaber.json");
         //this.load.spritesheet("red", "final_project_assets/spritesheets/redBalloon.json");
         //this.load.spritesheet("blue", "final_project_assets/spritesheets/blueBalloon.json");
         //this.load.audio("jump", "final_project_assets/sounds/jump.wav");
@@ -24,6 +24,32 @@ export default class Level1 extends GameLevel {
         // HOMEWORK 5 - TODO
         // You'll want to change this to your level music
         //this.load.audio("level_music", "final_project_assets/music/levelmusic.mp3");
+
+        console.log("YES");
+
+        // Load the scene info
+        
+        this.load.object("weaponData", "final_project_assets/data/weaponData.json");
+
+        // Load the nav mesh
+        //this.load.object("navmesh", "final_project_assets/data/navmesh.json");
+        
+        // Load in the enemy info
+        this.load.object("enemyData", "final_project_assets/data/enemy.json");
+
+        // Load in item info
+        this.load.object("itemData", "final_project_assets/data/items.json");
+
+        // Load the healthpack sprite
+        this.load.image("healthpack", "final_project_assets/sprites/health.png");
+        //this.load.image("inventorySlot", "final_project_assets/sprites/inventory.png");
+        //weapon
+        this.load.image("knife", "final_project_assets/sprites/knife.png");
+        this.load.image("laserGun", "final_project_assets/sprites/Laser_gun.png");
+        this.load.image("pistol", "final_project_assets/sprites/pistol.png");
+        this.load.image("machineGun","final_project_assets/sprites/machine_gun.png")
+        this.load.image("lightSaber", "final_project_assets/sprites/light_saber.png");
+        
     }
 
     // HOMEWORK 5 - TODO

@@ -115,7 +115,7 @@ export default class InGameMenu extends Scene {
                         ]
                     }
                 }
-                this.sceneManager.changeToScene(GameLevel, {},sceneOptions);
+                this.sceneManager.changeToScene(Level1, {},sceneOptions);
                 //this.emitter.fireEvent("level1");
             }
             if(event.type === "menu"){

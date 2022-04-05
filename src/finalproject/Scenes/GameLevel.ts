@@ -14,15 +14,20 @@ import Scene from "../../Wolfie2D/Scene/Scene";
 import Timer from "../../Wolfie2D/Timing/Timer";
 import Color from "../../Wolfie2D/Utils/Color";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
-import BalloonController from "../Enemies/BalloonController";
-import { HW5_Color } from "../hw5_color";
-import { HW5_Events } from "../hw5_enums";
+import { finalproject_Events } from "../finalproject_constants";
 import HW5_ParticleSystem from "../HW5_ParticleSystem";
 import PlayerController from "../Player/PlayerController";
 import MainMenu from "./MainMenu";
 import In_Game_Menu from "./InGameMenu";
 import Layer from "../../Wolfie2D/Scene/Layer";
 import Button from "../../Wolfie2D/Nodes/UIElements/Button";
+import InventoryManager from "../GameSystems/InventoryManager";
+import Item from "../GameSystems/items/Item";
+import WeaponType from "../GameSystems/items/WeaponTypes/WeaponType";
+import Weapon from "../GameSystems/items/Weapon";
+import RegistryManager from "../../Wolfie2D/Registry/RegistryManager";
+import Healthpack from "../GameSystems/items/Healthpack";
+import BattleManager from "../GameSystems/BattleManager";
 
 // HOMEWORK 5 - TODO
 /**
@@ -60,6 +65,13 @@ export default class GameLevel extends Scene {
     //Cooldown timer for ultimate skill
     protected ultimateCooldown: Timer;
 
+
+    // A list of items in the scene
+    private items: Array<Item>;
+
+    // The battle manager for the scene
+    private battleManager: BattleManager;
+
     // Total ballons and amount currently popped
     //protected totalBalloons: number;
     //protected balloonLabel: Label;
@@ -82,7 +94,14 @@ export default class GameLevel extends Scene {
         this.subscribeToEvents();
         /////////////////////////////////////////////////
         this.addUI();
-
+        /*
+        console.log("xxxx");
+        this.battleManager = new BattleManager();
+        this.initWeapons();
+        this.items = new Array();
+        
+        this.spawnItems();
+        */
         // 10 second cooldown for ultimate
         this.ultimateCooldown = new Timer(2000);
 
@@ -129,7 +148,6 @@ export default class GameLevel extends Scene {
             }
             if(event.type === "back_to_scene"){
                 this.game.enable();
-                console.log("yes");
             }      
             switch(event.type){
                 /*case HW5_Events.PLAYER_HIT_SWITCH:
@@ -180,7 +198,7 @@ export default class GameLevel extends Scene {
                     }
                     break;
                     */
-                case HW5_Events.PLAYER_ENTERED_LEVEL_END:
+                case finalproject_Events.PLAYER_ENTERED_LEVEL_END:
                     {
                         //Check if the player has pressed all the switches and popped all of the balloons
                             if(!this.levelEndTimer.hasRun() && this.levelEndTimer.isStopped()){
@@ -191,21 +209,21 @@ export default class GameLevel extends Scene {
                     }
                     break;
 
-                case HW5_Events.LEVEL_START:
+                case finalproject_Events.LEVEL_START:
                     {
                         // Re-enable controls
                         Input.enableInput();
                     }
                     break;
 
-                case HW5_Events.LEVEL_PAUSED:
+                case finalproject_Events.LEVEL_PAUSED:
                         {
                             // Re-enable controls
                             Input.disableInput();
                         }
                     break;
                 
-                case HW5_Events.LEVEL_END:
+                case finalproject_Events.LEVEL_END:
                     {
                         // Go to the next level
                         if(this.nextLevel){
@@ -224,11 +242,11 @@ export default class GameLevel extends Scene {
                         }
                     }
                     break;
-                case HW5_Events.PLAYER_KILLED:
+                case finalproject_Events.PLAYER_KILLED:
                     {
                         this.respawnPlayer();
                     }
-
+                    break;
             }
         }
 
@@ -285,15 +303,17 @@ export default class GameLevel extends Scene {
      */
     protected subscribeToEvents(){
         this.receiver.subscribe([
-            HW5_Events.PLAYER_HIT_SWITCH,
-            HW5_Events.PLAYER_ENTERED_LEVEL_END,
-            HW5_Events.LEVEL_START,
-            HW5_Events.LEVEL_PAUSED,
-            HW5_Events.LEVEL_END,
-            HW5_Events.PLAYER_KILLED
+            finalproject_Events.PLAYER_HIT_SWITCH,
+            finalproject_Events.PLAYER_ENTERED_LEVEL_END,
+            finalproject_Events.LEVEL_START,
+            finalproject_Events.LEVEL_PAUSED,
+            finalproject_Events.LEVEL_END,
+            finalproject_Events.PLAYER_KILLED
+
         ]);
         this.receiver.subscribe("ingame_menu");
         this.receiver.subscribe("back_to_scene");
+        this.receiver.subscribe("healthpack");
         
     }
 
@@ -359,7 +379,7 @@ export default class GameLevel extends Scene {
                     ease: EaseFunctionType.IN_OUT_QUAD
                 }
             ],
-            onEnd: HW5_Events.LEVEL_END
+            onEnd: finalproject_Events.LEVEL_END
         });
 
         this.levelTransitionScreen.tweens.add("fadeOut", {
@@ -373,7 +393,7 @@ export default class GameLevel extends Scene {
                     ease: EaseFunctionType.IN_OUT_QUAD
                 }
             ],
-            onEnd: HW5_Events.LEVEL_START
+            onEnd: finalproject_Events.LEVEL_START
         });
     }
 
@@ -404,7 +424,7 @@ export default class GameLevel extends Scene {
     protected addLevelEnd(startingTile: Vec2, size: Vec2): void {
         this.levelEndArea = <Rect>this.add.graphic(GraphicType.RECT, "primary", {position: startingTile.scale(32), size: size.scale(32)});
         this.levelEndArea.addPhysics(undefined, undefined, false, true);
-        this.levelEndArea.setTrigger("player", HW5_Events.PLAYER_ENTERED_LEVEL_END, null);
+        this.levelEndArea.setTrigger("player", finalproject_Events.PLAYER_ENTERED_LEVEL_END, null);
         this.levelEndArea.color = new Color(0, 0, 0, 0);
     }
 
@@ -421,6 +441,8 @@ export default class GameLevel extends Scene {
      * @param tilePos The tilemap position to add the balloon to
      * @param aiOptions The options for the balloon AI
      */
+
+    /*
     protected addBalloon(spriteKey: string, tilePos: Vec2, aiOptions: Record<string, any>): void {
         let balloon = this.add.animatedSprite(spriteKey, "primary");
         balloon.position.set(tilePos.x*32, tilePos.y*32);
@@ -429,7 +451,7 @@ export default class GameLevel extends Scene {
         balloon.addAI(BalloonController, aiOptions);
         balloon.setGroup("balloon");
         balloon.setTrigger("player", HW5_Events.PLAYER_HIT_BALLOON, null);
-    }
+    }*/
 
     // HOMEWORK 5 - TODO
     /**
@@ -509,5 +531,74 @@ export default class GameLevel extends Scene {
         this.sceneManager.changeToScene(MainMenu, {});
         Input.enableInput();
         this.system.stopSystem();
+    }
+
+
+
+
+
+    spawnItems(): void {
+        // Get the item data
+        let itemData = this.load.getObject("itemData");
+
+        for(let item of itemData.items){
+            if(item.type === "healthpack"){
+                // Create a healthpack
+                this.createHealthpack(new Vec2(item.position[0]/2, item.position[1]/2));
+            } else {
+                let weapon = this.createWeapon(item.weaponType);
+                weapon.moveSprite(new Vec2(item.position[0]/2, item.position[1]/2));
+                this.items.push(weapon);
+            }
+        }        
+    }
+
+    /**
+     * 
+     * Creates and returns a new weapon
+     * @param type The weaponType of the weapon, as a string
+     */
+    createWeapon(type: string): Weapon {
+        let weaponType = <WeaponType>RegistryManager.getRegistry("weaponTypes").get(type);
+
+        let sprite = this.add.sprite(weaponType.spriteKey, "primary");
+
+        return new Weapon(sprite, weaponType, this.battleManager);
+    }
+
+    /**
+     * Creates a healthpack at a certain position in the world
+     * @param position 
+     */
+    createHealthpack(position: Vec2): void {
+        let sprite = this.add.sprite("healthpack", "primary");
+        let healthpack = new Healthpack(sprite)
+        healthpack.moveSprite(position);
+        this.items.push(healthpack);
+    }
+
+    /**
+     * Initalizes all weapon types based of data from weaponData.json
+     */
+    initWeapons(): void{
+        console.log("initWeapons");
+
+        let weaponData = this.load.getObject("weaponData");
+
+        for(let i = 0; i < weaponData.numWeapons; i++){
+            let weapon = weaponData.weapons[i];
+
+            // Get the constructor of the prototype
+            let constr = RegistryManager.getRegistry("weaponTemplates").get(weapon.weaponType);
+
+            // Create a weapon type
+            let weaponType = new constr();
+
+            // Initialize the weapon type
+            weaponType.initialize(weapon);
+
+            // Register the weapon type
+            RegistryManager.getRegistry("weaponTypes").registerItem(weapon.name, weaponType)
+        }
     }
 }

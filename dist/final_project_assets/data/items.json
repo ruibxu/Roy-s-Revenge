@@ -1,0 +1,9 @@
+{
+    "items": [
+	    {
+            "type": "weapon",
+            "weaponType": "pistol", 
+            "position": [592, 784]
+        }
+    ]
+}
