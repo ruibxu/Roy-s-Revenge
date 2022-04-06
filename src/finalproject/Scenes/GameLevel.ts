@@ -85,23 +85,21 @@ export default class GameLevel extends Scene {
     startScene(): void {
         //this.balloonsPopped = 0;
         //this.switchesPressed = 0;
-
+        this.initWeapons();
         // Do the game level standard initializations
         this.initLayers();
         this.initViewport();
         /////////////////////////////////////////////////
-        this.initPlayer();
+
         this.subscribeToEvents();
         /////////////////////////////////////////////////
         this.addUI();
-        /*
-        console.log("xxxx");
+
         this.battleManager = new BattleManager();
-        this.initWeapons();
-        this.items = new Array();
         
+        this.items = new Array();
         this.spawnItems();
-        */
+        this.initPlayer();
         // 10 second cooldown for ultimate
         this.ultimateCooldown = new Timer(2000);
 
@@ -150,54 +148,47 @@ export default class GameLevel extends Scene {
                 this.game.enable();
             }      
             switch(event.type){
-                /*case HW5_Events.PLAYER_HIT_SWITCH:
+                case finalproject_Events.PLAYER_HIT_SWITCH:
                     {
                         // Hit a switch block, so update the label and count
-                        this.switchesPressed++;
-                        this.switchLabel.text = "Switches Left: " + (this.totalSwitches - this.switchesPressed)
-                        this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "switch", loop: false, holdReference: false});
+                        // this.switchesPressed++;
+                        // this.switchLabel.text = "Switches Left: " + (this.totalSwitches - this.switchesPressed)
+                        // this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "switch", loop: false, holdReference: false});
                     }
-                    break;*/
-
-               /*  case HW5_Events.PLAYER_HIT_BALLOON:
+                    break;
+                case finalproject_Events.PLAYER_HIT_WEAPON:
                     {
-                        let node = this.sceneGraph.getNode(event.data.get("node"));
-                        let other = this.sceneGraph.getNode(event.data.get("other"));
-
-                        if(node === this.player){
-                            // Node is player, other is balloon
-                            this.handlePlayerBalloonCollision(<AnimatedSprite>node, <AnimatedSprite>other);
-                        } else {
-                            // Other is player, node is balloon
-                            this.handlePlayerBalloonCollision(<AnimatedSprite>other,<AnimatedSprite>node);
-
+                        //
+                    }
+                    break;
+                case finalproject_Events.PLAYER_HIT_TRAP:
+                    {
+                        //
+                    }
+                    break;
+                case finalproject_Events.PLAYER_WEAPON_CHANGE:
+                    {
+                        console.log(event.data.get("weapon"));
+                        if(event.data.get("weapon")=="pistol"){
+                            this.player = this.add.animatedSprite("player_with_pistol", "primary");
+                        }
+                        else if(event.data.get("weapon")=="machineGun"){
+                            this.player = this.add.animatedSprite("player_with_machinegun", "primary");
+                        }
+                        else if(event.data.get("weapon")=="lightSaber"){
+                            this.player = this.add.animatedSprite("player_with_lightsaber", "primary");
+                        }
+                        else if(event.data.get("weapon")=="laserGun"){
+                            this.player = this.add.animatedSprite("player_with_lasergun", "primary");
+                        }
+                        else if(event.data.get("weapon")=="knife"){
+                            this.player = this.add.animatedSprite("player_with_knife", "primary");
+                        }
+                        else{
+                            this.player = this.add.animatedSprite("player", "primary");
                         }
                     }
                     break;
-
-               case HW5_Events.BALLOON_POPPED:
-                    {
-                        // An balloon collided with the player, destroy it and use the particle system
-                        this.balloonsPopped++;
-                        this.balloonLabel.text = "Balloons Left: " + (this.totalBalloons - this.balloonsPopped);
-                        let node = this.sceneGraph.getNode(event.data.get("owner"));
-                        
-                        // Set mass based on color
-                        let particleMass = 0;
-                        if ((<BalloonController>node._ai).color == HW5_Color.RED) {
-                            particleMass = 1;
-                        }
-                        else if ((<BalloonController>node._ai).color == HW5_Color.GREEN) {
-                            particleMass = 2;
-                        }
-                        else {
-                            particleMass = 3;
-                        }
-                        this.system.startSystem(2000, particleMass, node.position.clone());
-                        node.destroy();
-                    }
-                    break;
-                    */
                 case finalproject_Events.PLAYER_ENTERED_LEVEL_END:
                     {
                         //Check if the player has pressed all the switches and popped all of the balloons
@@ -250,13 +241,7 @@ export default class GameLevel extends Scene {
             }
         }
 
-        /**
-         * Pressing 1 switches our suit to RED
-         * Pressing 2 switches our suit to BLUE
-         * Pressing 3 switches our suit to GREEN
-         */
         /*
-        if (this.suitChangeTimer.isStopped()) {
             if (Input.isKeyJustPressed("1")) {
                 this.emitter.fireEvent(HW5_Events.SUIT_COLOR_CHANGE, {color: HW5_Color.RED});
                 this.suitChangeTimer.start();
@@ -265,14 +250,8 @@ export default class GameLevel extends Scene {
                 this.emitter.fireEvent(HW5_Events.SUIT_COLOR_CHANGE, {color: HW5_Color.BLUE});
                 this.suitChangeTimer.start();
             }
-            if (Input.isKeyJustPressed("3")) {
-                this.emitter.fireEvent(HW5_Events.SUIT_COLOR_CHANGE, {color: HW5_Color.GREEN});
-                this.suitChangeTimer.start();
-            }
-        }
-
+            
         */
-        
         if(Input.isKeyJustPressed("escape")){
             this.emitter.fireEvent("ingame_menu");
         }
@@ -284,9 +263,9 @@ export default class GameLevel extends Scene {
     protected initLayers(): void {
         // Add a layer for UI
         this.ui_layer=this.addUILayer("UI");
-        
-        // Add a layer for players and enemies
         this.game=this.addLayer("primary", 1);
+        // Add a layer for players and enemies
+        
 
 
     }
@@ -295,7 +274,7 @@ export default class GameLevel extends Scene {
      * Initializes the viewport
      */
     protected initViewport(): void {
-        this.viewport.setZoomLevel(2);
+        this.viewport.setZoomLevel(2.25);
     }
 
     /**
@@ -304,11 +283,14 @@ export default class GameLevel extends Scene {
     protected subscribeToEvents(){
         this.receiver.subscribe([
             finalproject_Events.PLAYER_HIT_SWITCH,
+            finalproject_Events.PLAYER_HIT_WEAPON,
+            finalproject_Events.PLAYER_HIT_TRAP,
             finalproject_Events.PLAYER_ENTERED_LEVEL_END,
             finalproject_Events.LEVEL_START,
             finalproject_Events.LEVEL_PAUSED,
             finalproject_Events.LEVEL_END,
-            finalproject_Events.PLAYER_KILLED
+            finalproject_Events.PLAYER_KILLED,
+            finalproject_Events.PLAYER_WEAPON_CHANGE
 
         ]);
         this.receiver.subscribe("ingame_menu");
@@ -401,7 +383,12 @@ export default class GameLevel extends Scene {
      * Initializes the player
      */
     protected initPlayer(): void {
-        // Add the player
+        //add inventory
+        let inventory = new InventoryManager(this, 2, "inventorySlot", new Vec2(32, 32), 4, "slots1", "items1");
+        let startingWeapon = this.createWeapon("pistol");
+        inventory.addItem(startingWeapon);
+        
+         // Add the player
         this.player = this.add.animatedSprite("player", "primary");
         this.player.scale.set(1, 1);
         if(!this.playerSpawn){
@@ -411,7 +398,12 @@ export default class GameLevel extends Scene {
         this.player.position.copy(this.playerSpawn);
         this.player.addPhysics(new AABB(Vec2.ZERO, new Vec2(14, 14)));
         this.player.colliderOffset.set(0, 2);
-        this.player.addAI(PlayerController, {playerType: "platformer", tilemap: "Main"});
+        this.player.addAI(PlayerController, 
+            {playerType: "platformer", 
+            tilemap: "Main",   
+            inventory: inventory,
+            items: this.items,
+            });
 
         this.player.setGroup("player");
 
@@ -533,10 +525,6 @@ export default class GameLevel extends Scene {
         this.system.stopSystem();
     }
 
-
-
-
-
     spawnItems(): void {
         // Get the item data
         let itemData = this.load.getObject("itemData");
@@ -544,10 +532,10 @@ export default class GameLevel extends Scene {
         for(let item of itemData.items){
             if(item.type === "healthpack"){
                 // Create a healthpack
-                this.createHealthpack(new Vec2(item.position[0]/2, item.position[1]/2));
+                this.createHealthpack(new Vec2(item.position[0], item.position[1]));
             } else {
                 let weapon = this.createWeapon(item.weaponType);
-                weapon.moveSprite(new Vec2(item.position[0]/2, item.position[1]/2));
+                weapon.moveSprite(new Vec2(item.position[0], item.position[1]));
                 this.items.push(weapon);
             }
         }        
@@ -601,4 +589,6 @@ export default class GameLevel extends Scene {
             RegistryManager.getRegistry("weaponTypes").registerItem(weapon.name, weaponType)
         }
     }
+
+    
 }

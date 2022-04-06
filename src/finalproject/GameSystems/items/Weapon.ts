@@ -41,6 +41,8 @@ export default class Weapon extends Item {
 
         // Create the cooldown timer
         this.cooldownTimer = new Timer(type.cooldown);
+
+        
     }
 
     // @override
@@ -53,14 +55,15 @@ export default class Weapon extends Item {
         if(!this.cooldownTimer.isStopped()){
             return false;
         }
-        // Rely on the weapon type to create any necessary assets
-        this.assets = this.type.createRequiredAssets(this.sprite.getScene());
 
+        // Rely on the weapon type to create any necessary assets
+        if(!this.assets)
+        this.assets = this.type.createRequiredAssets(this.sprite.getScene());
         // Do a type specific weapon animation
         this.type.doAnimation(user, direction, ...this.assets);
 
         // Apply damage
-        this.battleManager.handleInteraction(userType, this);
+        //this.battleManager.handleInteraction(userType, this);
     
         // Reset the cooldown timer
         this.cooldownTimer.start();

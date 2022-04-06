@@ -91,7 +91,7 @@ export default class InventoryManager {
      */
     removeItem(): Item {
         let item = this.items[this.currentSlot];
-
+        
         this.items[this.currentSlot] = null;
 
         if(item){

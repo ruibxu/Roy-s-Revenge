@@ -2,7 +2,6 @@ import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import { GameEventType } from "../../../Wolfie2D/Events/GameEventType";
 import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import { EaseFunctionType } from "../../../Wolfie2D/Utils/EaseFunctions";
-import { HW5_Color } from "../../hw5_color";
 import { finalproject_Events } from "../../finalproject_constants";
 import { PlayerStates } from "../PlayerController";
 import InAir from "./InAir";

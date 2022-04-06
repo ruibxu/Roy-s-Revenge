@@ -4,7 +4,7 @@
         {
             "weaponType": "slice",
             "name": "knife",
-            "displayName": "Knife",
+            "displayName": "knife",
             "animationSprite": "slice",
             "spriteKey": "knife",
             "damage": 2,
@@ -15,7 +15,7 @@
         {
             "weaponType": "slice",
             "name": "lightSaber",
-            "displayName": "light Saber",
+            "displayName": "lightSaber",
             "animationSprite": "slice",
             "spriteKey": "lightSaber",
             "damage": 4,
@@ -26,7 +26,7 @@
         {
             "weaponType": "semiAutoGun",
             "name": "pistol",
-            "displayName": "Pistol",
+            "displayName": "pistol",
             "spriteKey": "pistol",
             "damage": 1,
             "cooldown": 500,
@@ -35,8 +35,8 @@
         },
         {
             "weaponType": "semiAutoGun",
-            "name": "machinegun",
-            "displayName": "MachineGun",
+            "name": "machineGun",
+            "displayName": "machineGun",
             "spriteKey": "machineGun",
             "damage": 1,
             "cooldown": 100,

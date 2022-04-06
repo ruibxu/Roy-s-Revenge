@@ -37,7 +37,7 @@ export default class LaserGun extends WeaponType {
         let maxY = Math.max(start.y, end.y);
 
         // Get the wall tilemap
-        let walls = <OrthogonalTilemap>shooter.getScene().getLayer("Wall").getItems()[0];
+        let walls = <OrthogonalTilemap>shooter.getScene().getLayer("front").getItems()[0];
 
         let minIndex = walls.getColRowAt(new Vec2(minX, minY));
 		let maxIndex = walls.getColRowAt(new Vec2(maxX, maxY));

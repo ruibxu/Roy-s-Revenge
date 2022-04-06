@@ -5,7 +5,6 @@ import GameNode, { TweenableProperties } from "../../Wolfie2D/Nodes/GameNode";
 import Sprite from "../../Wolfie2D/Nodes/Sprites/Sprite";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
-import { HW5_Color } from "../hw5_color";
 import { finalproject_Events } from "../finalproject_constants";
 import Fall from "./PlayerStates/Fall";
 import Idle from "./PlayerStates/Idle";
@@ -14,6 +13,12 @@ import Jump from "./PlayerStates/Jump";
 import Run from "./PlayerStates/Run";
 import Walk from "./PlayerStates/Walk";
 import InventoryManager from "../GameSystems/InventoryManager";
+import Receiver from "../../Wolfie2D/Events/Receiver";
+import Emitter from "../../Wolfie2D/Events/Emitter";
+import GameEvent from "../../Wolfie2D/Events/GameEvent";
+import Input from "../../Wolfie2D/Input/Input";
+import Item from "../GameSystems/items/Item";
+
 
 export enum PlayerType {
     PLATFORMER = "platformer",
@@ -36,8 +41,10 @@ export default class PlayerController extends StateMachineAI {
 	MIN_SPEED: number = 200;
     MAX_SPEED: number = 300;
     tilemap: OrthogonalTilemap;
+    isDead: boolean = false;
      //add inverntory
-   // inventory: InventoryManager;
+    inventory: InventoryManager;
+    items: Array<Item>;
 
     // HOMEWORK 5 - TODO
     /**
@@ -51,11 +58,24 @@ export default class PlayerController extends StateMachineAI {
      */
     initializeAI(owner: GameNode, options: Record<string, any>){
         this.owner = owner;
+        
+
 
         this.initializePlatformer();
         this.tilemap = this.owner.getScene().getTilemap(options.tilemap) as OrthogonalTilemap;
 
+        this.receiver = new Receiver();
+		this.emitter = new Emitter();
+
+
         this.receiver.subscribe(finalproject_Events.ATTACK);
+        this.receiver.subscribe(finalproject_Events.PLAYER_DAMAGE);
+
+
+        this.items = options.items;
+        this.inventory = options.inventory;
+
+
 
         owner.tweens.add("death", {
             startDelay: 0,
@@ -78,6 +98,32 @@ export default class PlayerController extends StateMachineAI {
         });
 
     }
+
+
+    handleEvent(event: GameEvent): void {
+		// We need to handle animations when we get hurt
+		if(event.type === finalproject_Events.PLAYER_DAMAGE){
+			if(event.data.get("health") === 0){
+				// Play animation and queue event to end game
+				this.isDead=true;
+				//this.owner.animation.play("DEAD", true);
+
+				this.emitter.fireEvent( finalproject_Events.PLAYER_DEAD);
+			} else {
+				//this.owner.animation.play("TAKING_DAMAGE", false, Homework3Event.PLAYER_I_FRAMES_END);
+			}
+		}
+      
+        if(event.type===finalproject_Events.ATTACK){
+           
+            this.attack();
+        
+        }
+        
+
+        
+	}
+
 
     initializePlatformer(): void {
         this.speed = 400;
@@ -133,21 +179,80 @@ export default class PlayerController extends StateMachineAI {
 		} else if (this.currentState instanceof Run){
 			Debug.log("playerstate", "Player State: Run");
 		} else if (this.currentState instanceof Idle){
-			Debug.log("playerstate", "Player State: Idle");
+		 	Debug.log("playerstate", "Player State: Idle");
 		} else if(this.currentState instanceof Fall){
             Debug.log("playerstate", "Player State: Fall");
         }
 
-        // while(this.receiver.hasNextEvent()){
-        //     let event=this.receiver.getNextEvent()
-        //     if(event.type===finalproject_Events.ATTACK){this.attack();}
-        // }
+        // Check for slot change
+        if (Input.isJustPressed("switch")) {
+            console.log("e pressed");
+            if(this.inventory.getSlot()===0){
+                this.inventory.changeSlot(1);
+            }
+            else if(this.inventory.getSlot()===1){
+                this.inventory.changeSlot(0);
+            }
+            if (this.inventory.getItem()){
+                console.log("weapon change to: ",this.inventory.getItem().sprite.imageId);
+                this.emitter.fireEvent(finalproject_Events.PLAYER_WEAPON_CHANGE,{weapon:this.inventory.getItem().sprite.imageId});
+            }
+        }
+
+
+        // Check if there is an item to pick up
+        if (Input.isJustPressed("pickup")) {
+            console.log("f pressed");
+            console.log(this.items);
+            for (let item of this.items) {
+                if (this.owner.collisionShape.overlaps(item.sprite.boundary)) {
+                    console.log("try pickup");
+                    // We overlap it, try to pick it up
+                    //console.log(this.inventory.getItem().sprite.imageId);
+                    if (this.inventory.getItem()){
+                        if (this.inventory.getItem().sprite.imageId==="pistol"){
+                            if(item.sprite.imageId==="machineGun"||item.sprite.imageId==="laserGun"){
+                                this.inventory.getItem().moveSprite(this.owner.position, "primary");
+                                this.items.push(this.inventory.getItem());
+                                this.inventory.removeItem();
+                                this.inventory.addItem(item);
+                                console.log("weapon change to: ",this.inventory.getItem().sprite.imageId);
+                                this.emitter.fireEvent(finalproject_Events.PLAYER_WEAPON_CHANGE,{weapon:this.inventory.getItem().sprite.imageId});
+                            }
+                        }
+                        else if(this.inventory.getItem().sprite.imageId==="knife"){
+                            if(item.sprite.imageId==="lightSaber"){
+                                this.inventory.getItem().moveSprite(this.owner.position, "primary");
+                                this.items.push(this.inventory.getItem());
+                                this.inventory.removeItem();
+                                this.inventory.addItem(item);
+                                console.log("weapon change to: ",this.inventory.getItem().sprite.imageId);
+                                this.emitter.fireEvent(finalproject_Events.PLAYER_WEAPON_CHANGE,{weapon:this.inventory.getItem().sprite.imageId});
+                            }
+                        }
+                        else if(this.inventory.getItem().sprite.imageId==="machineGun"){
+                            if(item.sprite.imageId==="laserGun"){
+                                this.inventory.getItem().moveSprite(this.owner.position, "primary");
+                                this.items.push(this.inventory.getItem());
+                                this.inventory.removeItem();
+                                this.inventory.addItem(item);
+                                console.log("weapon change to: ",this.inventory.getItem().sprite.imageId);
+                                this.emitter.fireEvent(finalproject_Events.PLAYER_WEAPON_CHANGE,{weapon:this.inventory.getItem().sprite.imageId});
+                            }
+                        }
+                    }
+                    this.inventory.addItem(item);
+                    break;
+                }
+            }
+        }
+    } 
+    
+    attack(): void {
+        if(this.inventory.getItem()!=null) 
+        {this.inventory.getItem().use(this.owner,"player",new Vec2(1,0));}
+          
     }
     
-    // attack(): void {
-    //     if(this.inventory.getItem()!=null) {this.inventory.getItem().use(this.owner);}
-          
-    //     }
-
           	
 }

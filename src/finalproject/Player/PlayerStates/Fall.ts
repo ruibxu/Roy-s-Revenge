@@ -1,6 +1,5 @@
 import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
-import { HW5_Color } from "../../hw5_color";
 import InAir from "./InAir";
 
 export default class Fall extends InAir {
