@@ -21,8 +21,8 @@ export default class SemiAutoGun extends WeaponType {
 
     color: Color;
     private hexColor: string;
-    //protected MAX_BULLETS_SIZE: number;
-	protected bullet:Graphic;
+    protected MAX_BULLETS_SIZE: number;
+    protected bullets:Array<Graphic>;
     
 
     initialize(options: Record<string, any>): void {
@@ -33,7 +33,8 @@ export default class SemiAutoGun extends WeaponType {
         this.displayName = options.displayName;
         this.spriteKey = options.spriteKey;
         this.useVolume = options.useVolume;
-        //this.bullets=new Array(this.MAX_BULLETS_SIZE);
+        this.MAX_BULLETS_SIZE=5;
+        this.bullets=new Array(this.MAX_BULLETS_SIZE);
     }
 
     doAnimation(shooter: GameNode, direction: Vec2, line: Line): void {
@@ -88,16 +89,22 @@ export default class SemiAutoGun extends WeaponType {
 		// 		break;
 		// 	}
 		// }
-
-		if(this.bullet !== null){
+        let bullet=null;
+		if(this.bullets !== null){
 			// Spawn a bullet			
 			// const i= Math.floor(Math.random() * (1 + 1));;
 			// if (i==1) bullet.color.set(255,20,147,1);
 			//else
-            this.bullet.color=Color.YELLOW;
-			this.bullet.visible = true;
-			this.bullet.position = shooter.position.clone();
-            this.bullet.setAIActive(true, {speed: 10*direction.x});
+            for(let b of this.bullets){
+                if(!b.visible){
+             	    //We found a dead bullet
+                	bullet = b;
+                 	break;}}
+            if(bullet !== null){
+            bullet.color=Color.YELLOW;
+			bullet.visible = true;
+			bullet.position = shooter.position.clone();
+            bullet.setAIActive(true, {speed: 10*direction.x});}
 		}
     }
 
@@ -131,27 +138,27 @@ export default class SemiAutoGun extends WeaponType {
         newType.initialize({color: this.hexColor,damage: this.damage, cooldown: this.cooldown, displayName: this.displayName, spriteKey: this.spriteKey, useVolume: this.useVolume});
         return newType;
     }
-    createRequiredAssets(scene: Scene): [Graphic] {
+    createRequiredAssets(scene: Scene): Graphic[] {
 		
         // Initialize the bullet object pool
-		// for(let i = 0; i < this.bullets.length; i++){
-			this.bullet = <Graphic>scene.add.graphic(GraphicType.RECT, "primary", {position: new Vec2(100, 100), size: new Vec2(10, 5)});
+		for(let i = 0; i < this.bullets.length; i++){
+			this.bullets[i] = <Graphic>scene.add.graphic(GraphicType.RECT, "primary", {position: new Vec2(100, 100), size: new Vec2(10, 5)});
 
 
 			// Currently bullets use the base custom gradient circle shader, 
 			// you'll need to change this to the Linear Gradient Circle once you get that shader working. 
 		
 
-			this.bullet.visible = false;
+			this.bullets[i].visible = false;
 			// This is the color each bullet is set to by default, you can change this if you like a different color
-			this.bullet.color = Color.BLUE;
+			this.bullets[i].color = Color.BLUE;
 
 			// Add AI to our bullet
-			this.bullet.addAI(BulletBehavior, {speed: 250});
+			this.bullets[i].addAI(BulletBehavior, {speed: 250});
 
 			// Add a collider to our bullet
 			let collider = new Circle(Vec2.ZERO, 5);
-			this.bullet.setCollisionShape(collider);
+			this.bullets[i].setCollisionShape(collider);}
 
             // this.bullet.tweens.add("fade", {
             //             startDelay: 0,
@@ -166,6 +173,6 @@ export default class SemiAutoGun extends WeaponType {
             //             ],
             //             onEnd: finalproject_Events.UNLOAD_ASSET
             //         });
-        return [this.bullet];
+        return this.bullets;
     }
 }

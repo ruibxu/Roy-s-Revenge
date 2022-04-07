@@ -28,6 +28,7 @@ import Weapon from "../GameSystems/items/Weapon";
 import RegistryManager from "../../Wolfie2D/Registry/RegistryManager";
 import Healthpack from "../GameSystems/items/Healthpack";
 import BattleManager from "../GameSystems/BattleManager";
+import CanvasNode from "../../Wolfie2D/Nodes/CanvasNode";
 
 // HOMEWORK 5 - TODO
 /**
@@ -37,6 +38,7 @@ import BattleManager from "../GameSystems/BattleManager";
  * it's up to you.
  */
 export default class GameLevel extends Scene {
+    protected enemy: AnimatedSprite;
     // Every level will have a player, which will be an animated sprite
     protected playerSpawn: Vec2;
     protected player: AnimatedSprite;
@@ -50,8 +52,11 @@ export default class GameLevel extends Scene {
     protected livesCountLabel: Label;
 
     // Stuff to end the level and go to the next level
-    protected levelEndArea: Rect;
+    
     protected nextLevel: new (...args: any) => GameLevel;
+    protected currentLevel: GameLevel;
+
+    protected levelEndArea: Rect;
     protected levelEndTimer: Timer;
     protected levelEndLabel: Label;
     
@@ -72,6 +77,8 @@ export default class GameLevel extends Scene {
     // The battle manager for the scene
     private battleManager: BattleManager;
 
+
+
     // Total ballons and amount currently popped
     //protected totalBalloons: number;
     //protected balloonLabel: Label;
@@ -83,16 +90,12 @@ export default class GameLevel extends Scene {
     //protected switchesPressed: number;
 
     startScene(): void {
-        //this.balloonsPopped = 0;
-        //this.switchesPressed = 0;
-        this.initWeapons();
         // Do the game level standard initializations
+     
+        this.initWeapons();
         this.initLayers();
         this.initViewport();
-        /////////////////////////////////////////////////
-
         this.subscribeToEvents();
-        /////////////////////////////////////////////////
         this.addUI();
 
         this.battleManager = new BattleManager();
@@ -100,6 +103,7 @@ export default class GameLevel extends Scene {
         this.items = new Array();
         this.spawnItems();
         this.initPlayer();
+        this.initEnemies();
         // 10 second cooldown for ultimate
         this.ultimateCooldown = new Timer(2000);
 
@@ -138,14 +142,17 @@ export default class GameLevel extends Scene {
 
     updateScene(deltaT: number){
         // Handle events and update the UI if needed
+    
+        
         while(this.receiver.hasNextEvent()){
             let event = this.receiver.getNextEvent();
             
             if(event.type === "ingame_menu"){
                 this.sceneManager.changeToScene(In_Game_Menu, {});
+                //this.emitter.fireEvent("currentLevel",{level: this});
             }
             if(event.type === "back_to_scene"){
-                this.game.enable();
+                this.playerSpawn = new Vec2(10*32-16, 23*32+16);
             }      
             switch(event.type){
                 case finalproject_Events.PLAYER_HIT_SWITCH:
@@ -168,6 +175,7 @@ export default class GameLevel extends Scene {
                     break;
                 case finalproject_Events.PLAYER_WEAPON_CHANGE:
                     {
+                        /*
                         console.log(event.data.get("weapon"));
                         if(event.data.get("weapon")=="pistol"){
                             this.player = this.add.animatedSprite("player_with_pistol", "primary");
@@ -186,7 +194,7 @@ export default class GameLevel extends Scene {
                         }
                         else{
                             this.player = this.add.animatedSprite("player", "primary");
-                        }
+                        }*/
                     }
                     break;
                 case finalproject_Events.PLAYER_ENTERED_LEVEL_END:
@@ -255,6 +263,9 @@ export default class GameLevel extends Scene {
         if(Input.isKeyJustPressed("escape")){
             this.emitter.fireEvent("ingame_menu");
         }
+
+        // if((<Weapon>(<PlayerController>this.player._ai).inventory.getItem()).type===)
+        // {this.handleScreenDespawn((<Weapon>(<PlayerController>this.player._ai).inventory.getItem()).type.bullets[0],this.viewport.getCenter(),this.viewport.getHalfSize().scaled(2));}
     }
 
     /**
@@ -265,9 +276,7 @@ export default class GameLevel extends Scene {
         this.ui_layer=this.addUILayer("UI");
         this.game=this.addLayer("primary", 1);
         // Add a layer for players and enemies
-        
-
-
+    
     }
 
     /**
@@ -409,6 +418,40 @@ export default class GameLevel extends Scene {
 
         this.viewport.follow(this.player);
     }
+
+
+    protected initEnemies(): void {
+        //add inventory
+      
+        
+         // Add the player
+        this.enemy = this.add.animatedSprite("enemy", "primary");
+        this.enemy.scale.set(1, 1);
+        if(!this.playerSpawn){
+            console.warn("Player spawn was never set - setting spawn to (0, 0)");
+            this.playerSpawn = Vec2.ZERO;
+        }
+        let enemyPosition=new Vec2(1216,384);
+        this.enemy.position.copy(enemyPosition);
+        this.enemy.addPhysics(new AABB(Vec2.ZERO, new Vec2(32, 32)));
+        this.enemy.colliderOffset.set(0, 2);
+        // this.player.addAI(PlayerController, 
+        //     {playerType: "platformer", 
+        //     tilemap: "Main",   
+        //     inventory: inventory,
+        //     items: this.items,
+        //     });
+
+        //this.player.setGroup("player");
+
+        //this.viewport.follow(this.player);
+    }
+
+    handleCollision(){
+        
+    }
+
+
 
     /**
      * Initializes the level end area
@@ -589,6 +632,13 @@ export default class GameLevel extends Scene {
             RegistryManager.getRegistry("weaponTypes").registerItem(weapon.name, weaponType)
         }
     }
+    handleScreenDespawn(node: CanvasNode, viewportCenter: Vec2, ViewportSize: Vec2): void {
+		// Your code goes here:
 
+		if (((node.position.x<=(viewportCenter.x-ViewportSize.x))||(node.position.x>=(viewportCenter.x+ViewportSize.x)))&&node.visible==true)
+		{node.visible=false;}
+
+
+	}
     
 }

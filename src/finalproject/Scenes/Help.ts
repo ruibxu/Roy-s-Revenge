@@ -30,7 +30,6 @@ export default class Help extends Scene {
         this.viewport.setZoomLevel(1);
 
         this.receiver.subscribe("menu");
-        this.receiver.subscribe("ingameMenu");
         this.receiver.subscribe("mainMenu");
 
         const helpHeader = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y - 300), text: "Help"});
@@ -122,9 +121,6 @@ export default class Help extends Scene {
             let event = this.receiver.getNextEvent();
             if(event.type === "mainMenu"){
                 this.flag=0;
-            }
-            if(event.type === "ingameMenu"){
-                this.flag=1;
             }
             if(event.type === "menu"&& this.flag==0){
                 this.sceneManager.changeToScene(MainMenu, {});

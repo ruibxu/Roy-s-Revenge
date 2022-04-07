@@ -14,12 +14,13 @@ export default class Level1 extends GameLevel {
         // Load resources
         this.load.tilemap("level1", "final_project_assets/tilemaps/level1.tmj");
         this.load.spritesheet("player", "final_project_assets/spritesheets/roy.json");
-        this.load.spritesheet("player_with_pistol", "final_project_assets/spritesheets/roy_with_pistol.json");
-        this.load.spritesheet("player_with_knife", "final_project_assets/spritesheets/roy_with_knife.json");
-        this.load.spritesheet("player_with_lightsaber", "final_project_assets/spritesheets/roy_with_lightsaber.json");
-        this.load.spritesheet("player_with_lasergun", "final_project_assets/spritesheets/roy_with_lasergun.json");
-        this.load.spritesheet("player_with_machinegun", "final_project_assets/spritesheets/roy_with_machinegun.json");
-        
+        this.load.spritesheet("enemy", "final_project_assets/spritesheets/boss.json");
+        // this.load.spritesheet("player_with_pistol", "final_project_assets/spritesheets/roy_with_pistol.json");
+        // this.load.spritesheet("player_with_knife", "final_project_assets/spritesheets/roy_with_knife.json");
+        // this.load.spritesheet("player_with_lightsaber", "final_project_assets/spritesheets/roy_with_lightsaber.json");
+        // this.load.spritesheet("player_with_lasergun", "final_project_assets/spritesheets/roy_with_lasergun.json");
+        // this.load.spritesheet("player_with_machinegun", "final_project_assets/spritesheets/roy_with_machinegun.json");
+        this.load.spritesheet("slice", "final_project_assets/spritesheets/slice.json");
         //this.load.spritesheet("red", "final_project_assets/spritesheets/redBalloon.json");
         //this.load.spritesheet("blue", "final_project_assets/spritesheets/blueBalloon.json");
         //this.load.audio("jump", "final_project_assets/sounds/jump.wav");
@@ -29,9 +30,6 @@ export default class Level1 extends GameLevel {
         // HOMEWORK 5 - TODO
         // You'll want to change this to your level music
         //this.load.audio("level_music", "final_project_assets/music/levelmusic.mp3");
-
-        console.log("YES");
-
         // Load the scene info
         
 
@@ -87,9 +85,10 @@ export default class Level1 extends GameLevel {
     startScene(): void {
         // Add the level 1 tilemap
         this.add.tilemap("level1", new Vec2(1, 1));
-        this.viewport.setBounds(0, 0, 64*32, 32*32);
+        //this.viewport.setBounds(0, 0, 64*32, 32*32);
+        this.viewport.setBounds(0, 0, 128*32, 16*32);
 
-        this.playerSpawn = new Vec2(5*32-16, 23*32+16);
+        this.playerSpawn = new Vec2(4*32-16, 11*32+16);
 
         // Set the total switches and balloons in the level
         //this.totalSwitches = 4;
@@ -99,8 +98,8 @@ export default class Level1 extends GameLevel {
         super.startScene();
 
         //this.addLevelEnd(new Vec2(60, 13), new Vec2(5, 5));
-
-        //this.nextLevel = Level2;
+        this.currentLevel = this;
+        this.nextLevel = Level2;
 
         // Add balloons of various types, just red and blue for the first level
         /* for(let pos of [new Vec2(18, 8), new Vec2(25, 3), new Vec2(52, 5)]){

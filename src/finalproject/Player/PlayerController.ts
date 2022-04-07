@@ -116,7 +116,7 @@ export default class PlayerController extends StateMachineAI {
       
         if(event.type===finalproject_Events.ATTACK){
            
-            this.attack();
+            this.attack(event.data.get("direction"));
         
         }
         
@@ -185,24 +185,30 @@ export default class PlayerController extends StateMachineAI {
         }
 
         // Check for slot change
-        if (Input.isJustPressed("switch")) {
-            console.log("e pressed");
-            if(this.inventory.getSlot()===0){
-                this.inventory.changeSlot(1);
-            }
-            else if(this.inventory.getSlot()===1){
-                this.inventory.changeSlot(0);
-            }
+        if (Input.isJustPressed("slot1")) {
+            this.inventory.changeSlot(0);
             if (this.inventory.getItem()){
-                console.log("weapon change to: ",this.inventory.getItem().sprite.imageId);
+                //console.log("weapon change to: ",this.inventory.getItem().sprite.imageId);
+                this.emitter.fireEvent(finalproject_Events.PLAYER_WEAPON_CHANGE,{weapon:this.inventory.getItem().sprite.imageId});
+            }
+        }
+        if (Input.isJustPressed("slot2")) {
+            this.inventory.changeSlot(1);
+            if (this.inventory.getItem()){
+                //console.log("weapon change to: ",this.inventory.getItem().sprite.imageId);
                 this.emitter.fireEvent(finalproject_Events.PLAYER_WEAPON_CHANGE,{weapon:this.inventory.getItem().sprite.imageId});
             }
         }
 
+                // Check for slot change
+        if (Input.isJustPressed("skill")) {
+           
+        }
+
+
 
         // Check if there is an item to pick up
-        if (Input.isJustPressed("pickup")) {
-            console.log("f pressed");
+        if (Input.isJustPressed("interact")) {
             console.log(this.items);
             for (let item of this.items) {
                 if (this.owner.collisionShape.overlaps(item.sprite.boundary)) {
@@ -248,9 +254,9 @@ export default class PlayerController extends StateMachineAI {
         }
     } 
     
-    attack(): void {
+    attack(direction:Vec2): void {
         if(this.inventory.getItem()!=null) 
-        {this.inventory.getItem().use(this.owner,"player",new Vec2(1,0));}
+        {this.inventory.getItem().use(this.owner,"player",direction);}
           
     }
     

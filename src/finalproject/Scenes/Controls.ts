@@ -17,12 +17,10 @@ import InGameMenu from "./InGameMenu";
 export default class Controls extends Scene {
     private controls: Layer;
 
-
     startScene(): void {
         // Center the viewport
         
         this.controls= this.addUILayer("controls");
-
 
         
         let size = this.viewport.getHalfSize();
@@ -31,6 +29,8 @@ export default class Controls extends Scene {
         this.viewport.setZoomLevel(1);
 
         this.receiver.subscribe("menu");
+        this.receiver.subscribe("main");
+        this.receiver.subscribe("ingame");
 
         const controlsBack = <Button>this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x-450, center.y - 300), text: "Back"});
         controlsBack.size.set(200, 50);
@@ -83,6 +83,7 @@ export default class Controls extends Scene {
             if(event.type === "menu"){
                 this.sceneManager.changeToScene(MainMenu, {});
             }
+
         }
     }
 }

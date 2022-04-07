@@ -15,6 +15,7 @@ export default abstract class PlayerState extends State {
 	parent: PlayerController;
 	positionTimer: Timer;
 	faceDirection: Vec2;
+	skillmode:boolean = false;
 
 
 	constructor(parent: StateMachine, owner: GameNode){
@@ -36,8 +37,9 @@ export default abstract class PlayerState extends State {
 		let direction = Vec2.ZERO;
 		direction.x = (Input.isPressed("left") ? -1 : 0) + (Input.isPressed("right") ? 1 : 0);
 		direction.y = (Input.isJustPressed("jump") ? -1 : 0);
-		if(Input.isPressed("left")) this.faceDirection.x=-1;
-		else if(Input.isPressed("right")) this.faceDirection.x=1;
+		if(this.owner.onGround)
+		{if(Input.isPressed("left")) this.faceDirection.x=-1;
+		else if(Input.isPressed("right")) this.faceDirection.x=1;}
 		return direction;
 	}
 
@@ -56,9 +58,8 @@ export default abstract class PlayerState extends State {
 			this.positionTimer.start();
 		}
 		if(Input.isMouseJustPressed())
-		{
+		{	
 			this.emitter.fireEvent(finalproject_Events.ATTACK,{position:this.owner.position.clone(),direction:this.faceDirection});}
-		
 			this.parent.velocity.y += this.gravity*deltaT;
 	}
 }

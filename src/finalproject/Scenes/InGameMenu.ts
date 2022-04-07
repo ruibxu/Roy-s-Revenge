@@ -14,7 +14,7 @@ import MainMenu from "./MainMenu";
 import GameLevel from "./GameLevel";
 import Controls from "./Controls";
 import Help from "./Help";
-
+import { finalproject_Events } from "../finalproject_constants";
 
 export default class InGameMenu extends Scene {
     private in_game_menu: Layer;
@@ -30,6 +30,7 @@ export default class InGameMenu extends Scene {
         let center = this.viewport.getCenter();
         this.viewport.setFocus(size);
         this.viewport.setZoomLevel(1);
+        
 
 
         //splashpages
@@ -46,6 +47,7 @@ export default class InGameMenu extends Scene {
         this.receiver.subscribe("control");
         this.receiver.subscribe("help");
         this.receiver.subscribe("menu");
+        this.receiver.subscribe("currentLevel");
 
 
 
@@ -101,22 +103,22 @@ export default class InGameMenu extends Scene {
     }
     updateScene(){
         while(this.receiver.hasNextEvent()){
+
             let event = this.receiver.getNextEvent();
+
 
             if(event.type === "newgame"){
                 let sceneOptions = {
                     physics: {
-                        groupNames: ["ground", "player", "balloon"],
+                        groupNames: ["ground", "player"],
                         collisions:
                         [
-                            [0, 1, 1],
-                            [1, 0, 0],
-                            [1, 0, 0]
+                            [0, 1],
+                            [1, 0],
                         ]
                     }
                 }
                 this.sceneManager.changeToScene(Level1, {},sceneOptions);
-                //this.emitter.fireEvent("level1");
             }
             if(event.type === "menu"){
                 this.sceneManager.changeToScene(MainMenu, {});
@@ -124,24 +126,22 @@ export default class InGameMenu extends Scene {
             if(event.type === "resume"){
                 let sceneOptions = {
                     physics: {
-                        groupNames: ["ground", "player", "balloon"],
+                        groupNames: ["ground", "player"],
                         collisions:
                         [
-                            [0, 1, 1],
-                            [1, 0, 0],
-                            [1, 0, 0]
+                            [0, 1],
+                            [1, 0]
                         ]
                     }
                 }
-                this.sceneManager.changeToScene(GameLevel, {},sceneOptions);
+                this.sceneManager.changeToScene(Level1, {}, sceneOptions);
                 this.emitter.fireEvent("back_to_scene");
             }
             if(event.type === "control"){
-                this.emitter.fireEvent("ingameMenu");
                 this.sceneManager.changeToScene(Controls,{});
+ 
             }
             if(event.type === "help"){
-                this.emitter.fireEvent("ingameMenu");
                 this.sceneManager.changeToScene(Help,{});
                 
             }
@@ -149,16 +149,15 @@ export default class InGameMenu extends Scene {
         if(Input.isKeyJustPressed("escape")){
             let sceneOptions = {
                 physics: {
-                    groupNames: ["ground", "player", "balloon"],
+                    groupNames: ["ground", "player"],
                     collisions:
                     [
-                        [0, 1, 1],
-                        [1, 0, 0],
-                        [1, 0, 0]
+                        [0, 1],
+                        [1, 0],
                     ]
                 }
             }
-            this.sceneManager.changeToScene(GameLevel, {},sceneOptions);
+            this.sceneManager.changeToScene(Level1, {}, sceneOptions); 
         }
         
     }

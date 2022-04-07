@@ -3,22 +3,22 @@
 	    {
             "type": "weapon",
             "weaponType": "lightSaber", 
-            "position": [592, 784]
+            "position": [368, 272]
         },
         {
             "type": "weapon",
             "weaponType": "machineGun", 
-            "position": [624, 784]
+            "position": [240, 336]
         },
         {
             "type": "weapon",
             "weaponType": "pistol", 
-            "position": [656, 784]
+            "position": [496, 208]
         },
         {
             "type": "weapon",
             "weaponType": "knife", 
-            "position": [688, 784]
+            "position": [304, 112]
         }
     ]
 }

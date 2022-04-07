@@ -219,12 +219,11 @@ export default class MainMenu extends Scene {
 
                 let sceneOptions = {
                     physics: {
-                        groupNames: ["ground", "player", "balloon"],
+                        groupNames: ["ground", "player"],
                         collisions:
                         [
-                            [0, 1, 1],
-                            [1, 0, 0],
-                            [1, 0, 0]
+                            [0, 1 ],
+                            [1, 0 ] ,
                         ]
                     }
                 }
@@ -239,12 +238,10 @@ export default class MainMenu extends Scene {
                 this.level.setHidden(true);
             }
             if(event.type === "controls"){
-                this.emitter.fireEvent("mainMenu");
                 this.sceneManager.changeToScene(Controls, {});
                 
             }
             if(event.type === "help"){
-                this.emitter.fireEvent("mainMenu");
                 this.sceneManager.changeToScene(Help, {});
                 
             }

@@ -18,10 +18,11 @@ import WeaponTypeRegistry from "./finalproject/Registry/WeaponTypeRegistry";
             {name: "left", keys: ["a"]},
             {name: "right", keys: ["d"]},
             {name: "jump", keys: ["w", "space"]},
-            {name: "ultimate", keys: ["q"]},
-            {name: "switch", keys: ["e"]},
+            {name: "skill", keys: ["q"]},
+            {name: "interact", keys: ["e"]},
             {name: "run", keys: ["shift"]},
-            {name: "pickup", keys: ["f"]}
+            {name: "slot1", keys: ["1"]},
+            {name: "slot2", keys: ["2"]},
 
         ],
         useWebGL: false,                        // Tell the game we want to use webgl

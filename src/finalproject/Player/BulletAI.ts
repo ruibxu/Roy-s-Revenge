@@ -53,7 +53,7 @@ export default class BulletBehavior implements AI {
     update(deltaT: number): void {
         
         while(this.receiver.hasNextEvent()){
-			this.handleEvent(this.receiver.getNextEvent());
+			this.handleEvent(this.receiver.getNextEvent())
 		}
         
         if(this.owner.visible){
@@ -64,8 +64,11 @@ export default class BulletBehavior implements AI {
             // Update the position
             //console.log(this.current_speed);
             this.owner.position.x+=this.current_speed;
+          
             //console.log( this.owner.position);
         }
+
+       
         
     }
 
