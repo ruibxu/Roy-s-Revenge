@@ -20,7 +20,6 @@ import WeaponTypeRegistry from "./finalproject/Registry/WeaponTypeRegistry";
             {name: "jump", keys: ["w", "space"]},
             {name: "skill", keys: ["q"]},
             {name: "interact", keys: ["e"]},
-            {name: "run", keys: ["shift"]},
             {name: "slot1", keys: ["1"]},
             {name: "slot2", keys: ["2"]},
 

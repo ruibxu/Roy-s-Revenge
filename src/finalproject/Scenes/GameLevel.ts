@@ -18,7 +18,6 @@ import { finalproject_Events } from "../finalproject_constants";
 import HW5_ParticleSystem from "../HW5_ParticleSystem";
 import PlayerController from "../Player/PlayerController";
 import MainMenu from "./MainMenu";
-import In_Game_Menu from "./InGameMenu";
 import Layer from "../../Wolfie2D/Scene/Layer";
 import Button from "../../Wolfie2D/Nodes/UIElements/Button";
 import InventoryManager from "../GameSystems/InventoryManager";
@@ -29,6 +28,8 @@ import RegistryManager from "../../Wolfie2D/Registry/RegistryManager";
 import Healthpack from "../GameSystems/items/Healthpack";
 import BattleManager from "../GameSystems/BattleManager";
 import CanvasNode from "../../Wolfie2D/Nodes/CanvasNode";
+
+
 
 // HOMEWORK 5 - TODO
 /**
@@ -44,8 +45,16 @@ export default class GameLevel extends Scene {
     protected player: AnimatedSprite;
     protected respawnTimer: Timer;
 
+
     protected ui_layer: Layer;
     protected game: Layer;
+    protected ingamemenu: Layer;
+    protected controls: Layer;
+    protected help: Layer;
+
+    protected inventory: InventoryManager;
+
+    protected ispaused: boolean;
 
     // Labels for the UI
     protected static livesCount: number = 3;
@@ -54,7 +63,7 @@ export default class GameLevel extends Scene {
     // Stuff to end the level and go to the next level
     
     protected nextLevel: new (...args: any) => GameLevel;
-    protected currentLevel: GameLevel;
+    protected currentLevel: new (...args: any) => GameLevel;
 
     protected levelEndArea: Rect;
     protected levelEndTimer: Timer;
@@ -67,8 +76,6 @@ export default class GameLevel extends Scene {
     // Custom particle sysyem
     protected system: HW5_ParticleSystem;
 
-    //Cooldown timer for ultimate skill
-    protected ultimateCooldown: Timer;
 
 
     // A list of items in the scene
@@ -104,8 +111,10 @@ export default class GameLevel extends Scene {
         this.spawnItems();
         this.initPlayer();
         this.initEnemies();
+
+
+        this.ispaused=false;
         // 10 second cooldown for ultimate
-        this.ultimateCooldown = new Timer(2000);
 
         this.levelTransitionScreen.tweens.play("fadeOut");
 
@@ -148,12 +157,71 @@ export default class GameLevel extends Scene {
             let event = this.receiver.getNextEvent();
             
             if(event.type === "ingame_menu"){
-                this.sceneManager.changeToScene(In_Game_Menu, {});
+                this.ui_layer.disable();
+                this.game.disable();
+                this.ingamemenu.enable();
+                this.controls.disable();
+                this.help.disable();
+                this.viewport.setZoomLevel(1);
+                this.viewport.setBounds(0, 0, 1200, 800);
+                this.getLayer("slots").disable();
+                this.getLayer("items").disable();
+                this.ispaused=true;
+                this.tilemaps.forEach(tilemap => {
+                    tilemap.visible = false;
+                    tilemap.getLayer().disable();
+                });
+                
+                //
                 //this.emitter.fireEvent("currentLevel",{level: this});
             }
-            if(event.type === "back_to_scene"){
-                this.playerSpawn = new Vec2(10*32-16, 23*32+16);
-            }      
+            if(event.type === "back_to_game"){
+                this.ui_layer.enable();
+                this.game.enable();
+                this.ingamemenu.disable();
+                this.getLayer("slots").enable();
+                this.getLayer("items").enable();
+                this.viewport.setZoomLevel(2.25);
+                this.viewport.setBounds(0, 0, 128*32, 16*32);
+                this.ispaused=false;
+
+                this.tilemaps.forEach(tilemap => {
+                    tilemap.visible = true;
+                    tilemap.getLayer().enable();
+                });
+                
+                //this.emitter.fireEvent("currentLevel",{level: this});
+            }
+
+
+            if(event.type === "newgame"){
+                let sceneOptions = {
+                    physics: {
+                        groupNames: ["ground", "player"],
+                        collisions:
+                        [
+                            [0, 1],
+                            [1, 0],
+                        ]
+                    }
+                }
+                this.sceneManager.changeToScene(this.currentLevel, {}, sceneOptions);
+            }
+            if(event.type === "menu"){
+                this.sceneManager.changeToScene(MainMenu, {});
+            }
+            if(event.type === "resume"){
+                this.emitter.fireEvent("back_to_game");
+            }
+            if(event.type === "control"){
+                this.controls.enable();
+                this.ingamemenu.disable();
+    
+            }
+            if(event.type === "help"){
+                this.help.enable();
+                this.ingamemenu.disable();
+            }
             switch(event.type){
                 case finalproject_Events.PLAYER_HIT_SWITCH:
                     {
@@ -163,38 +231,9 @@ export default class GameLevel extends Scene {
                         // this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "switch", loop: false, holdReference: false});
                     }
                     break;
-                case finalproject_Events.PLAYER_HIT_WEAPON:
-                    {
-                        //
-                    }
-                    break;
                 case finalproject_Events.PLAYER_HIT_TRAP:
                     {
                         //
-                    }
-                    break;
-                case finalproject_Events.PLAYER_WEAPON_CHANGE:
-                    {
-                        /*
-                        console.log(event.data.get("weapon"));
-                        if(event.data.get("weapon")=="pistol"){
-                            this.player = this.add.animatedSprite("player_with_pistol", "primary");
-                        }
-                        else if(event.data.get("weapon")=="machineGun"){
-                            this.player = this.add.animatedSprite("player_with_machinegun", "primary");
-                        }
-                        else if(event.data.get("weapon")=="lightSaber"){
-                            this.player = this.add.animatedSprite("player_with_lightsaber", "primary");
-                        }
-                        else if(event.data.get("weapon")=="laserGun"){
-                            this.player = this.add.animatedSprite("player_with_lasergun", "primary");
-                        }
-                        else if(event.data.get("weapon")=="knife"){
-                            this.player = this.add.animatedSprite("player_with_knife", "primary");
-                        }
-                        else{
-                            this.player = this.add.animatedSprite("player", "primary");
-                        }*/
                     }
                     break;
                 case finalproject_Events.PLAYER_ENTERED_LEVEL_END:
@@ -260,8 +299,11 @@ export default class GameLevel extends Scene {
             }
             
         */
-        if(Input.isKeyJustPressed("escape")){
+        if(Input.isKeyJustPressed("escape" )&& this.ingamemenu.isHidden()==true){
             this.emitter.fireEvent("ingame_menu");
+        }
+        if(Input.isKeyJustPressed("escape" )&& this.ingamemenu.isHidden()==false){
+            this.emitter.fireEvent("back_to_game");
         }
 
         // if((<Weapon>(<PlayerController>this.player._ai).inventory.getItem()).type===)
@@ -273,10 +315,220 @@ export default class GameLevel extends Scene {
      */
     protected initLayers(): void {
         // Add a layer for UI
-        this.ui_layer=this.addUILayer("UI");
+        this.ui_layer=this.addUILayer("UI");    
         this.game=this.addLayer("primary", 1);
-        // Add a layer for players and enemies
+        this.ingamemenu=this.addLayer("ingame",0);
+        this.ingamemenu.disable();
+        
+
+
+        let size = this.viewport.getHalfSize();
+        let center = this.viewport.getCenter();
+
+
+
+        let resumeBtn= <Button>this.add.uiElement(UIElementType.BUTTON, "ingame", {position: new Vec2(size.x, size.y-150), text: "Resume Game"});
+        let newGameBtn = <Button>this.add.uiElement(UIElementType.BUTTON, "ingame", {position: new Vec2(size.x, size.y-50), text: "New Game"});
+        let CtrlBtn = <Button>this.add.uiElement(UIElementType.BUTTON, "ingame", {position: new Vec2(size.x, size.y+50), text: "Controls"});
+        let helpBtn = <Button>this.add.uiElement(UIElementType.BUTTON, "ingame", {position: new Vec2(size.x, size.y+150), text: "Help"});
+        let mainMenuBtn = <Button>this.add.uiElement(UIElementType.BUTTON, "ingame", {position: new Vec2(size.x, size.y+250), text: "Main Menu"});
+
+
+        resumeBtn.backgroundColor = new Color(99,202,253);
+        resumeBtn.borderColor = Color.BLACK;
+        resumeBtn.borderRadius = 10;
+        resumeBtn.setPadding(new Vec2(50, 10));
+        resumeBtn.font = "PixelSimple";
+        resumeBtn.size.set(400, 50);
+        resumeBtn.textColor = Color.BLACK;
+        resumeBtn.onClickEventId = "resume";
+
+
+        newGameBtn.backgroundColor = new Color(99,202,253);
+        newGameBtn.borderColor = Color.BLACK;
+        newGameBtn.borderRadius = 10;
+        newGameBtn.setPadding(new Vec2(50, 10));
+        newGameBtn.font = "PixelSimple";
+        newGameBtn.size.set(400, 50);
+        newGameBtn.textColor = Color.BLACK;
+        newGameBtn.onClickEventId = "newgame";
+
+        CtrlBtn.backgroundColor = new Color(99,202,253);
+        CtrlBtn.borderColor = Color.BLACK;
+        CtrlBtn.borderRadius = 10;
+        CtrlBtn.setPadding(new Vec2(50, 10));
+        CtrlBtn.font = "PixelSimple";
+        CtrlBtn.size.set(400, 50);
+        CtrlBtn.textColor = Color.BLACK;
+        CtrlBtn.onClickEventId = "control";
+
+        helpBtn.backgroundColor = new Color(99,202,253);
+        helpBtn.borderColor = Color.BLACK;
+        helpBtn.borderRadius = 10;
+        helpBtn.setPadding(new Vec2(50, 10));
+        helpBtn.font = "PixelSimple";
+        helpBtn.size.set(400, 50);
+        helpBtn.textColor = Color.BLACK;
+        helpBtn.onClickEventId = "help";
+
+
+        mainMenuBtn.backgroundColor = new Color(99,202,253);
+        mainMenuBtn.borderColor = Color.BLACK;
+        mainMenuBtn.borderRadius = 10;
+        mainMenuBtn.setPadding(new Vec2(50, 10));
+        mainMenuBtn.font = "PixelSimple";
+        mainMenuBtn.size.set(400, 50);
+        mainMenuBtn.textColor = Color.BLACK;
+        mainMenuBtn.onClickEventId = "menu";
     
+
+        //InGameControls
+        this.controls= this.addUILayer("controls");
+        this.controls.disable();
+
+        
+        this.viewport.setFocus(size);
+        this.viewport.setZoomLevel(1);
+
+
+        const controlsBack = <Button>this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x-450, center.y - 300), text: "Back"});
+        controlsBack.size.set(200, 50);
+        controlsBack.borderWidth = 2;
+        controlsBack.borderColor = Color.BLACK;
+        controlsBack.textColor = Color.BLACK;
+        controlsBack.backgroundColor = new Color(142,142,142);
+        controlsBack.onClickEventId = "ingame_menu";
+
+       
+
+        const controlsHeader = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 300), text: "Controls"});
+
+        controlsHeader.fontSize = 70;
+        controlsHeader.textColor=Color.WHITE;
+        const texta = "a to move left";
+        const textb = "d to move right";
+        const text="space and w to jump";
+        const textc = "e to pick up weapons";
+        const textd = "Q to cast the skill";
+        const textd2 ="(which will decrease one HP and increase the attack speed for 5s)";
+        const texte = "left click to attack";
+
+        const linea = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 150), text: texta});
+        const lineb = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y-100), text: textb});
+        const line = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y-50), text: text});
+        const linec = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: textc});
+        const lined = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y+50), text: textd});
+        const lined2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y+100), text: textd2});
+        const linee = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y+150), text: texte});
+
+        linea.fontSize=40;
+        lineb.fontSize=40;
+        line.fontSize=40;
+        linec.fontSize=40;
+        lined.fontSize=40;
+        lined2.fontSize=40;
+        linee.fontSize=40;
+
+        linea.textColor=Color.WHITE;
+        lineb.textColor=Color.WHITE;
+        line.textColor=Color.WHITE;
+        linec.textColor=Color.WHITE;
+        lined.textColor=Color.WHITE;
+        lined2.textColor=Color.WHITE;
+        linee.textColor=Color.WHITE;
+
+
+        // in game help
+        this.help= this.addUILayer("help");
+        this.help.disable();
+
+        this.viewport.setFocus(size);
+        this.viewport.setZoomLevel(1);
+
+
+        const helpHeader = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y - 300), text: "Help"});
+        const backStory = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-450, center.y -225), text: "Backstory"});
+        helpHeader.fontSize = 70;
+        helpHeader.textColor=Color.WHITE;
+        backStory.fontSize = 30;
+        backStory.textColor=Color.WHITE;
+
+        const helpBack = <Button>this.add.uiElement(UIElementType.BUTTON, "help", {position: new Vec2(center.x-450, center.y - 300), text: "Back"});
+        helpBack.size.set(200, 50);
+        helpBack.borderWidth = 2;
+        helpBack.borderColor = Color.BLACK;
+        helpBack.textColor = Color.BLACK;
+        helpBack.backgroundColor = new Color(142,142,142);
+        helpBack.onClickEventId = "ingame_menu";
+
+        const storya = "Roy is a robot created by Dr. G that is used to help people in daily lives. Dr. G is a nice,";
+        const storyb = "intelligential man who hopes robots can help people live better and be friends with";
+        const storyc = "people. Roy is the first robot Dr. G created. Roy is more like a son to Dr. G, unlike";
+        const storyd = "other robots, Roy has emotions, and this is and this is the gift Dr.G gives him as the ";
+        const storye = "first robots. Another scientist Dr. K has the opposite opinion with ";
+        const storyf = "Dr. G, he hopes robots can be weaponized and become war machines. However K’s idea";
+        const storyg = "is strongly opposed by Dr. G. Dr. K is very angry that Dr. G was trying to stop him, so ";
+        const storyh = "he sends his armed robots to catch Dr. G to his laboratory, however, Dr. G was accidentally";
+        const storyi = "killed by the weaponized robots, when Roy discovered that Dr. G was dead, he was very sad and then";
+        const storyj = "he started his journey of revenge. He was very sad and then he started his journey of revenge. ";
+
+
+
+        const story1 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y - 200), text: storya});
+        const story2 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y - 175), text: storyb});
+        const story3 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y - 150), text: storyc});
+        const story4 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y - 125), text: storyd});
+        const story5 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y -100), text: storye});
+        const story6 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y -75), text: storyf});
+        const story7 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y -50), text: storyg});
+        const story8 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y -25), text: storyh});
+        const story9 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y), text: storyi});
+        const story10 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y +25), text: storyj});
+
+        story1.textColor=Color.WHITE;
+        story2.textColor=Color.WHITE;
+        story3.textColor=Color.WHITE;
+        story4.textColor=Color.WHITE;
+        story5.textColor=Color.WHITE;
+        story6.textColor=Color.WHITE;
+        story7.textColor=Color.WHITE;
+        story8.textColor=Color.WHITE;
+        story9.textColor=Color.WHITE;
+        story10.textColor=Color.WHITE;
+        story1.fontSize=18;
+        story2.fontSize=18;
+        story3.fontSize=18;
+        story4.fontSize=18;
+        story5.fontSize=18;
+        story6.fontSize=18;
+        story7.fontSize=18;
+        story8.fontSize=18;
+        story9.fontSize=18;
+        story10.fontSize=18;
+
+
+
+        const cheat_code = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-450, center.y +75), text: "Cheat codes"});
+        cheat_code.fontSize = 30;
+        cheat_code.textColor=Color.WHITE;
+        const cheata = "\"cheating\" : Unlock all the levels ";
+        const cheatb = "\"invincible\" : Player will be invincible ";
+        const cheat1 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y +100), text: cheata});
+        const cheat2 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y +125), text: cheatb});
+
+        cheat1.textColor=Color.WHITE;
+        cheat2.textColor=Color.WHITE;
+        cheat1.fontSize=18;
+        cheat2.fontSize=18;
+
+
+
+        const developers = "Developed by Ruibo Xu, Simon Wang, Hua Lin. ";
+        const developers2= <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y +350), text:developers});
+        developers2.fontSize=30;
+        developers2.textColor=Color.WHITE;
+
+
     }
 
     /**
@@ -303,8 +555,14 @@ export default class GameLevel extends Scene {
 
         ]);
         this.receiver.subscribe("ingame_menu");
-        this.receiver.subscribe("back_to_scene");
+        this.receiver.subscribe("back_to_game");
         this.receiver.subscribe("healthpack");
+
+        this.receiver.subscribe("resume");
+        this.receiver.subscribe("newgame");
+        this.receiver.subscribe("control");
+        this.receiver.subscribe("help");
+        this.receiver.subscribe("menu");
         
     }
 
@@ -393,9 +651,12 @@ export default class GameLevel extends Scene {
      */
     protected initPlayer(): void {
         //add inventory
-        let inventory = new InventoryManager(this, 2, "inventorySlot", new Vec2(32, 32), 4, "slots1", "items1");
+        this.inventory = new InventoryManager(this, 2, "inventorySlot", new Vec2(32, 32), 4, "slots", "items");
+        
+        
+
         let startingWeapon = this.createWeapon("pistol");
-        inventory.addItem(startingWeapon);
+        this.inventory.addItem(startingWeapon);
         
          // Add the player
         this.player = this.add.animatedSprite("player", "primary");
@@ -410,7 +671,7 @@ export default class GameLevel extends Scene {
         this.player.addAI(PlayerController, 
             {playerType: "platformer", 
             tilemap: "Main",   
-            inventory: inventory,
+            inventory: this.inventory,
             items: this.items,
             });
 
@@ -463,85 +724,7 @@ export default class GameLevel extends Scene {
         this.levelEndArea.color = new Color(0, 0, 0, 0);
     }
 
-    // HOMEWORK 5 - TODO
-    /*
-        Make sure balloons are being set up properly to have triggers so that when they collide
-        with players, they send out a trigger event.
 
-        Look at the levelEndArea trigger for reference.
-    */
-    /**
-     * Adds an balloon into the game
-     * @param spriteKey The key of the balloon sprite
-     * @param tilePos The tilemap position to add the balloon to
-     * @param aiOptions The options for the balloon AI
-     */
-
-    /*
-    protected addBalloon(spriteKey: string, tilePos: Vec2, aiOptions: Record<string, any>): void {
-        let balloon = this.add.animatedSprite(spriteKey, "primary");
-        balloon.position.set(tilePos.x*32, tilePos.y*32);
-        balloon.scale.set(2, 2);
-        balloon.addPhysics();
-        balloon.addAI(BalloonController, aiOptions);
-        balloon.setGroup("balloon");
-        balloon.setTrigger("player", HW5_Events.PLAYER_HIT_BALLOON, null);
-    }*/
-
-    // HOMEWORK 5 - TODO
-    /**
-     * You must implement this method.
-     * There are 3 types of collisions:
-     * 
-     * 1) Collisions with red balloons
-     * 
-     * 2) Collisions with blue balloons
-     * 
-     * 3) Collisions with green balloons
-     *  
-     * When the player collides with a balloon, you should check the suit color and the balloon color, 
-     * and if they are not the same, damage the player. Otherwise the player is unharmed.
-     * 
-     * In either case you'll also need to pop the balloon and set up elements for the particle system, 
-     * specifically changing the particle system color to the color of the balloon being popped. You'll also
-     * have to use the balloon popping sound you've created and play it here as well.
-     * 
-     * Note that node destruction is handled for you.
-     * 
-     * For those who are curious, there is actually a node.destroy() method.
-     * You no longer have to make the nodes invisible and pretend they don't exist.
-     * You don't have to use this yourself, but you can see examples
-     * of it in this class.
-     * 
-     */
-    /*
-    protected handlePlayerBalloonCollision(player: AnimatedSprite, balloon: AnimatedSprite) {
-        if(typeof balloon !== "undefined"){
-            if ((<PlayerController>player._ai).suitColor != (<BalloonController>balloon._ai).color){
-                GameLevel.livesCount--;
-                if (GameLevel.livesCount == 0){
-                    Input.disableInput();
-                    this.player.disablePhysics();
-                    this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "player_death", loop: false, holdReference: false});
-                    this.player.tweens.play("death");
-                }
-                this.livesCountLabel.text = "Lives: " + GameLevel.livesCount;
-            }
-            if((<BalloonController>balloon._ai).color==HW5_Color.RED){
-                this.system.changeColor(Color.RED);
-            }
-            else if((<BalloonController>balloon._ai).color==HW5_Color.BLUE){
-                this.system.changeColor(Color.BLUE);
-            }
-            else if((<BalloonController>balloon._ai).color==HW5_Color.GREEN){
-                this.system.changeColor(Color.GREEN);
-            }
-            
-            this.emitter.fireEvent(HW5_Events.BALLOON_POPPED, {owner: balloon.id});
-            this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "pop", loop: false, holdReference: false});
-        }
-    }
-    */
     /**
      * Increments the amount of life the player has
      * @param amt The amount to add to the player life
@@ -640,5 +823,8 @@ export default class GameLevel extends Scene {
 
 
 	}
+    isPaused():boolean {
+        return this.ispaused;
+    }
     
 }

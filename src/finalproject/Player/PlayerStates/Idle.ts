@@ -2,16 +2,25 @@ import Input from "../../../Wolfie2D/Input/Input";
 import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import { PlayerStates } from "../PlayerController";
 import OnGround from "./OnGround";
+import GameLevel from "../../Scenes/GameLevel";
 
 export default class Idle extends OnGround {
 	owner: AnimatedSprite;
 
 	onEnter(options: Record<string, any>): void {
-		this.parent.speed = this.parent.MIN_SPEED;
+		let gamelevel = <GameLevel> this.owner.getScene();
+		if(gamelevel.isPaused()){
+			this.parent.speed =0;
+        }
+		else{
+			this.parent.speed = this.parent.MIN_SPEED;
+		}
+		
 	}
 
 	
 	updateSuit() {
+
 		if(this.parent.inventory.getItem())
 		{
 			if(this.parent.inventory.getItem().sprite.imageId==="pistol"){
@@ -37,7 +46,10 @@ export default class Idle extends OnGround {
 
 	update(deltaT: number): void {
 		super.update(deltaT);
-
+		let gamelevel = <GameLevel> this.owner.getScene();
+		if(gamelevel.isPaused()){
+            return;
+        }
 		let dir = this.getInputDirection();
 
 		if(!dir.isZero() && dir.y === 0){

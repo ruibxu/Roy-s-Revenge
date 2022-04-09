@@ -12,7 +12,7 @@
         },
         {
             "type": "weapon",
-            "weaponType": "pistol", 
+            "weaponType": "laserGun", 
             "position": [496, 208]
         },
         {

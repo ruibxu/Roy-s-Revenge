@@ -27,7 +27,9 @@ export default class LaserGun extends WeaponType {
 
     doAnimation(shooter: GameNode, direction: Vec2, line: Line): void {
         let start = shooter.position.clone();
-        let end = shooter.position.clone().add(direction.scaled(900));
+        start.y+=5;
+        let end = shooter.position.clone().add(direction.scaled(200));
+        end.y+=5;
         let delta = end.clone().sub(start);
 
         // Iterate through the tilemap region until we find a collision
@@ -72,6 +74,7 @@ export default class LaserGun extends WeaponType {
     createRequiredAssets(scene: Scene): [Line] {
         let line = <Line>scene.add.graphic(GraphicType.LINE, "primary", {start: new Vec2(-1, 1), end: new Vec2(-1, -1)});
         line.color = this.color;
+        line.thickness =30;
 
         line.tweens.add("fade", {
             startDelay: 0,

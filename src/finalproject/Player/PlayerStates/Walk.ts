@@ -3,6 +3,7 @@ import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import { finalproject_Events } from "../../finalproject_constants";
 import { PlayerStates } from "../PlayerController";
 import OnGround from "./OnGround";
+import GameLevel from "../../Scenes/GameLevel";
 
 export default class Walk extends OnGround {
 	owner: AnimatedSprite;
@@ -37,6 +38,10 @@ export default class Walk extends OnGround {
 
 	update(deltaT: number): void {
 		super.update(deltaT);
+		let gamelevel = <GameLevel> this.owner.getScene();
+        if(gamelevel.isPaused()){
+            return;
+        }
 		let dir = this.getInputDirection();
 
 		if(dir.isZero()){

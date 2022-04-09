@@ -12,7 +12,6 @@ import Label from "../../Wolfie2D/Nodes/UIElements/Label";
 import Input from "../../Wolfie2D/Input/Input";
 import MainMenu from "./MainMenu";
 import GameLevel from "./GameLevel";
-import InGameMenu from "./InGameMenu";
 
 export default class Controls extends Scene {
     private controls: Layer;

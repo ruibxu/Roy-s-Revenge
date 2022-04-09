@@ -94,12 +94,13 @@ export default class Level1 extends GameLevel {
         //this.totalSwitches = 4;
         //this.totalBalloons = 6;
 
+        this.currentLevel = Level1;
+        this.nextLevel = Level2;
         // Do generic setup for a GameLevel
         super.startScene();
 
         //this.addLevelEnd(new Vec2(60, 13), new Vec2(5, 5));
-        this.currentLevel = this;
-        this.nextLevel = Level2;
+
 
         // Add balloons of various types, just red and blue for the first level
         /* for(let pos of [new Vec2(18, 8), new Vec2(25, 3), new Vec2(52, 5)]){
