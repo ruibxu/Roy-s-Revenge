@@ -8,6 +8,8 @@ import Timer from "../../../Wolfie2D/Timing/Timer";
 import { finalproject_Events } from "../../finalproject_constants";
 import PlayerController, { PlayerStates } from "../PlayerController";
 import GameLevel from "../../Scenes/GameLevel";
+import Sprite from "../../../Wolfie2D/Nodes/Sprites/Sprite";
+import MathUtils from "../../../Wolfie2D/Utils/MathUtils";
 
 
 export default abstract class PlayerState extends State {
@@ -69,38 +71,16 @@ export default abstract class PlayerState extends State {
 			this.emitter.fireEvent(finalproject_Events.PLAYER_MOVE, {position: this.owner.position.clone()});
 			this.positionTimer.start();
 		}
-		if(Input.isPressed("skill")){	
-			if(!this.skillcooldown.hasRun()){
-				this.skillcooldown.start();
-			}
-				
-			if(this.skillmode==false){
-				if(!this.skillcooldown.hasRun()&&this.flag==0){
-					this.gravity=-1000;
-					this.skillmode=true;
-					this.flag=1;
-					console.log("skilled	");
-				}
-				if(this.skillcooldown.isStopped()){
-	
-					this.skillcooldown.start();
-					console.log("yes");
-				}
-				
-			}
-			if(this.skillmode==true){
-				if(this.skillcooldown.hasRun()){
-					this.owner._velocity.y=-1000;
-					this.skillmode=false;
-					console.log("what");
-				}
-				if(this.skillcooldown.isStopped()){
-					this.skillcooldown.reset();
-					//this.skillcooldown.start();
-					console.log("no");
-				}
-				
-			}
+		
+		if(Input.isPressed("skill")&&this.skillcooldown.isStopped()){	
+			/*
+			this.skillcooldown.start();
+			this.skillmode=!this.skillmode;
+			this.gravity=-(this.gravity);
+			
+			let direction = this.getInputDirection();
+			(<Sprite>this.owner).invertY = MathUtils.sign(direction.y) > 0 ; */
+			
 		}
 
 		this.parent.velocity.y += this.gravity*deltaT;

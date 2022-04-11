@@ -14,7 +14,7 @@ export default class Level1 extends GameLevel {
         // Load resources
         this.load.tilemap("level1", "final_project_assets/tilemaps/level1.tmj");
         this.load.spritesheet("player", "final_project_assets/spritesheets/roy.json");
-        this.load.spritesheet("enemy", "final_project_assets/spritesheets/boss.json");
+        this.load.spritesheet("boss", "final_project_assets/spritesheets/boss.json");
         // this.load.spritesheet("player_with_pistol", "final_project_assets/spritesheets/roy_with_pistol.json");
         // this.load.spritesheet("player_with_knife", "final_project_assets/spritesheets/roy_with_knife.json");
         // this.load.spritesheet("player_with_lightsaber", "final_project_assets/spritesheets/roy_with_lightsaber.json");
@@ -96,10 +96,11 @@ export default class Level1 extends GameLevel {
 
         this.currentLevel = Level1;
         this.nextLevel = Level2;
+        
         // Do generic setup for a GameLevel
         super.startScene();
-
-        //this.addLevelEnd(new Vec2(60, 13), new Vec2(5, 5));
+        this.addLevelEnd(new Vec2(124, 10), new Vec2(5, 5));
+        
 
 
         // Add balloons of various types, just red and blue for the first level

@@ -46,7 +46,7 @@ export default class Controls extends Scene {
         const texta = "a to move left";
         const textb = "d to move right";
         const text="space and w to jump";
-        const textc = "e to switch weapons";
+        const textc = "e to pick up weapons, 1 and 2 to change to each slots";
         const textd = "Q to cast the ultimate skill";
         const textd2 ="(which will decrease one HP and increase the attack speed for 5s)";
         const texte = "left click to attack";

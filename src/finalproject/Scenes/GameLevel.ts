@@ -57,7 +57,7 @@ export default class GameLevel extends Scene {
     protected ispaused: boolean;
 
     // Labels for the UI
-    protected static livesCount: number = 3;
+    protected static livesCount: number = 20;
     protected livesCountLabel: Label;
 
     // Stuff to end the level and go to the next level
@@ -118,6 +118,13 @@ export default class GameLevel extends Scene {
 
         this.levelTransitionScreen.tweens.play("fadeOut");
 
+        this.levelTransitionTimer = new Timer(500);
+        this.levelEndTimer = new Timer(3000, () => {
+            // After the level end timer ends, fade to black and then go to the next scene
+            this.levelTransitionScreen.tweens.play("fadeIn");
+        });
+
+        this.levelTransitionScreen.tweens.play("fadeOut");
         // Initialize the timers
         /*
         this.respawnTimer = new Timer(1000, () => {
@@ -132,10 +139,7 @@ export default class GameLevel extends Scene {
 
 
         this.levelTransitionTimer = new Timer(500);
-        this.levelEndTimer = new Timer(3000, () => {
-            // After the level end timer ends, fade to black and then go to the next scene
-            this.levelTransitionScreen.tweens.play("fadeIn");
-        });
+
 
 
 
@@ -276,7 +280,8 @@ export default class GameLevel extends Scene {
                                     ]
                                 }
                             }
-                            this.sceneManager.changeToScene(this.nextLevel, {}, sceneOptions);
+                            //this.sceneManager.changeToScene(this.nextLevel, {}, sceneOptions);
+                            this.emitter.fireEvent("menu");
                         }
                     }
                     break;
@@ -408,7 +413,7 @@ export default class GameLevel extends Scene {
         const texta = "a to move left";
         const textb = "d to move right";
         const text="space and w to jump";
-        const textc = "e to pick up weapons";
+        const textc = "e to pick up weapons, 1 and 2 to change to each slots";
         const textd = "Q to cast the skill";
         const textd2 ="(which will decrease one HP and increase the attack speed for 5s)";
         const texte = "left click to attack";
@@ -686,16 +691,18 @@ export default class GameLevel extends Scene {
       
         
          // Add the player
-        this.enemy = this.add.animatedSprite("enemy", "primary");
+        this.enemy = this.add.animatedSprite("boss", "primary");
         this.enemy.scale.set(1, 1);
-        if(!this.playerSpawn){
-            console.warn("Player spawn was never set - setting spawn to (0, 0)");
-            this.playerSpawn = Vec2.ZERO;
-        }
+        // if(!this.playerSpawn){
+        //     console.warn("Player spawn was never set - setting spawn to (0, 0)");
+        //     this.playerSpawn = Vec2.ZERO;
+        // }
         let enemyPosition=new Vec2(1216,384);
         this.enemy.position.copy(enemyPosition);
         this.enemy.addPhysics(new AABB(Vec2.ZERO, new Vec2(32, 32)));
         this.enemy.colliderOffset.set(0, 2);
+        
+        this.enemy.animation.play("IDLE",true);
         // this.player.addAI(PlayerController, 
         //     {playerType: "platformer", 
         //     tilemap: "Main",   

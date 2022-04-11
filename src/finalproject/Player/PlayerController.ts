@@ -146,6 +146,43 @@ export default class PlayerController extends StateMachineAI {
         //     this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(switch_location),9);
         //     this.emitter.fireEvent(HW5_Events.PLAYER_HIT_SWITCH);
         // }
+        
+        /*let spike_location=new Vec2(this.owner.position.x, this.owner.position.y+32);
+        console.log(spike_location);
+        //this.tilemap.getTileAtWorldPosition(spike_location);
+        console.log(this.tilemap.getTileAtWorldPosition(spike_location));
+
+        if(this.tilemap.getTileAtWorldPosition(spike_location)==4){
+            //this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(spike_location),9);
+            //this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SPIKE);
+            console.log("123");
+        }*/
+
+        ///
+        
+        // if(this.owner.collidedWithTilemap && this.tilemap){
+        //     console.log("1");
+        //     let tilePosition=this.owner.position.clone();
+        //     tilePosition.y=tilePosition.y+this.tilemap.getTileSize().y;
+
+        //     let tileRowCol=this.tilemap.getColRowAt(tilePosition);
+        //     if(this.tilemap.getTileAtRowCol(tileRowCol)===3)
+        //     {
+        //     //console.info(tilePosition.toString());
+        //     //tilePosition.y=tilePosition.y-this.tilemap.getTileSize().y;        
+            
+        //     //console.log(this.tilemap.getTileSize().x);
+        //    //console.log(this.tilemap.getTileSize().y);
+        //     //this.tilemap.setTileAtRowCol(tileRowCol,9);
+        //     console.log("hit spike");
+        //     //this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SPIKE);
+        //     }
+        // }
+
+        ////
+
+
+
         let gamelevel = <GameLevel> this.owner.getScene();
         if(gamelevel.isPaused()){
             return;
@@ -211,9 +248,23 @@ export default class PlayerController extends StateMachineAI {
             if(this.inventory.getItem()){
                 weapon.use(this.owner,"player",this.faceDirection);}
             }
+            
+
+
+
+
+            if(this.currentState instanceof Jump){
+                Debug.log("playerstate", "Player State: Jump");
+            } else if (this.currentState instanceof Walk){
+                Debug.log("playerstate", "Player State: Walk");
+            } else if (this.currentState instanceof Idle){
+                Debug.log("playerstate", "Player State: Idle");
+            } else if(this.currentState instanceof Fall){
+                Debug.log("playerstate", "Player State: Fall");
+            }
+
 
 		}
-
 
 
 
