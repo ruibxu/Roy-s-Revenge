@@ -2,17 +2,17 @@
 node_modules
 
 # Exclude the compiled project
-# dist/*
+dist/*
 
 # Include the demo_assets folder
-# !dist/demo_assets/
+!dist/demo_assets/
 
 # Include the built-in asset folder
-# !dist/builtin/
+!dist/builtin/
 
 # Include the hw1 assets
-# !dist/hw5_assets/
+!dist/hw5_assets/
 
 ### IF YOU ARE MAKING A PROJECT, YOU MAY WANT TO UNCOMMENT THIS LINE ###
-# !dist/final_project_assets/
+!dist/final_project_assets/
 

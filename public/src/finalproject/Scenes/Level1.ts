@@ -51,7 +51,7 @@ export default class Level1 extends GameLevel {
         this.load.image("inventorySlot", "final_project_assets/sprites/inventory.png");
         //weapon
         this.load.image("knife", "final_project_assets/sprites/knife.png");
-        this.load.image("laserGun", "final_project_assets/sprites/laser.png");
+        this.load.image("laserGun", "final_project_assets/sprites/laser_gun.png");
         this.load.image("pistol", "final_project_assets/sprites/pistol.png");
         this.load.image("machineGun","final_project_assets/sprites/machine_gun.png")
         this.load.image("lightSaber", "final_project_assets/sprites/light_saber.png");

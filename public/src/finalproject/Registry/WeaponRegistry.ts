@@ -13,7 +13,7 @@ export default class WeaponTemplateRegistry extends Registry<WeaponConstructor> 
         // Load sprites
         rm.image("pistol", "final_project_assets/sprites/pistol.png");
         rm.image("knife", "final_project_assets/sprites/knife.png");
-        rm.image("laserGun", "final_project_assets/sprites/laser.png");
+        rm.image("laserGun", "final_project_assets/sprites/laser_gun.png");
         rm.image("machineGun","final_project_assets/sprites/machine_gun.png");
         rm.image("lightSaber","final_project_assets/sprites/light_saber.png");
 

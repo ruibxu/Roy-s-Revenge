@@ -1,6 +1,6 @@
 {
     "name": "Roy",
-    "spriteSheetImage": "Roy.png",
+    "spriteSheetImage": "roy.png",
     "spriteWidth": 32,
     "spriteHeight": 32,
     "columns": 8,
