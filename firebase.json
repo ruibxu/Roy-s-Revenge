@@ -8,16 +8,16 @@
     ],
     "rewrites": [
       {
+        "source": "/benchmark2",
+        "destination": "/dist/index.html"
+      },
+      {
         "source": "/",
-        "destination": "/benchmark_1/designdoc.html"
+        "destination": "/index.html"
       },
       {
         "source": "/benchmark1",
         "destination": "/benchmark_1/designdoc.html"
-      },
-      {
-        "source": "/benchmark2",
-        "destination": "/public/dist/index.html"
       }
     ]
   }
