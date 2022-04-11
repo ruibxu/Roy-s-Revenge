@@ -12,6 +12,8 @@ import Help from "./Help";
 import Layer from "../../Wolfie2D/Scene/Layer";
 import Label from "../../Wolfie2D/Nodes/UIElements/Label";
 import Input from "../../Wolfie2D/Input/Input";
+import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
+import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 
 export default class MainMenu extends Scene {
 
@@ -35,6 +37,7 @@ export default class MainMenu extends Scene {
         // Load the menu song
         this.load.audio("menu", "final_project_assets/music/menu.mp3");
         this.load.image("logo", "final_project_assets/images/banner.png");
+        this.load.image("level1", "final_project_assets/images/level1.png");
     }
 
     startScene(): void {
@@ -129,6 +132,29 @@ export default class MainMenu extends Scene {
         const level5 = <Button>this.add.uiElement(UIElementType.BUTTON, "level", {position: new Vec2(center.x, center.y +300), text: "Level 5"});
         const level6 = <Button>this.add.uiElement(UIElementType.BUTTON, "level", {position: new Vec2(center.x+400, center.y +300), text: "Level 6"});
 
+        let level1pic=this.add.sprite("level1","level");
+        level1pic.position.set(center.x-400, center.y-130);
+        level1pic.scale.set(0.2,0.2);
+
+        let level2pic=this.add.sprite("level1","level");
+        level2pic.position.set(center.x, center.y-130);
+        level2pic.scale.set(0.2,0.2);
+
+        let level3pic=this.add.sprite("level1","level");
+        level3pic.position.set(center.x+400, center.y-130);
+        level3pic.scale.set(0.2,0.2);
+
+        let level4pic=this.add.sprite("level1","level");
+        level4pic.position.set(center.x-400, center.y+170);
+        level4pic.scale.set(0.2,0.2);
+
+        let level5pic=this.add.sprite("level1","level");
+        level5pic.position.set(center.x, center.y+170);
+        level5pic.scale.set(0.2,0.2);
+
+        let level6pic=this.add.sprite("level1","level");
+        level6pic.position.set(center.x+400, center.y+170);
+        level6pic.scale.set(0.2,0.2);
 
 
         levelHeader.fontSize = 70;
@@ -219,12 +245,11 @@ export default class MainMenu extends Scene {
 
                 let sceneOptions = {
                     physics: {
-                        groupNames: ["ground", "player", "balloon"],
+                        groupNames: ["ground", "player"],
                         collisions:
                         [
-                            [0, 1, 1],
-                            [1, 0, 0],
-                            [1, 0, 0]
+                            [0, 1 ],
+                            [1, 0 ] ,
                         ]
                     }
                 }
@@ -239,12 +264,10 @@ export default class MainMenu extends Scene {
                 this.level.setHidden(true);
             }
             if(event.type === "controls"){
-                this.emitter.fireEvent("mainMenu");
                 this.sceneManager.changeToScene(Controls, {});
                 
             }
             if(event.type === "help"){
-                this.emitter.fireEvent("mainMenu");
                 this.sceneManager.changeToScene(Help, {});
                 
             }

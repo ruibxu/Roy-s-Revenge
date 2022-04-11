@@ -1,24 +1,55 @@
 import Input from "../../../Wolfie2D/Input/Input";
 import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
-import { HW5_Color } from "../../hw5_color";
 import { PlayerStates } from "../PlayerController";
 import OnGround from "./OnGround";
+import GameLevel from "../../Scenes/GameLevel";
 
 export default class Idle extends OnGround {
 	owner: AnimatedSprite;
 
 	onEnter(options: Record<string, any>): void {
-		this.parent.speed = this.parent.MIN_SPEED;
+		let gamelevel = <GameLevel> this.owner.getScene();
+		if(gamelevel.isPaused()){
+			this.parent.speed =0;
+        }
+		else{
+			this.parent.speed = this.parent.MIN_SPEED;
+		}
+		
 	}
 
 	
 	updateSuit() {
-		this.owner.animation.playIfNotAlready("IDLE", true);
+
+		if(this.parent.inventory.getItem())
+		{
+			if(this.parent.inventory.getItem().sprite.imageId==="pistol"){
+				this.owner.animation.playIfNotAlready("PISTOL_IDLE", true);
+			}
+			else if(this.parent.inventory.getItem().sprite.imageId==="knife"){
+				this.owner.animation.playIfNotAlready("KNIFE_IDLE", true);
+			}
+			else if(this.parent.inventory.getItem().sprite.imageId==="machineGun"){
+				this.owner.animation.playIfNotAlready("MACHINEGUN_IDLE", true);
+			}
+			else if(this.parent.inventory.getItem().sprite.imageId==="laserGun"){
+				this.owner.animation.playIfNotAlready("LASERGUN_IDLE", true);
+			}
+			else if(this.parent.inventory.getItem().sprite.imageId==="lightSaber"){
+				this.owner.animation.playIfNotAlready("LIGHTSABER_IDLE", true);
+			}
+		}
+		else{
+			this.owner.animation.playIfNotAlready("IDLE", true);
+		}
 	}
 
 	update(deltaT: number): void {
 		super.update(deltaT);
-
+		let gamelevel = <GameLevel> this.owner.getScene();
+		if(gamelevel.isPaused()){
+            return;
+        }
 		let dir = this.getInputDirection();
 
 		if(!dir.isZero() && dir.y === 0){

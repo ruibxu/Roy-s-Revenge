@@ -11,11 +11,11 @@ import GameNode from "../../Wolfie2D/Nodes/GameNode";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import NavigationPath from "../../Wolfie2D/Pathfinding/NavigationPath";
-//import Weapon from "../GameSystems/items/Weapon";
+import Weapon from "../GameSystems/items/Weapon";
 import { finalproject_Events, finalproject_Names, finalproject_Statuses } from "../finalproject_constants";
 import BattlerAI from "./BattlerAI";
 import Alert from "./EnemyStates/Alert";
-//import Active from "./EnemyStates/Active";
+import Active from "./EnemyStates/Active";
 //import Guard from "./EnemyStates/Guard";
 import Patrol from "./EnemyStates/Patrol";
 

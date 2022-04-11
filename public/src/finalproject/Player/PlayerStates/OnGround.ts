@@ -27,9 +27,12 @@ export default class OnGround extends PlayerState {
 			// if(this.parent.velocity.x !== 0){
 			// 	//this.owner.tweens.play("flip");
 			// }
-		} else if(!this.owner.onGround){
+		} else if(!this.owner.onGround&&this.skillmode==false){
 			this.finished("fall");
 		}
+		/*else if(!this.owner.onCeiling&&this.skillmode==true){
+			this.finished("fall");
+		}*/
 	}
 
 	onExit(): Record<string, any> {

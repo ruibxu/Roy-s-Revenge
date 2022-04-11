@@ -5,21 +5,33 @@ import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import Input from "../../../Wolfie2D/Input/Input";
 import GameNode from "../../../Wolfie2D/Nodes/GameNode";
 import Timer from "../../../Wolfie2D/Timing/Timer";
-import { HW5_Events } from "../../hw5_enums";
-import PlayerController from "../PlayerController";
+import { finalproject_Events } from "../../finalproject_constants";
+import PlayerController, { PlayerStates } from "../PlayerController";
+import GameLevel from "../../Scenes/GameLevel";
+import Sprite from "../../../Wolfie2D/Nodes/Sprites/Sprite";
+import MathUtils from "../../../Wolfie2D/Utils/MathUtils";
 
 
 export default abstract class PlayerState extends State {
 	owner: GameNode;
-	gravity: number = 1000;
+	gravity: number ;
 	parent: PlayerController;
 	positionTimer: Timer;
+	faceDirection: Vec2;
+	skillmode:boolean;
+	skillcooldown: Timer;
+	flag:number;
+
 
 	constructor(parent: StateMachine, owner: GameNode){
 		super(parent);
 		this.owner = owner;
 		this.positionTimer = new Timer(250);
 		this.positionTimer.start();
+		this.skillmode=false;
+		this.gravity=1000;
+		this.skillcooldown=new Timer(2000);
+		this.flag=0;
 	}
 
 	// Change the suit color on receiving a suit color change event
@@ -30,26 +42,49 @@ export default abstract class PlayerState extends State {
 	 * Get the inputs from the keyboard, or Vec2.Zero if nothing is being pressed
 	 */
 	getInputDirection(): Vec2 {
+		let gamelevel = <GameLevel> this.owner.getScene();
 		let direction = Vec2.ZERO;
+		if(gamelevel.isPaused()){
+            direction.x=0;
+			return direction;
+        }
 		direction.x = (Input.isPressed("left") ? -1 : 0) + (Input.isPressed("right") ? 1 : 0);
 		direction.y = (Input.isJustPressed("jump") ? -1 : 0);
 		return direction;
 	}
 
 	/**This function is left to be overrided by any of the classes that extend this base class. That way, each
-	 * class can swap their animations accordingly.
+	 * class can swap their animation1,s accordingly.
 	*/
 	updateSuit() {
 		
 	}
 
 	update(deltaT: number): void {
+		let gamelevel = <GameLevel> this.owner.getScene();
+        if(gamelevel.isPaused()){
+            return;
+        }
 		// Do gravity
 		this.updateSuit();
 		if (this.positionTimer.isStopped()){
-			this.emitter.fireEvent(HW5_Events.PLAYER_MOVE, {position: this.owner.position.clone()});
+			this.emitter.fireEvent(finalproject_Events.PLAYER_MOVE, {position: this.owner.position.clone()});
 			this.positionTimer.start();
 		}
+		
+		if(Input.isPressed("skill")&&this.skillcooldown.isStopped()){	
+			/*
+			this.skillcooldown.start();
+			this.skillmode=!this.skillmode;
+			this.gravity=-(this.gravity);
+			
+			let direction = this.getInputDirection();
+			(<Sprite>this.owner).invertY = MathUtils.sign(direction.y) > 0 ; */
+			
+		}
+
 		this.parent.velocity.y += this.gravity*deltaT;
+		
+
 	}
 }

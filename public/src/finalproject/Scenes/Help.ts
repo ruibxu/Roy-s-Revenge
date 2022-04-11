@@ -12,11 +12,9 @@ import Label from "../../Wolfie2D/Nodes/UIElements/Label";
 import Input from "../../Wolfie2D/Input/Input";
 import MainMenu from "./MainMenu";
 import GameLevel from "./GameLevel";
-import InGameMenu from "./InGameMenu";
 
 export default class Help extends Scene {
     private help: Layer;
-    private flag:number=0;
 
     startScene(): void {
         // Center the viewport
@@ -30,7 +28,6 @@ export default class Help extends Scene {
         this.viewport.setZoomLevel(1);
 
         this.receiver.subscribe("menu");
-        this.receiver.subscribe("ingameMenu");
         this.receiver.subscribe("mainMenu");
 
         const helpHeader = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y - 300), text: "Help"});
@@ -120,17 +117,8 @@ export default class Help extends Scene {
     updateScene(){
         while(this.receiver.hasNextEvent()){
             let event = this.receiver.getNextEvent();
-            if(event.type === "mainMenu"){
-                this.flag=0;
-            }
-            if(event.type === "ingameMenu"){
-                this.flag=1;
-            }
-            if(event.type === "menu"&& this.flag==0){
+            if(event.type === "menu"){
                 this.sceneManager.changeToScene(MainMenu, {});
-            }
-            if(event.type === "menu"&& this.flag==1){
-                this.sceneManager.changeToScene(InGameMenu, {});
             }
 
         }

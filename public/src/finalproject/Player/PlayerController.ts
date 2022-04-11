@@ -5,14 +5,20 @@ import GameNode, { TweenableProperties } from "../../Wolfie2D/Nodes/GameNode";
 import Sprite from "../../Wolfie2D/Nodes/Sprites/Sprite";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
-import { HW5_Color } from "../hw5_color";
-import { HW5_Events } from "../hw5_enums";
+import { finalproject_Events } from "../finalproject_constants";
 import Fall from "./PlayerStates/Fall";
 import Idle from "./PlayerStates/Idle";
 import InAir from "./PlayerStates/InAir";
 import Jump from "./PlayerStates/Jump";
-import Run from "./PlayerStates/Run";
 import Walk from "./PlayerStates/Walk";
+import InventoryManager from "../GameSystems/InventoryManager";
+import Receiver from "../../Wolfie2D/Events/Receiver";
+import Emitter from "../../Wolfie2D/Events/Emitter";
+import GameEvent from "../../Wolfie2D/Events/GameEvent";
+import Input from "../../Wolfie2D/Input/Input";
+import Item from "../GameSystems/items/Item";
+import GameLevel from "../Scenes/Gamelevel";
+
 
 export enum PlayerType {
     PLATFORMER = "platformer",
@@ -30,11 +36,18 @@ export enum PlayerStates {
 
 export default class PlayerController extends StateMachineAI {
     protected owner: GameNode;
+    health: number;
     velocity: Vec2 = Vec2.ZERO;
 	speed: number = 200;
 	MIN_SPEED: number = 200;
     MAX_SPEED: number = 300;
     tilemap: OrthogonalTilemap;
+    isDead: boolean = false;
+     //add inverntory
+    inventory: InventoryManager;
+    items: Array<Item>;
+    faceDirection: Vec2;
+    state: String;
 
     // HOMEWORK 5 - TODO
     /**
@@ -48,33 +61,45 @@ export default class PlayerController extends StateMachineAI {
      */
     initializeAI(owner: GameNode, options: Record<string, any>){
         this.owner = owner;
-
+    
         this.initializePlatformer();
         this.tilemap = this.owner.getScene().getTilemap(options.tilemap) as OrthogonalTilemap;
 
-        //this.receiver.subscribe(HW5_Events.SUIT_COLOR_CHANGE);
+        this.receiver = new Receiver();
+		this.emitter = new Emitter();
 
-        owner.tweens.add("death", {
-            startDelay: 0,
-            duration: 500,
-            effects: [
-                {
-                    property: "rotation",
-                    start: 0,
-                    end: 2*Math.PI,
-                    ease: EaseFunctionType.IN_OUT_QUAD
-                },
-                {
-                    property: "alpha",
-                    start: 1,
-                    end: 0,
-                    ease: EaseFunctionType.IN_OUT_QUAD
-                }
-            ],
-            onEnd: (HW5_Events.PLAYER_KILLED)
-        });
+
+        this.receiver.subscribe(finalproject_Events.ATTACK);
+        this.receiver.subscribe(finalproject_Events.PLAYER_DAMAGE);
+
+        this.health = 3;
+        this.items = options.items;
+        this.inventory = options.inventory;
+        this.faceDirection = Vec2.ZERO;
+        this.faceDirection.x=1;
+        this.state="idle";
+
 
     }
+
+
+    handleEvent(event: GameEvent): void {
+		// We need to handle animations when we get hurt
+		if(event.type === finalproject_Events.PLAYER_DAMAGE){
+			if(event.data.get("health") === 0){
+				// Play animation and queue event to end game
+				this.isDead=true;
+				//this.owner.animation.play("DEAD", true);
+
+				this.emitter.fireEvent( finalproject_Events.PLAYER_DEAD);
+			} else {
+				//this.owner.animation.play("TAKING_DAMAGE", false, Homework3Event.PLAYER_I_FRAMES_END);
+			}
+		}
+    
+        
+	}
+
 
     initializePlatformer(): void {
         this.speed = 400;
@@ -83,8 +108,6 @@ export default class PlayerController extends StateMachineAI {
 		this.addState(PlayerStates.IDLE, idle);
 		let walk = new Walk(this, this.owner);
 		this.addState(PlayerStates.WALK, walk);
-		let run = new Run(this, this.owner);
-		this.addState(PlayerStates.RUN, run);
 		let jump = new Jump(this, this.owner);
         this.addState(PlayerStates.JUMP, jump);
         let fall = new Fall(this, this.owner);
@@ -96,6 +119,7 @@ export default class PlayerController extends StateMachineAI {
     changeState(stateName: string): void {
         // If we jump or fall, push the state so we can go back to our current state later
         // unless we're going from jump to fall or something
+        this.state = stateName;
         if((stateName === PlayerStates.JUMP || stateName === PlayerStates.FALL) && !(this.stack.peek() instanceof InAir)){
             this.stack.push(this.stateMap.get(stateName));
         }
@@ -122,17 +146,127 @@ export default class PlayerController extends StateMachineAI {
         //     this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(switch_location),9);
         //     this.emitter.fireEvent(HW5_Events.PLAYER_HIT_SWITCH);
         // }
+        
+        /*let spike_location=new Vec2(this.owner.position.x, this.owner.position.y+32);
+        console.log(spike_location);
+        //this.tilemap.getTileAtWorldPosition(spike_location);
+        console.log(this.tilemap.getTileAtWorldPosition(spike_location));
 
-		if(this.currentState instanceof Jump){
-			Debug.log("playerstate", "Player State: Jump");
-		} else if (this.currentState instanceof Walk){
-			Debug.log("playerstate", "Player State: Walk");
-		} else if (this.currentState instanceof Run){
-			Debug.log("playerstate", "Player State: Run");
-		} else if (this.currentState instanceof Idle){
-			Debug.log("playerstate", "Player State: Idle");
-		} else if(this.currentState instanceof Fall){
-            Debug.log("playerstate", "Player State: Fall");
+        if(this.tilemap.getTileAtWorldPosition(spike_location)==4){
+            //this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(spike_location),9);
+            //this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SPIKE);
+            console.log("123");
+        }*/
+
+        ///
+        
+        // if(this.owner.collidedWithTilemap && this.tilemap){
+        //     console.log("1");
+        //     let tilePosition=this.owner.position.clone();
+        //     tilePosition.y=tilePosition.y+this.tilemap.getTileSize().y;
+
+        //     let tileRowCol=this.tilemap.getColRowAt(tilePosition);
+        //     if(this.tilemap.getTileAtRowCol(tileRowCol)===3)
+        //     {
+        //     //console.info(tilePosition.toString());
+        //     //tilePosition.y=tilePosition.y-this.tilemap.getTileSize().y;        
+            
+        //     //console.log(this.tilemap.getTileSize().x);
+        //    //console.log(this.tilemap.getTileSize().y);
+        //     //this.tilemap.setTileAtRowCol(tileRowCol,9);
+        //     console.log("hit spike");
+        //     //this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SPIKE);
+        //     }
+        // }
+
+        ////
+
+
+
+        let gamelevel = <GameLevel> this.owner.getScene();
+        if(gamelevel.isPaused()){
+            return;
         }
-	}
-}
+
+
+
+        // Check for slot change
+        if (Input.isJustPressed("slot1")) {
+            this.inventory.changeSlot(0);
+            if (this.inventory.getItem()){
+                //console.log("weapon change to: ",this.inventory.getItem().sprite.imageId);
+                this.emitter.fireEvent(finalproject_Events.PLAYER_WEAPON_CHANGE,{weapon:this.inventory.getItem().sprite.imageId});
+            }
+        }
+        if (Input.isJustPressed("slot2")) {
+            this.inventory.changeSlot(1);
+            if (this.inventory.getItem()){
+                //console.log("weapon change to: ",this.inventory.getItem().sprite.imageId);
+                this.emitter.fireEvent(finalproject_Events.PLAYER_WEAPON_CHANGE,{weapon:this.inventory.getItem().sprite.imageId});
+            }
+        }
+
+                // Check for slot change
+        if (Input.isJustPressed("skill")) {
+           
+        }
+
+
+
+        // Check if there is an item to pick up
+        if (Input.isJustPressed("interact")) {
+                    // We overlap it, try to pick it up
+                    //console.log(this.inventory.getItem().sprite.imageId);
+            for (let item of this.items) {
+                if (this.owner.collisionShape.overlaps(item.sprite.boundary)) {
+                    // We overlap it, try to pick it up
+                    if (this.inventory.getItem()){
+                        this.inventory.getItem().moveSprite(this.owner.position, "primary");
+                        this.items.push(this.inventory.getItem());
+                        this.inventory.removeItem();
+                        this.inventory.addItem(item);
+                        this.emitter.fireEvent(finalproject_Events.PLAYER_WEAPON_CHANGE,{weapon:this.inventory.getItem().sprite.imageId});
+                        break;
+                    }
+                    else{
+                        this.inventory.addItem(item);
+                        break;
+                    }
+                }
+
+            }
+        }
+        if(Input.isPressed("left")&& !(this.state === PlayerStates.JUMP) && !(this.state === PlayerStates.FALL)){
+            this.faceDirection.x=-1;
+        }
+        if(Input.isPressed("right")&& !(this.state === PlayerStates.JUMP) && !(this.state === PlayerStates.FALL)){
+            this.faceDirection.x=1;
+        }
+        
+        if(Input.isMouseJustPressed()){	
+            let weapon = this.inventory.getItem();
+            if(this.inventory.getItem()){
+                weapon.use(this.owner,"player",this.faceDirection);}
+            }
+            
+
+
+
+
+            if(this.currentState instanceof Jump){
+                Debug.log("playerstate", "Player State: Jump");
+            } else if (this.currentState instanceof Walk){
+                Debug.log("playerstate", "Player State: Walk");
+            } else if (this.currentState instanceof Idle){
+                Debug.log("playerstate", "Player State: Idle");
+            } else if(this.currentState instanceof Fall){
+                Debug.log("playerstate", "Player State: Fall");
+            }
+
+
+		}
+
+
+
+} 
+    

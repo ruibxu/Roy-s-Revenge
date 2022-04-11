@@ -1,7 +1,6 @@
 import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import Debug from "../../Wolfie2D/Debug/Debug";
 import { GameEventType } from "../../Wolfie2D/Events/GameEventType";
-import { HW5_Color } from "../hw5_color";
 import GameLevel from "./GameLevel";
 
 export default class Level2 extends GameLevel {

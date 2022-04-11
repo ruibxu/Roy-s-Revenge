@@ -1,0 +1,126 @@
+{
+	"name": "boss",
+	"spriteSheetImage": "boss.png",
+	"spriteWidth": 64,
+	"spriteHeight": 64,
+	"leftBuffer": 0,
+	"rightBuffer": 0,
+	"topBuffer": 0,
+	"bottomBuffer": 0,
+	"columns": 5,
+	"rows": 5,
+	"animations": [
+		{
+			"name": "IDLE",
+			"repeat": true,
+			"frames": [
+				{
+					"index": 0,
+					"duration": 5
+				},
+				{
+					"index": 1,
+					"duration": 5
+				}
+			]
+		},
+		{
+			"name": "RUN",
+			"repeat": true,
+			"frames": [
+				{
+					"index": 2,
+					"duration": 2
+				},
+				{
+					"index": 3,
+					"duration": 2
+				},
+				{
+					"index": 4,
+					"duration": 2
+				},
+				{
+					"index": 5,
+					"duration": 2
+				}
+			]
+		},
+		{
+			"name": "ATTACK",
+			"repeat": true,
+			"frames": [
+				{
+					"index": 8,
+					"duration": 2
+				},
+				{
+					"index": 9,
+					"duration": 2
+				},
+				{
+					"index": 10,
+					"duration": 2
+				},
+				{
+					"index": 11,
+					"duration": 2
+				},
+				{
+					"index": 12,
+					"duration": 2
+				},
+				{
+					"index": 13,
+					"duration": 2
+				},
+				{
+					"index": 14,
+					"duration": 2
+				},
+				{
+					"index": 15,
+					"duration": 2
+				},
+				{
+					"index": 16,
+					"duration": 2
+				}
+
+			]
+		},
+		{
+			"name": "dying",
+			"repeat": true,
+			"frames": [
+				{
+					"index": 19,
+					"duration": 2
+				},
+				{
+					"index": 20,
+					"duration": 2
+				},
+				{
+					"index": 21,
+					"duration": 2
+				},
+				{
+					"index": 22,
+					"duration": 2
+				}
+			]
+		},
+		{
+			"name": "dead",
+			"repeat": true,
+			"frames": [
+				{
+					"index": 22,
+					"duration": 5
+				}
+			]
+		}
+		
+	]
+}

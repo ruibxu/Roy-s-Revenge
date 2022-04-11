@@ -10,6 +10,9 @@ import { AnimationData, AnimationState } from "./AnimationTypes";
  * creating new animations from the CanvasNode.
  */
 export default class AnimationManager {
+	playAnimation(arg0: string, arg1: boolean) {
+		throw new Error("Method not implemented.");
+	}
     /** The owner of this animation manager */
     protected owner: CanvasNode;
     

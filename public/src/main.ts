@@ -1,6 +1,9 @@
 import Game from "./Wolfie2D/Loop/Game";
 import MainMenu from "./finalproject/Scenes/MainMenu";
 import Splash from "./finalproject/Scenes/Splash";
+import WeaponTemplateRegistry from "./finalproject/Registry/WeaponRegistry";
+import RegistryManager from "./Wolfie2D/Registry/RegistryManager";
+import WeaponTypeRegistry from "./finalproject/Registry/WeaponTypeRegistry";
 
 // The main function is your entrypoint into Wolfie2D. Specify your first scene and any options here.
 (function main(){
@@ -15,14 +18,24 @@ import Splash from "./finalproject/Scenes/Splash";
             {name: "left", keys: ["a"]},
             {name: "right", keys: ["d"]},
             {name: "jump", keys: ["w", "space"]},
-            {name: "ultimate", keys: ["q"]},
-            {name: "switch", keys: ["e"]},
-            {name: "run", keys: ["shift"]}
+            {name: "skill", keys: ["q"]},
+            {name: "interact", keys: ["e"]},
+            {name: "slot1", keys: ["1"]},
+            {name: "slot2", keys: ["2"]},
 
         ],
         useWebGL: false,                        // Tell the game we want to use webgl
         showDebug: false                       // Whether to show debug messages. You can change this to true if you want
     }
+
+    // Set up custom registries
+    let weaponTemplateRegistry = new WeaponTemplateRegistry();
+    RegistryManager.addCustomRegistry("weaponTemplates", weaponTemplateRegistry);
+    
+    let weaponTypeRegistry = new WeaponTypeRegistry();
+    RegistryManager.addCustomRegistry("weaponTypes", weaponTypeRegistry);
+
+    // Create a game with the options specified
 
     // Create a game with the options specified
     const game = new Game(options);

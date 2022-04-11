@@ -12,17 +12,14 @@ import Label from "../../Wolfie2D/Nodes/UIElements/Label";
 import Input from "../../Wolfie2D/Input/Input";
 import MainMenu from "./MainMenu";
 import GameLevel from "./GameLevel";
-import InGameMenu from "./InGameMenu";
 
 export default class Controls extends Scene {
     private controls: Layer;
-
 
     startScene(): void {
         // Center the viewport
         
         this.controls= this.addUILayer("controls");
-
 
         
         let size = this.viewport.getHalfSize();
@@ -31,6 +28,8 @@ export default class Controls extends Scene {
         this.viewport.setZoomLevel(1);
 
         this.receiver.subscribe("menu");
+        this.receiver.subscribe("main");
+        this.receiver.subscribe("ingame");
 
         const controlsBack = <Button>this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x-450, center.y - 300), text: "Back"});
         controlsBack.size.set(200, 50);
@@ -47,7 +46,7 @@ export default class Controls extends Scene {
         const texta = "a to move left";
         const textb = "d to move right";
         const text="space and w to jump";
-        const textc = "e to switch weapons";
+        const textc = "e to pick up weapons, 1 and 2 to change to each slots";
         const textd = "Q to cast the ultimate skill";
         const textd2 ="(which will decrease one HP and increase the attack speed for 5s)";
         const texte = "left click to attack";
@@ -83,6 +82,7 @@ export default class Controls extends Scene {
             if(event.type === "menu"){
                 this.sceneManager.changeToScene(MainMenu, {});
             }
+
         }
     }
 }
