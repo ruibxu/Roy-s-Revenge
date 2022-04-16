@@ -30,7 +30,7 @@ export default abstract class PlayerState extends State {
 		this.positionTimer.start();
 		this.skillmode=false;
 		this.gravity=1000;
-		this.skillcooldown=new Timer(2000);
+		this.skillcooldown=new Timer(1000);
 		this.flag=0;
 	}
 
@@ -73,13 +73,23 @@ export default abstract class PlayerState extends State {
 		}
 		
 		if(Input.isPressed("skill")&&this.skillcooldown.isStopped()){	
-			/*
-			this.skillcooldown.start();
-			this.skillmode=!this.skillmode;
-			this.gravity=-(this.gravity);
-			
-			let direction = this.getInputDirection();
-			(<Sprite>this.owner).invertY = MathUtils.sign(direction.y) > 0 ; */
+				//this.skillcooldown.reset();
+				this.skillcooldown.start();
+				this.skillmode=!this.skillmode;
+				//this.gravity=-(this.gravity);
+				
+				let direction = this.getInputDirection();
+				
+				
+				if(this.skillmode==true){
+					(<Sprite>this.owner).invertY = MathUtils.sign(direction.y) > 0 ; 
+				}
+				else{
+					(<Sprite>this.owner).invertY = false;
+				}
+				
+				
+				
 			
 		}
 

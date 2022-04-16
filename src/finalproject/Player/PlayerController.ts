@@ -18,6 +18,7 @@ import GameEvent from "../../Wolfie2D/Events/GameEvent";
 import Input from "../../Wolfie2D/Input/Input";
 import Item from "../GameSystems/items/Item";
 import GameLevel from "../Scenes/Gamelevel";
+import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 
 
 export enum PlayerType {
@@ -42,6 +43,9 @@ export default class PlayerController extends StateMachineAI {
 	MIN_SPEED: number = 200;
     MAX_SPEED: number = 300;
     tilemap: OrthogonalTilemap;
+    spike: OrthogonalTilemap;
+    laser: OrthogonalTilemap;
+    background: OrthogonalTilemap;
     isDead: boolean = false;
      //add inverntory
     inventory: InventoryManager;
@@ -64,7 +68,9 @@ export default class PlayerController extends StateMachineAI {
     
         this.initializePlatformer();
         this.tilemap = this.owner.getScene().getTilemap(options.tilemap) as OrthogonalTilemap;
-
+        this.spike = this.owner.getScene().getTilemap(options.spike) as OrthogonalTilemap;
+        this.laser = this.owner.getScene().getTilemap(options.laser) as OrthogonalTilemap;
+        this.background = this.owner.getScene().getTilemap(options.background) as OrthogonalTilemap;
         this.receiver = new Receiver();
 		this.emitter = new Emitter();
 
@@ -89,11 +95,9 @@ export default class PlayerController extends StateMachineAI {
 			if(event.data.get("health") === 0){
 				// Play animation and queue event to end game
 				this.isDead=true;
-				//this.owner.animation.play("DEAD", true);
 
 				this.emitter.fireEvent( finalproject_Events.PLAYER_DEAD);
 			} else {
-				//this.owner.animation.play("TAKING_DAMAGE", false, Homework3Event.PLAYER_I_FRAMES_END);
 			}
 		}
     
@@ -141,22 +145,24 @@ export default class PlayerController extends StateMachineAI {
     update(deltaT: number): void {
 		super.update(deltaT);
         
-        // let switch_location=new Vec2(this.owner.position.x, this.owner.position.y+32);
-        // if(this.tilemap.getTileAtWorldPosition(switch_location)==8){
-        //     this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(switch_location),9);
-        //     this.emitter.fireEvent(HW5_Events.PLAYER_HIT_SWITCH);
+        //  let switch_location=new Vec2(this.owner.position.x, this.owner.position.y+32);
+        //  if(this.tilemap.getTileAtWorldPosition(switch_location)==8){
+        //      this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(switch_location),9);
+        //      this.emitter.fireEvent(HW5_Events.PLAYER_HIT_SWITCH);
         // }
         
-        /*let spike_location=new Vec2(this.owner.position.x, this.owner.position.y+32);
-        console.log(spike_location);
+        let bottom_block=new Vec2(this.owner.position.x, this.owner.position.y+32);
+        let current_blcok=new Vec2(this.owner.position.x, this.owner.position.y);
         //this.tilemap.getTileAtWorldPosition(spike_location);
-        console.log(this.tilemap.getTileAtWorldPosition(spike_location));
 
-        if(this.tilemap.getTileAtWorldPosition(spike_location)==4){
+        if(this.spike.getTileAtWorldPosition(bottom_block)==4){
             //this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(spike_location),9);
             //this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SPIKE);
             console.log("123");
-        }*/
+        }
+        if(this.tilemap.getTileAtWorldPosition(bottom_block)==12){
+            this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(bottom_block),13);
+        } 
 
         ///
         
@@ -244,7 +250,7 @@ export default class PlayerController extends StateMachineAI {
         }
         
         if(Input.isMouseJustPressed()){	
-            let weapon = this.inventory.getItem();
+            let weapon = this.inventory.getItem();  
             if(this.inventory.getItem()){
                 weapon.use(this.owner,"player",this.faceDirection);}
             }

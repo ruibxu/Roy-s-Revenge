@@ -15,11 +15,6 @@ export default class Level1 extends GameLevel {
         this.load.tilemap("level1", "final_project_assets/tilemaps/level1.tmj");
         this.load.spritesheet("player", "final_project_assets/spritesheets/roy.json");
         this.load.spritesheet("boss", "final_project_assets/spritesheets/boss.json");
-        // this.load.spritesheet("player_with_pistol", "final_project_assets/spritesheets/roy_with_pistol.json");
-        // this.load.spritesheet("player_with_knife", "final_project_assets/spritesheets/roy_with_knife.json");
-        // this.load.spritesheet("player_with_lightsaber", "final_project_assets/spritesheets/roy_with_lightsaber.json");
-        // this.load.spritesheet("player_with_lasergun", "final_project_assets/spritesheets/roy_with_lasergun.json");
-        // this.load.spritesheet("player_with_machinegun", "final_project_assets/spritesheets/roy_with_machinegun.json");
         this.load.spritesheet("slice", "final_project_assets/spritesheets/slice.json");
         //this.load.spritesheet("red", "final_project_assets/spritesheets/redBalloon.json");
         //this.load.spritesheet("blue", "final_project_assets/spritesheets/blueBalloon.json");
@@ -51,7 +46,7 @@ export default class Level1 extends GameLevel {
         this.load.image("inventorySlot", "final_project_assets/sprites/inventory.png");
         //weapon
         this.load.image("knife", "final_project_assets/sprites/knife.png");
-        this.load.image("laserGun", "final_project_assets/sprites/Laser_gun.png");
+        this.load.image("laserGun", "final_project_assets/sprites/laser_gun.png");
         this.load.image("pistol", "final_project_assets/sprites/pistol.png");
         this.load.image("machineGun","final_project_assets/sprites/machine_gun.png")
         this.load.image("lightSaber", "final_project_assets/sprites/light_saber.png");

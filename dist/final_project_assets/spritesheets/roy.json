@@ -127,6 +127,19 @@
 			]
         },
         {
+            "name": "KNIFE_ATTACK",
+             "frames": [ 
+			{
+			"index": 20,
+			"duration": 5
+			},
+			{
+			"index": 21,
+			"duration": 5
+			}
+			]
+        },
+        {
             "name": "KNIFE_FALL",
             "frames":[ {"index": 19, "duration": 100	}]
         },
@@ -324,6 +337,19 @@
 			{
 			"index": 56,
 			"duration": 100
+			}
+			]
+        },
+        {
+            "name": "LIGHTSABER_ATTACK",
+             "frames": [ 
+			{
+			"index": 56,
+			"duration": 5
+			},
+			{
+			"index": 57,
+			"duration": 5
 			}
 			]
         },

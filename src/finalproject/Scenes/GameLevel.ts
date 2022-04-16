@@ -125,6 +125,8 @@ export default class GameLevel extends Scene {
         });
 
         this.levelTransitionScreen.tweens.play("fadeOut");
+        
+
         // Initialize the timers
         /*
         this.respawnTimer = new Timer(1000, () => {
@@ -225,6 +227,9 @@ export default class GameLevel extends Scene {
             if(event.type === "help"){
                 this.help.enable();
                 this.ingamemenu.disable();
+            }
+            if(event.type === finalproject_Events.LASEROFF){
+                //
             }
             switch(event.type){
                 case finalproject_Events.PLAYER_HIT_SWITCH:
@@ -556,7 +561,8 @@ export default class GameLevel extends Scene {
             finalproject_Events.LEVEL_PAUSED,
             finalproject_Events.LEVEL_END,
             finalproject_Events.PLAYER_KILLED,
-            finalproject_Events.PLAYER_WEAPON_CHANGE
+            finalproject_Events.PLAYER_WEAPON_CHANGE,
+            finalproject_Events.LASEROFF
 
         ]);
         this.receiver.subscribe("ingame_menu");
@@ -568,7 +574,6 @@ export default class GameLevel extends Scene {
         this.receiver.subscribe("control");
         this.receiver.subscribe("help");
         this.receiver.subscribe("menu");
-        
     }
 
     /**
@@ -675,7 +680,10 @@ export default class GameLevel extends Scene {
         this.player.colliderOffset.set(0, 2);
         this.player.addAI(PlayerController, 
             {playerType: "platformer", 
-            tilemap: "Main",   
+            tilemap: "front",   
+            spike:"spike",
+            laser:"laser",
+            back:"background",
             inventory: this.inventory,
             items: this.items,
             });

@@ -44,12 +44,9 @@ export default class Walk extends OnGround {
         }
 		let dir = this.getInputDirection();
 
+		console.log(dir);
 		if(dir.isZero()){
 			this.finished(PlayerStates.IDLE);
-		} else {
-			if(Input.isPressed("run")){
-				this.finished(PlayerStates.RUN);
-			}
 		}
 
 		this.parent.velocity.x = dir.x * this.parent.speed

@@ -8,6 +8,7 @@ export enum finalproject_Events {
     SLICE="Slice",
     //when people touch with weapon sprite
     PLAYER_HIT_WEAPON="PlayerHitWeapon",
+    LASEROFF="laseroff",
     PLAYER_HIT_TRAP="PlayerHitTRAP",
     PLAYER_DAMAGE="PlayerDamage",
     PLAYER_DEAD="PlayerDead",
