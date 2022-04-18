@@ -28,8 +28,7 @@ import RegistryManager from "../../Wolfie2D/Registry/RegistryManager";
 import Healthpack from "../GameSystems/items/Healthpack";
 import BattleManager from "../GameSystems/BattleManager";
 import CanvasNode from "../../Wolfie2D/Nodes/CanvasNode";
-
-
+import BattlerAI from "../Enemies/BattlerAI";
 
 // HOMEWORK 5 - TODO
 /**
@@ -39,7 +38,7 @@ import CanvasNode from "../../Wolfie2D/Nodes/CanvasNode";
  * it's up to you.
  */
 export default class GameLevel extends Scene {
-    protected enemy: AnimatedSprite;
+    protected enemies: Array<AnimatedSprite>;
     // Every level will have a player, which will be an animated sprite
     protected playerSpawn: Vec2;
     protected player: AnimatedSprite;
@@ -76,15 +75,11 @@ export default class GameLevel extends Scene {
     // Custom particle sysyem
     protected system: HW5_ParticleSystem;
 
-
-
     // A list of items in the scene
     private items: Array<Item>;
 
     // The battle manager for the scene
     private battleManager: BattleManager;
-
-
 
     // Total ballons and amount currently popped
     //protected totalBalloons: number;
@@ -95,24 +90,24 @@ export default class GameLevel extends Scene {
     //protected totalSwitches: number;
     //protected switchLabel: Label;
     //protected switchesPressed: number;
+    protected bullets:Array<CanvasNode>;
 
     startScene(): void {
         // Do the game level standard initializations
-     
-        this.initWeapons();
-        this.initLayers();
+        this.initLayers(); 
         this.initViewport();
+        this.initWeapons();
         this.subscribeToEvents();
         this.addUI();
-
         this.battleManager = new BattleManager();
         
         this.items = new Array();
         this.spawnItems();
         this.initPlayer();
         this.initEnemies();
-
-
+        this.bullets = new Array();
+        this.battleManager.setPlayers([<BattlerAI>this.player._ai]);
+        this.battleManager.setEnemies(this.enemies.map(enemy => <BattlerAI>enemy._ai));
         this.ispaused=false;
         // 10 second cooldown for ultimate
 
@@ -154,9 +149,15 @@ export default class GameLevel extends Scene {
 
 
     updateScene(deltaT: number){
+        //check if bullet out of screen
+        const viewportCenter = this.viewport.getCenter().clone();	
+		const ViewportSize = this.viewport.getHalfSize().scaled(2);
+        for(let bullet of this.bullets){
+				this.handleScreenDespawn(bullet, viewportCenter, ViewportSize);
+		}
+        this.handleCollisions();
+
         // Handle events and update the UI if needed
-    
-        
         while(this.receiver.hasNextEvent()){
             let event = this.receiver.getNextEvent();
             
@@ -288,6 +289,19 @@ export default class GameLevel extends Scene {
                 case finalproject_Events.PLAYER_KILLED:
                     {
                         this.respawnPlayer();
+                    }
+                    break;
+                
+                case finalproject_Events.SHOOT_BULLET:
+                    {
+                    let asset = this.sceneGraph.getNode(event.data.get("node"));
+                    this.bullets.push(asset);
+                    }
+                    break;
+                case finalproject_Events.UNLOAD_ASSET:
+                    {
+                    let asset = this.sceneGraph.getNode(event.data.get("node"));
+                    asset.destroy();
                     }
                     break;
             }
@@ -556,8 +570,9 @@ export default class GameLevel extends Scene {
             finalproject_Events.LEVEL_PAUSED,
             finalproject_Events.LEVEL_END,
             finalproject_Events.PLAYER_KILLED,
-            finalproject_Events.PLAYER_WEAPON_CHANGE
-
+            finalproject_Events.PLAYER_WEAPON_CHANGE,
+            finalproject_Events.UNLOAD_ASSET,
+            finalproject_Events.SHOOT_BULLET
         ]);
         this.receiver.subscribe("ingame_menu");
         this.receiver.subscribe("back_to_game");
@@ -687,22 +702,16 @@ export default class GameLevel extends Scene {
 
 
     protected initEnemies(): void {
-        //add inventory
-      
         
-         // Add the player
-        this.enemy = this.add.animatedSprite("boss", "primary");
-        this.enemy.scale.set(1, 1);
-        // if(!this.playerSpawn){
-        //     console.warn("Player spawn was never set - setting spawn to (0, 0)");
-        //     this.playerSpawn = Vec2.ZERO;
-        // }
+        this.enemies=new Array();
+             
+        let enemy = this.add.animatedSprite("boss", "primary");
+        enemy.scale.set(1, 1);
         let enemyPosition=new Vec2(1216,384);
-        this.enemy.position.copy(enemyPosition);
-        this.enemy.addPhysics(new AABB(Vec2.ZERO, new Vec2(32, 32)));
-        this.enemy.colliderOffset.set(0, 2);
-        
-        this.enemy.animation.play("IDLE",true);
+        enemy.position.copy(enemyPosition);
+        enemy.addPhysics(new AABB(Vec2.ZERO, new Vec2(32, 32)));
+        enemy.colliderOffset.set(0, 2);       
+        enemy.animation.play("IDLE",true);
         // this.player.addAI(PlayerController, 
         //     {playerType: "platformer", 
         //     tilemap: "Main",   
@@ -713,10 +722,7 @@ export default class GameLevel extends Scene {
         //this.player.setGroup("player");
 
         //this.viewport.follow(this.player);
-    }
-
-    handleCollision(){
-        
+        this.enemies.push(enemy);
     }
 
 
@@ -818,20 +824,81 @@ export default class GameLevel extends Scene {
             // Initialize the weapon type
             weaponType.initialize(weapon);
 
+
+
             // Register the weapon type
             RegistryManager.getRegistry("weaponTypes").registerItem(weapon.name, weaponType)
         }
     }
     handleScreenDespawn(node: CanvasNode, viewportCenter: Vec2, ViewportSize: Vec2): void {
-		// Your code goes here:
+		
 
 		if (((node.position.x<=(viewportCenter.x-ViewportSize.x))||(node.position.x>=(viewportCenter.x+ViewportSize.x)))&&node.visible==true)
-		{node.visible=false;}
+		{   
+            //node.destroy(); 
+            this.bullets.forEach((element,index)=>{
+                if(element.id==node.id) this.bullets.splice(index,1);
+             });
+            this.emitter.fireEvent(finalproject_Events.UNLOAD_ASSET,{"node":node.id});
 
-
+        }
 	}
     isPaused():boolean {
         return this.ispaused;
     }
-    
+    handleCollisions(){	
+		// Check for collisions of bullets with enemy
+		for(let bullet of this.bullets){
+                for(let enemy of this.enemies)
+                {
+                    if(bullet.boundary.overlaps(enemy.boundary)){
+                        // A collision happened - destroy the bullet
+                        console.log("bullet hit");
+                        this.bullets.forEach((element,index)=>{
+                            if(element.id==bullet.id) this.bullets.splice(index,1);
+                         });
+                        this.emitter.fireEvent(finalproject_Events.UNLOAD_ASSET,{"node":bullet.id})
+                        // Increase the hp of the enemy
+                    }
+				}				
+            }   
+        
+      
+            for(let enemy of this.enemies)
+            {
+                if(this.player.boundary.overlaps(enemy.boundary)&&(!this.player.animation.isPlaying("TAKING_DAMAGE")||
+                !this.player.animation.isPlaying("KNIFE_TAKING_DAMAGE")||!this.player.animation.isPlaying("PISTOL_TAKING_DAMAGE")||
+                !this.player.animation.isPlaying("MACHINEGUN_TAKING_DAMAGE")||!this.player.animation.isPlaying("LIGHTSABER_TAKING_DAMAGE")||
+                !this.player.animation.isPlaying("LASERGUN_TAKING_DAMAGE")
+                ))
+                {   
+                    // A collision happened - destroy the bullet
+                    if((<PlayerController>this.player._ai).inventory.getItem())
+                    {   console.log("got damage");
+                        if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="pistol"){
+                            this.player.animation.playIfNotAlready("PISTOL_TAKING_DAMAGE");
+                        }
+                        else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="knife"){
+                            this.player.animation.playIfNotAlready("KNIFE_TAKING_DAMAGE");
+                        }
+                        else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="machineGun"){
+                            this.player.animation.playIfNotAlready("MACHINEGUN_TAKING_DAMAGE");
+                        }
+                        else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="laserGun"){
+                            this.player.animation.playIfNotAlready("LASERGUN_TAKING_DAMAGE");
+                        }
+                        else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="lightSaber"){
+                            this.player.animation.playIfNotAlready("LIGHTSABER_TAKING_DAMAGE");
+                        }
+                    }
+                    else{
+                        this.player.animation.playIfNotAlready("TAKING_DAMAGE", true);
+                    }
+                    
+                    this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE);
+                    // Increase the hp of the enemy
+                }
+            }			
+    }   
+
 }

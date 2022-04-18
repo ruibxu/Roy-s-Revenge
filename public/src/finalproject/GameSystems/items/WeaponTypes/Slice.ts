@@ -45,6 +45,7 @@ export default class Slice extends WeaponType {
     }
 
     hits(node: GameNode, sliceSprite: AnimatedSprite): boolean {
+        console.log("hit");
         return sliceSprite.boundary.overlaps(node.collisionShape);
     }
 
