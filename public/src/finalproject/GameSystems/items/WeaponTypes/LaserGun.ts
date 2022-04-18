@@ -78,7 +78,7 @@ export default class LaserGun extends WeaponType {
 
         line.tweens.add("fade", {
             startDelay: 0,
-            duration: 300,
+            duration: 500,
             effects: [
                 {
                     property: TweenableProperties.alpha,
@@ -94,6 +94,7 @@ export default class LaserGun extends WeaponType {
     }
 
     hits(node: GameNode, line: Line): boolean {
+        console.log("hit");
         return node.collisionShape.getBoundingRect().intersectSegment(line.start, line.end.clone().sub(line.start)) !== null;
     }
 

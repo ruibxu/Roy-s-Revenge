@@ -1,6 +1,7 @@
 import GameNode from "../../../../Wolfie2D/Nodes/GameNode";
 import Scene from "../../../../Wolfie2D/Scene/Scene";
 
+
 export default abstract class WeaponType {
     /** The key for this sprite image */
     spriteKey: string;
@@ -20,7 +21,7 @@ export default abstract class WeaponType {
     /**
      * Initializes this weapon type with data
      */
-    abstract initialize(options: Record<string, any>): void;
+    abstract initialize(options: Record<string, any>,bullets?:Array<any>): void;
 
     /**
      * The animation to do when this weapon is used

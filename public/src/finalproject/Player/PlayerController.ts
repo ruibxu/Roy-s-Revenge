@@ -93,6 +93,7 @@ export default class PlayerController extends StateMachineAI {
 
 				this.emitter.fireEvent( finalproject_Events.PLAYER_DEAD);
 			} else {
+                
 				//this.owner.animation.play("TAKING_DAMAGE", false, Homework3Event.PLAYER_I_FRAMES_END);
 			}
 		}
