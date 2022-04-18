@@ -16,6 +16,8 @@ export default class Level1 extends GameLevel {
         this.load.spritesheet("player", "final_project_assets/spritesheets/roy.json");
         this.load.spritesheet("boss", "final_project_assets/spritesheets/boss.json");
         this.load.spritesheet("slice", "final_project_assets/spritesheets/slice.json");
+        this.load.object("enemyData","final_project_assets/data/enemy.json");
+        this.load.spritesheet("melee_enemy","final_project_assets/spritesheets/melee_enemy.json");
         //this.load.spritesheet("red", "final_project_assets/spritesheets/redBalloon.json");
         //this.load.spritesheet("blue", "final_project_assets/spritesheets/blueBalloon.json");
         //this.load.audio("jump", "final_project_assets/sounds/jump.wav");
@@ -33,7 +35,7 @@ export default class Level1 extends GameLevel {
         this.load.object("weaponData", "final_project_assets/data/weaponData.json");
 
         // Load the nav mesh
-        //this.load.object("navmesh", "final_project_assets/data/navmesh.json");
+        this.load.object("navmesh", "final_project_assets/data/navmesh.json");
 
         // Load in the enemy info
         this.load.object("enemyData", "final_project_assets/data/enemy.json");
@@ -43,6 +45,7 @@ export default class Level1 extends GameLevel {
 
         // Load the healthpack sprite
         this.load.image("healthpack", "final_project_assets/sprites/health.png");
+        this.load.image("gear", "final_project_assets/sprites/gear.png");
         this.load.image("inventorySlot", "final_project_assets/sprites/inventory.png");
         //weapon
         this.load.image("knife", "final_project_assets/sprites/knife.png");

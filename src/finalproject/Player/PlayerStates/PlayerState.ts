@@ -10,15 +10,16 @@ import PlayerController, { PlayerStates } from "../PlayerController";
 import GameLevel from "../../Scenes/GameLevel";
 import Sprite from "../../../Wolfie2D/Nodes/Sprites/Sprite";
 import MathUtils from "../../../Wolfie2D/Utils/MathUtils";
+import Debug from "../../../Wolfie2D/Debug/Debug";
 
 
 export default abstract class PlayerState extends State {
 	owner: GameNode;
 	gravity: number ;
-	parent: PlayerController;
+	parent:PlayerController;
 	positionTimer: Timer;
 	faceDirection: Vec2;
-	skillmode:boolean;
+	//skillmode:boolean;
 	skillcooldown: Timer;
 
 
@@ -27,11 +28,11 @@ export default abstract class PlayerState extends State {
 		this.owner = owner;
 		this.positionTimer = new Timer(250);
 		this.positionTimer.start();
-		this.skillmode=false;
+		//this.parent.skillmode=false;
 		this.gravity=1000;
 		this.skillcooldown=new Timer(2000);
 	}
-
+	
 	// Change the suit color on receiving a suit color change event
 	handleInput(event: GameEvent): void {
 	}
@@ -71,33 +72,37 @@ export default abstract class PlayerState extends State {
 		}
 		
 		if(Input.isPressed("skill")&&this.skillcooldown.isStopped()&&this.parent.velocity.y==0){	
-				
-				this.skillcooldown.reset();
-				this.skillcooldown.start();
-				this.skillmode=!this.skillmode;
-				this.gravity=-(this.gravity);
-				let direction = this.getInputDirection();
-				
-				console.log(this.parent.velocity.y);
-				if(this.skillmode==true){
-					(<Sprite>this.owner).invertY = MathUtils.sign(direction.y) > 0 ; 
-				}
-				else{
-					(<Sprite>this.owner).invertY = false;
-				}
-				
+			this.skillcooldown.reset();
+			this.skillcooldown.start();
+			this.parent.skillmode=!this.parent.skillmode;
+			console.log(this.parent.skillmode);
+			this.gravity=-(this.gravity);
+			let direction = this.getInputDirection();
 			
+			console.log(this.parent.velocity.y);
+			if(this.parent.skillmode==true){
+				(<Sprite>this.owner).invertY = MathUtils.sign(direction.y) > 0 ; 
+			}
+			else{
+				(<Sprite>this.owner).invertY = false;
+			}	
 		}
-		if(this.skillmode==false){
+
+
+		if(this.parent.skillmode==false){
 			console.log(this.parent.velocity.y);
 			this.parent.velocity.y += this.gravity*deltaT;
 		}
-		else if (this.skillmode==true){
+		else if (this.parent.skillmode==true){
 			
 			this.parent.velocity.y += this.gravity*deltaT;
 		}
 		//
-		
+		if(this.parent.skillmode==true){
+			Debug.log("skillmode", "skill mode : trued");
+		} else if (this.parent.skillmode==false){
+			Debug.log("skillmode", "skill mode : false");
+		}
 		
 
 	}

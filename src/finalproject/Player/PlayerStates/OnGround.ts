@@ -8,12 +8,14 @@ export default class OnGround extends PlayerState {
 	onEnter(options: Record<string, any>): void {}
 
 	update(deltaT: number): void {
-		if(this.parent.velocity.y >= 0&& this.skillmode==false){
+		if(this.parent.velocity.y >= 0&& this.parent.skillmode==false){
 			this.parent.velocity.y = 0;
 		}
-		if(this.parent.velocity.y <= 0 && this.skillmode==true){
+		if(this.parent.velocity.y <= 0 && this.parent.skillmode==true){
 			this.parent.velocity.y = 0;
 		}
+
+
 
 		super.update(deltaT);
 
@@ -25,23 +27,25 @@ export default class OnGround extends PlayerState {
 
 		// If we jump, move to the Jump state, give a burst of upwards velocity, and play our flip tween animation if 
 		// we're moving left or right
-		if(Input.isJustPressed("jump")&& this.skillmode==false){
-
+		if(Input.isJustPressed("jump")&& this.parent.skillmode==false){
 			this.finished("jump");
 			this.parent.velocity.y = -500;
 		} 
-		else if(Input.isJustPressed("jump")&& this.skillmode==true){
+		else if(Input.isJustPressed("jump")&& this.parent.skillmode==true){
 			this.finished("jump");
 			this.parent.velocity.y = 500;
 			console.log(this.parent.velocity.y);
 		} 
 		
-		if(!this.owner.onGround&&this.skillmode==false){
+		if(!this.owner.onGround&&this.parent.skillmode==false){
+			//console.log(this.skillmode);
 			this.finished("fall");
 		}
-		else if(!this.owner.onCeiling&&this.skillmode==true){
+		else if(!this.owner.onCeiling&&this.parent.skillmode==true){
 			this.finished("fall");
 		}
+
+
 
 		
 	}

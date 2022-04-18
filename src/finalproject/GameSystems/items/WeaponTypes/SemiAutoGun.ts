@@ -32,7 +32,7 @@ export default class SemiAutoGun extends WeaponType {
         //this.bullets=new Array(this.MAX_BULLETS_SIZE);
     }
 
-    doAnimation(shooter: GameNode, direction: Vec2, line: Line): void {
+    doAnimation(shooter: GameNode, direction: Vec2, bullet: Rect): void {
         // let start = shooter.position.clone();
         // start.y+=5;
         // let end = shooter.position.clone().add(direction.scaled(200));
@@ -76,22 +76,11 @@ export default class SemiAutoGun extends WeaponType {
         // line.end = end;
 
         // line.tweens.play("fade");
-       // let bullet=null;
-		// if(this.bullets !== null){
-			// Spawn a bullet			
-			// const i= Math.floor(Math.random() * (1 + 1));;
-			// if (i==1) bullet.color.set(255,20,147,1);
-			//else
-            // for(let b of this.bullets){      
-             	    //We found a dead bullet
-                	// bullet = b;
-                 	// break;}
-            if(this.bullet !== null){
-            this.bullet.color=Color.YELLOW;
-			this.bullet.visible = true;
-			this.bullet.position = shooter.position.clone();
-            this.bullet.setAIActive(true, {speed: 10*direction.x});}
-		// }
+       
+        bullet.color=Color.YELLOW;
+        bullet.position = shooter.position.clone();
+        bullet.setAIActive(true, {speed: 10*direction.x});
+        bullet.tweens.play("fire");
     }
 
     createRequiredAssets(scene: Scene): [Rect]{
@@ -116,27 +105,36 @@ export default class SemiAutoGun extends WeaponType {
 
         // return [line];
        
-        // Initialize the bullet object pool
-		// for(let i = 0; i < this.bullets.length; i++){
-			this.bullet = <Rect>scene.add.graphic(GraphicType.RECT, "primary", {position: new Vec2(100, 100), size: new Vec2(10, 5)});
+        let bullet = <Rect>scene.add.graphic(GraphicType.RECT, "primary", {position: new Vec2(100, 100), size: new Vec2(10, 5)});
 
 
-			// Currently bullets use the base custom gradient circle shader, 
-			// you'll need to change this to the Linear Gradient Circle once you get that shader working. 
-		
-
-			this.bullet.visible = false;
-			// This is the color each bullet is set to by default, you can change this if you like a different color
-			this.bullet.color = Color.BLUE;
-
-			// Add AI to our bullet
-			this.bullet.addAI(BulletBehavior, {speed: 250});
-
-			// Add a collider to our bullet
-			let collider = new Circle(Vec2.ZERO, 5);
-			this.bullet.setCollisionShape(collider);
+        // Currently bullets use the base custom gradient circle shader, 
+        // you'll need to change this to the Linear Gradient Circle once you get that shader working. 
+    
+        // This is the color each bullet is set to by default, you can change this if you like a different color
+        // Add AI to our bullet
         
-            return [this.bullet];
+        bullet.addAI(BulletBehavior, {speed: 0});
+
+        // Add a collider to our bullet
+        // let collider = new Circle(Vec2.ZERO, 5);
+        // bullet.setCollisionShape(collider);
+
+        bullet.tweens.add("fire", {
+            startDelay: 0,
+            duration: 1,
+            effects: [
+                {
+                    property: "rotation",
+                    start: 0,
+                    end: 0.1,
+                    ease: EaseFunctionType.IN_OUT_QUAD
+                }
+            ],
+            onEnd:  finalproject_Events.SHOOT_BULLET
+        });
+   
+        return [bullet];
 
     }
 
