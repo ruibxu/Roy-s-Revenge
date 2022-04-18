@@ -26,14 +26,14 @@ export default class AttackAction extends GoapAction {
                 return null;
             }
             
-            // console.log(enemy.speed);
-            // //Randomize attack direction, gives the enemy gun users stormtrooper aim
-            // let dir = enemy.getPlayerPosition().clone().sub(enemy.owner.position).normalize();
-            // dir.rotateCCW(Math.PI / 4 * Math.random() - Math.PI/8);
-            // if(enemy.weapon.use(enemy.owner, "enemy", dir)){
-            //     // If we fired, face that direction
-            //     enemy.owner.rotation = Vec2.UP.angleToCCW(dir);
-            // }
+            console.log(enemy.speed);
+            //Randomize attack direction, gives the enemy gun users stormtrooper aim
+            let dir = enemy.getPlayerPosition().clone().sub(enemy.owner.position).normalize();
+            dir.rotateCCW(Math.PI / 4 * Math.random() - Math.PI/8);
+            if(enemy.weapon.use(enemy.owner, "enemy", dir)){
+                // If we fired, face that direction
+                enemy.owner.rotation = Vec2.UP.angleToCCW(dir);
+            }
             
             return this.effects;
         }

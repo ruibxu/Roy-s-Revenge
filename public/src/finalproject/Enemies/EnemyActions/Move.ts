@@ -29,6 +29,7 @@ export default class Move extends GoapAction {
 
             //If close enough, we've moved far enough and this loop action is done
             if (distance <= this.inRange){
+                console.log("WE are in Range!");
                 return this.effects;
             }
 

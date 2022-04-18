@@ -14,7 +14,7 @@ import Scene from "../../Wolfie2D/Scene/Scene";
 import Timer from "../../Wolfie2D/Timing/Timer";
 import Color from "../../Wolfie2D/Utils/Color";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
-import { finalproject_Events, finalproject_Statuses } from "../finalproject_constants";
+import { finalproject_Events, finalproject_Statuses, finalproject_Names } from "../finalproject_constants";
 import HW5_ParticleSystem from "../HW5_ParticleSystem";
 import PlayerController from "../Player/PlayerController";
 import MainMenu from "./MainMenu";
@@ -36,6 +36,8 @@ import EnemyAI from "../Enemies/EnemyAI";
 import Move from "../Enemies/EnemyActions/Move";
 import BattleManager from "../GameSystems/BattleManager";
 import BattlerAI from "../Enemies/BattlerAI";
+import PositionGraph from "../../Wolfie2D/DataTypes/Graphs/PositionGraph";
+import Navmesh from "../../Wolfie2D/Pathfinding/Navmesh";
 
 // HOMEWORK 5 - TODO
 /**
@@ -84,7 +86,8 @@ export default class GameLevel extends Scene {
     // Custom particle sysyem
     protected system: HW5_ParticleSystem;
 
-
+    // The position graph for the navmesh
+    private graph: PositionGraph;
 
     // A list of items in the scene
     private items: Array<Item>;
@@ -118,6 +121,9 @@ export default class GameLevel extends Scene {
         this.items = new Array();
         this.spawnItems();
         this.initPlayer();
+        
+        // Create the navmesh
+        this.createNavmesh();
         this.initEnemies();
 
         // Send the player and enemies to the battle manager
@@ -239,6 +245,10 @@ export default class GameLevel extends Scene {
             }
             if(event.isType("healthpack")){
                 this.createHealthpack(event.data.get("position"));
+            }
+            // Debug mode graph
+            if(Input.isKeyJustPressed("g")){
+                this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
             }
 
             switch(event.type){
@@ -719,6 +729,33 @@ export default class GameLevel extends Scene {
         this.viewport.follow(this.player);
     }
 
+    createNavmesh(): void {
+        // Add a layer to display the graph
+        let gLayer = this.addLayer("graph");
+        gLayer.setHidden(true);
+
+        let navmeshData = this.load.getObject("navmesh");
+
+         // Create the graph
+        this.graph = new PositionGraph();
+
+        // Add all nodes to our graph
+        for(let node of navmeshData.nodes){
+            this.graph.addPositionedNode(new Vec2(node[0], node[1]));
+            this.add.graphic(GraphicType.POINT, "graph", {position: new Vec2(node[0], node[1])})
+        }
+
+        // Add all edges to our graph
+        for(let edge of navmeshData.edges){
+            this.graph.addEdge(edge[0], edge[1]);
+            this.add.graphic(GraphicType.LINE, "graph", {start: this.graph.getNodePosition(edge[0]), end: this.graph.getNodePosition(edge[1])})
+        }
+
+        // Set this graph as a navigable entity
+        let navmesh = new Navmesh(this.graph);
+
+        this.navManager.addNavigableEntity(finalproject_Names.NAVMESH, navmesh);
+    }
 
     protected initEnemies(): void {
         console.log("initEnemies");
@@ -726,7 +763,7 @@ export default class GameLevel extends Scene {
         this.enemies = new Array(enemyData.numEnemies);
 
         let actionsMelee = [new AttackAction(3, [finalproject_Statuses.IN_RANGE],[finalproject_Statuses.REACHED_GOAL]),
-        new Move(2, [] , [finalproject_Statuses.IN_RANGE], {inRange: 100})]
+        new Move(2, [] , [finalproject_Statuses.IN_RANGE], {inRange: 20})]
 
         //Initalize the enemies
         for(let i = 0; i < enemyData.numEnemies; i++){
@@ -741,11 +778,12 @@ export default class GameLevel extends Scene {
             this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(16,16)));
 
             if(data.route){
-                //data.route = data.route.map((index: number) => this.graph.getNodePosition(index));                
+                //console.log(this.graph);
+                data.route = data.route.map((index: number) => this.graph.getNodePosition(index));                
             }
 
             if(data.guardPosition){
-                data.guardPosition = new Vec2(data.guardPosition[0]/2, data.guardPosition[1]/2);
+                data.guardPosition = new Vec2(data.guardPosition[0], data.guardPosition[1]);
             }
 
             let statusArray: Array<string> = [finalproject_Statuses.CAN_BERSERK, finalproject_Statuses.CAN_RETREAT];

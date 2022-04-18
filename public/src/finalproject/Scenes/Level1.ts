@@ -40,7 +40,7 @@ export default class Level1 extends GameLevel {
         this.load.object("weaponData", "final_project_assets/data/weaponData.json");
 
         // Load the nav mesh
-        //this.load.object("navmesh", "final_project_assets/data/navmesh.json");
+        this.load.object("navmesh", "final_project_assets/data/navmesh.json");
 
         // Load in the enemy info
         this.load.object("enemyData", "final_project_assets/data/enemy.json");

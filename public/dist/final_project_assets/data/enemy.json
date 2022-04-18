@@ -2,9 +2,9 @@
   "numEnemies": 1,
   "enemies": [
     {
-      "position": [176, 368],
-      "mode": "guard",
-      "guardPosition": [176, 368],
+      "position": [144, 240],
+      "mode": "patrol",
+      "route": [0, 1, 2],
       "health": 5,
       "type": "melee_enemy"
     }
