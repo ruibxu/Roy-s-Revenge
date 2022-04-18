@@ -13,7 +13,7 @@ import WeaponTypeRegistry from "./finalproject/Registry/WeaponTypeRegistry";
     // Set up options for our game
     let options = {
         canvasSize: {x: 1200, y: 800},          // The size of the game
-        clearColor: {r: 0, g: 74, b: 111},   // The color the game clears to
+        clearColor: {r: 57, g: 55, b: 55},   // The color the game clears to
         inputs: [
             {name: "left", keys: ["a"]},
             {name: "right", keys: ["d"]},

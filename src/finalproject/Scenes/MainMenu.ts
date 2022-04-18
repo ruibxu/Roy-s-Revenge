@@ -22,7 +22,7 @@ export default class MainMenu extends Scene {
     private splash: Layer;
     private mainMenu: Layer;
     private level: Layer;
-    private controls: Layer;
+    private background: Layer;
     private help: Layer;
     private in_game_menu: Layer;
     private playBtn: Button;
@@ -37,6 +37,7 @@ export default class MainMenu extends Scene {
         // Load the menu song
         this.load.audio("menu", "final_project_assets/music/menu.mp3");
         this.load.image("logo", "final_project_assets/images/banner.png");
+        this.load.image("back", "final_project_assets/images/background.png");
         this.load.image("level1", "final_project_assets/images/level1.png");
     }
 
@@ -47,6 +48,8 @@ export default class MainMenu extends Scene {
 
 
         this.mainMenu =this.addUILayer("Main");
+        this.background=this.addUILayer("Back");
+        this.background.setDepth(40);
         //this.mainMenu.setHidden(true);
 
 
@@ -56,6 +59,8 @@ export default class MainMenu extends Scene {
         this.viewport.setZoomLevel(1);
 
         this.logo = this.add.sprite("logo", "Main");
+        let back = this.add.sprite("back", "Back");
+        back.position.set(size.x, size.y);
         this.logo.position.set(size.x, size.y-250);
         this.logo.scale.set(1.5,1.5);
         // Create a play button
@@ -258,10 +263,12 @@ export default class MainMenu extends Scene {
             if(event.type === "level"){
                 this.level.setHidden(false);
                 this.mainMenu.setHidden(true);
+                this.background.setHidden(true);
             }
             if(event.type === "menu"){
                 this.mainMenu.setHidden(false);
                 this.level.setHidden(true);
+                this.background.setHidden(false);
             }
             if(event.type === "controls"){
                 this.sceneManager.changeToScene(Controls, {});

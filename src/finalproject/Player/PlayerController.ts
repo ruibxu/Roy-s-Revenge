@@ -212,11 +212,6 @@ export default class PlayerController extends StateMachineAI {
             }
         }
 
-                // Check for slot change
-        if (Input.isJustPressed("skill")) {
-           
-        }
-
 
 
         // Check if there is an item to pick up
@@ -255,8 +250,6 @@ export default class PlayerController extends StateMachineAI {
                 weapon.use(this.owner,"player",this.faceDirection);}
             }
             
-
-
 
 
             if(this.currentState instanceof Jump){

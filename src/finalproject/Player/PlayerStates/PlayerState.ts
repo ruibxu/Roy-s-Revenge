@@ -20,7 +20,6 @@ export default abstract class PlayerState extends State {
 	faceDirection: Vec2;
 	skillmode:boolean;
 	skillcooldown: Timer;
-	flag:number;
 
 
 	constructor(parent: StateMachine, owner: GameNode){
@@ -30,8 +29,7 @@ export default abstract class PlayerState extends State {
 		this.positionTimer.start();
 		this.skillmode=false;
 		this.gravity=1000;
-		this.skillcooldown=new Timer(1000);
-		this.flag=0;
+		this.skillcooldown=new Timer(2000);
 	}
 
 	// Change the suit color on receiving a suit color change event
@@ -72,15 +70,15 @@ export default abstract class PlayerState extends State {
 			this.positionTimer.start();
 		}
 		
-		if(Input.isPressed("skill")&&this.skillcooldown.isStopped()){	
-				//this.skillcooldown.reset();
+		if(Input.isPressed("skill")&&this.skillcooldown.isStopped()&&this.parent.velocity.y==0){	
+				
+				this.skillcooldown.reset();
 				this.skillcooldown.start();
 				this.skillmode=!this.skillmode;
-				//this.gravity=-(this.gravity);
-				
+				this.gravity=-(this.gravity);
 				let direction = this.getInputDirection();
 				
-				
+				console.log(this.parent.velocity.y);
 				if(this.skillmode==true){
 					(<Sprite>this.owner).invertY = MathUtils.sign(direction.y) > 0 ; 
 				}
@@ -88,12 +86,18 @@ export default abstract class PlayerState extends State {
 					(<Sprite>this.owner).invertY = false;
 				}
 				
-				
-				
 			
 		}
-
-		this.parent.velocity.y += this.gravity*deltaT;
+		if(this.skillmode==false){
+			console.log(this.parent.velocity.y);
+			this.parent.velocity.y += this.gravity*deltaT;
+		}
+		else if (this.skillmode==true){
+			
+			this.parent.velocity.y += this.gravity*deltaT;
+		}
+		//
+		
 		
 
 	}
