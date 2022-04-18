@@ -595,16 +595,7 @@ export default class GameLevel extends Scene {
             finalproject_Events.CONTROL,
             finalproject_Events.HELP,
             finalproject_Events.MENU
-
         ])
-        //this.receiver.subscribe("ingame_menu");
-        // this.receiver.subscribe("back_to_game");
-        // this.receiver.subscribe("healthpack");
-        // this.receiver.subscribe("resume");
-        // this.receiver.subscribe("newgame");
-        // this.receiver.subscribe("control");
-        // this.receiver.subscribe("help");
-        // this.receiver.subscribe("menu");
     }
 
     /**

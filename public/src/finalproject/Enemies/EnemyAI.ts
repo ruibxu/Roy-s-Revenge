@@ -54,6 +54,10 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
     // Path away from player
     retreatPath: NavigationPath;
 
+    gravity: number = 1000;
+
+    velocity: Vec2;
+
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
 
