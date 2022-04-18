@@ -42,6 +42,8 @@ export default class PlayerController extends StateMachineAI {
 	MIN_SPEED: number = 200;
     MAX_SPEED: number = 300;
     tilemap: OrthogonalTilemap;
+    tilemap_laser: OrthogonalTilemap;
+    tilemap_spike: OrthogonalTilemap;
     isDead: boolean = false;
      //add inverntory
     inventory: InventoryManager;
@@ -64,6 +66,8 @@ export default class PlayerController extends StateMachineAI {
     
         this.initializePlatformer();
         this.tilemap = this.owner.getScene().getTilemap(options.tilemap) as OrthogonalTilemap;
+        this.tilemap_laser = this.owner.getScene().getTilemap(options.tilemap_laser) as OrthogonalTilemap;
+        this.tilemap_spike = this.owner.getScene().getTilemap(options.tilemap_spike) as OrthogonalTilemap;
 
         this.receiver = new Receiver();
 		this.emitter = new Emitter();
@@ -140,12 +144,30 @@ export default class PlayerController extends StateMachineAI {
      */
     update(deltaT: number): void {
 		super.update(deltaT);
-        
-        // let switch_location=new Vec2(this.owner.position.x, this.owner.position.y+32);
-        // if(this.tilemap.getTileAtWorldPosition(switch_location)==8){
-        //     this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(switch_location),9);
-        //     this.emitter.fireEvent(HW5_Events.PLAYER_HIT_SWITCH);
-        // }
+        let player_location=new Vec2(this.owner.position.x, this.owner.position.y);
+        let below_player_location=new Vec2(this.owner.position.x, this.owner.position.y+32);
+        //console.log("spike layer: ",this.tilemap_spike.getTileAtWorldPosition(below_player_location));
+        //console.log("laser layer: ",this.tilemap_laser.getTileAtWorldPosition(player_location));
+
+        //handle if player on switch
+        if(this.tilemap.getTileAtWorldPosition(below_player_location)==12){
+            //set the switch to off
+            this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(below_player_location),13);
+            //set all laser to invisible
+            for (let x=0; x < this.tilemap_laser.getDimensions().x ; x++){
+                for (let y=0; y < this.tilemap_laser.getDimensions().y ; y++){
+                    if(this.tilemap_laser.getTileAtWorldPosition(new Vec2(x*32,y*32))==16){
+                        this.tilemap_laser.setTileAtRowCol(new Vec2(x,y),0);
+                    }
+                }
+            }
+            this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+        }
+
+        //handle if player hit trap
+        if(this.tilemap_laser.getTileAtWorldPosition(player_location)==16 || this.tilemap_spike.getTileAtWorldPosition(below_player_location)==4){
+            this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_TRAP);
+        }
         
         /*let spike_location=new Vec2(this.owner.position.x, this.owner.position.y+32);
         console.log(spike_location);
@@ -220,7 +242,21 @@ export default class PlayerController extends StateMachineAI {
             for (let item of this.items) {
                 if (this.owner.collisionShape.overlaps(item.sprite.boundary)) {
                     // We overlap it, try to pick it up
-                    if (this.inventory.getItem()){
+                    if(item.sprite.imageId==="healthpack"){
+                        //If it is a health pack, don't put into inventory, but use it directly by firing PickupHealthpack event
+                        console.log("pick up healthpack event fired.");
+                        item.removeSprite();
+                        this.items.splice(this.items.indexOf(item),1);
+                        this.emitter.fireEvent(finalproject_Events.PICKUP_HEALTHPACK);
+                    }
+                    else if(item.sprite.imageId==="gear"){
+                        //If it is a gear, don't put into inventory, but use it directly by firing PickupGear event
+                        console.log("pick up gear event fired.");
+                        item.removeSprite();
+                        this.items.splice(this.items.indexOf(item),1);
+                        this.emitter.fireEvent(finalproject_Events.PICKUP_GEAR);
+                    }
+                    else if (this.inventory.getItem()){
                         this.inventory.getItem().moveSprite(this.owner.position, "primary");
                         this.items.push(this.inventory.getItem());
                         this.inventory.removeItem();

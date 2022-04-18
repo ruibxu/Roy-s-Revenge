@@ -24,5 +24,9 @@ export default abstract class Item {
         this.sprite.position.copy(position);
     }
 
+    removeSprite(){
+        this.sprite.destroy();
+    }
+
     abstract use(user: GameNode, ...args: any): void;
 }

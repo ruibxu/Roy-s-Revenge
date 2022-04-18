@@ -15,6 +15,8 @@ export default class Level1 extends GameLevel {
         this.load.tilemap("level1", "final_project_assets/tilemaps/level1.tmj");
         this.load.spritesheet("player", "final_project_assets/spritesheets/roy.json");
         this.load.spritesheet("boss", "final_project_assets/spritesheets/boss.json");
+        this.load.object("enemyData","final_project_assets/data/enemy.json");
+        this.load.spritesheet("melee_enemy","final_project_assets/spritesheets/melee_enemy.json");
         // this.load.spritesheet("player_with_pistol", "final_project_assets/spritesheets/roy_with_pistol.json");
         // this.load.spritesheet("player_with_knife", "final_project_assets/spritesheets/roy_with_knife.json");
         // this.load.spritesheet("player_with_lightsaber", "final_project_assets/spritesheets/roy_with_lightsaber.json");
@@ -48,6 +50,7 @@ export default class Level1 extends GameLevel {
 
         // Load the healthpack sprite
         this.load.image("healthpack", "final_project_assets/sprites/health.png");
+        this.load.image("gear", "final_project_assets/sprites/gear.png");
         this.load.image("inventorySlot", "final_project_assets/sprites/inventory.png");
         //weapon
         this.load.image("knife", "final_project_assets/sprites/knife.png");
@@ -88,7 +91,7 @@ export default class Level1 extends GameLevel {
         //this.viewport.setBounds(0, 0, 64*32, 32*32);
         this.viewport.setBounds(0, 0, 128*32, 16*32);
 
-        this.playerSpawn = new Vec2(4*32-16, 11*32+16);
+        this.playerSpawn = new Vec2(4*32-16, 11*32+16); //112,368
 
         // Set the total switches and balloons in the level
         //this.totalSwitches = 4;

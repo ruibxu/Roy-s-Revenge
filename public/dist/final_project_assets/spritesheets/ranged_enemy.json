@@ -1,6 +1,6 @@
 {
-    "name": "melee_enemy",
-    "spriteSheetImage": "melee_enemy.png",
+    "name": "ranged_enemy",
+    "spriteSheetImage": "ranged_enemy.png",
     "spriteWidth": 32,
     "spriteHeight": 32,
     "columns": 3,

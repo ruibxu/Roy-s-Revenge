@@ -14,7 +14,7 @@ import Scene from "../../Wolfie2D/Scene/Scene";
 import Timer from "../../Wolfie2D/Timing/Timer";
 import Color from "../../Wolfie2D/Utils/Color";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
-import { finalproject_Events } from "../finalproject_constants";
+import { finalproject_Events, finalproject_Statuses } from "../finalproject_constants";
 import HW5_ParticleSystem from "../HW5_ParticleSystem";
 import PlayerController from "../Player/PlayerController";
 import MainMenu from "./MainMenu";
@@ -26,10 +26,16 @@ import WeaponType from "../GameSystems/items/WeaponTypes/WeaponType";
 import Weapon from "../GameSystems/items/Weapon";
 import RegistryManager from "../../Wolfie2D/Registry/RegistryManager";
 import Healthpack from "../GameSystems/items/Healthpack";
-import BattleManager from "../GameSystems/BattleManager";
+import Gear from "../GameSystems/items/Gear";
 import CanvasNode from "../../Wolfie2D/Nodes/CanvasNode";
-
-
+import AttackAction from "../Enemies/EnemyActions/AttackAction";
+import GoapAction from "../../Wolfie2D/DataTypes/Interfaces/GoapAction";
+import GoapActionPlanner from "../../Wolfie2D/AI/GoapActionPlanner";
+import Map from "../../Wolfie2D/DataTypes/Map";
+import EnemyAI from "../Enemies/EnemyAI";
+import Move from "../Enemies/EnemyActions/Move";
+import BattleManager from "../GameSystems/BattleManager";
+import BattlerAI from "../Enemies/BattlerAI";
 
 // HOMEWORK 5 - TODO
 /**
@@ -41,10 +47,10 @@ import CanvasNode from "../../Wolfie2D/Nodes/CanvasNode";
 export default class GameLevel extends Scene {
     protected enemy: AnimatedSprite;
     // Every level will have a player, which will be an animated sprite
+    private enemies : Array<AnimatedSprite>
     protected playerSpawn: Vec2;
     protected player: AnimatedSprite;
     protected respawnTimer: Timer;
-
 
     protected ui_layer: Layer;
     protected game: Layer;
@@ -59,6 +65,8 @@ export default class GameLevel extends Scene {
     // Labels for the UI
     protected static livesCount: number = 20;
     protected livesCountLabel: Label;
+    protected static gearCount: number = 0;
+    protected gearCountLabel: Label;
 
     // Stuff to end the level and go to the next level
     
@@ -112,6 +120,9 @@ export default class GameLevel extends Scene {
         this.initPlayer();
         this.initEnemies();
 
+        // Send the player and enemies to the battle manager
+        this.battleManager.setPlayers([<BattlerAI>this.player._ai]);
+        this.battleManager.setEnemies(this.enemies.map(enemy => <BattlerAI>enemy._ai));
 
         this.ispaused=false;
         // 10 second cooldown for ultimate
@@ -226,18 +237,20 @@ export default class GameLevel extends Scene {
                 this.help.enable();
                 this.ingamemenu.disable();
             }
+            if(event.isType("healthpack")){
+                this.createHealthpack(event.data.get("position"));
+            }
+
             switch(event.type){
                 case finalproject_Events.PLAYER_HIT_SWITCH:
                     {
-                        // Hit a switch block, so update the label and count
-                        // this.switchesPressed++;
-                        // this.switchLabel.text = "Switches Left: " + (this.totalSwitches - this.switchesPressed)
                         // this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "switch", loop: false, holdReference: false});
                     }
                     break;
                 case finalproject_Events.PLAYER_HIT_TRAP:
                     {
                         //
+                        this.emitter.fireEvent(finalproject_Events.PLAYER_KILLED);
                     }
                     break;
                 case finalproject_Events.PLAYER_ENTERED_LEVEL_END:
@@ -288,6 +301,16 @@ export default class GameLevel extends Scene {
                 case finalproject_Events.PLAYER_KILLED:
                     {
                         this.respawnPlayer();
+                    }
+                    break;
+                case finalproject_Events.PICKUP_HEALTHPACK:
+                    {
+                        this.incPlayerLife(5);
+                    }
+                    break;
+                case finalproject_Events.PICKUP_GEAR:
+                    {
+                        this.incGearCount();
                     }
                     break;
             }
@@ -547,6 +570,7 @@ export default class GameLevel extends Scene {
      * Handles all subscriptions to events
      */
     protected subscribeToEvents(){
+        //in level events
         this.receiver.subscribe([
             finalproject_Events.PLAYER_HIT_SWITCH,
             finalproject_Events.PLAYER_HIT_WEAPON,
@@ -556,19 +580,31 @@ export default class GameLevel extends Scene {
             finalproject_Events.LEVEL_PAUSED,
             finalproject_Events.LEVEL_END,
             finalproject_Events.PLAYER_KILLED,
-            finalproject_Events.PLAYER_WEAPON_CHANGE
+            finalproject_Events.PLAYER_WEAPON_CHANGE,
+            finalproject_Events.PICKUP_HEALTHPACK,
+            finalproject_Events.PICKUP_GEAR
 
         ]);
-        this.receiver.subscribe("ingame_menu");
-        this.receiver.subscribe("back_to_game");
-        this.receiver.subscribe("healthpack");
+        //menu events
+        this.receiver.subscribe([
+            finalproject_Events.IN_GAME_MENU,
+            finalproject_Events.BACK_TO_GAME,
+            finalproject_Events.HEALTHPACK,
+            finalproject_Events.RESUME,
+            finalproject_Events.NEWGAME,
+            finalproject_Events.CONTROL,
+            finalproject_Events.HELP,
+            finalproject_Events.MENU
 
-        this.receiver.subscribe("resume");
-        this.receiver.subscribe("newgame");
-        this.receiver.subscribe("control");
-        this.receiver.subscribe("help");
-        this.receiver.subscribe("menu");
-        
+        ])
+        //this.receiver.subscribe("ingame_menu");
+        // this.receiver.subscribe("back_to_game");
+        // this.receiver.subscribe("healthpack");
+        // this.receiver.subscribe("resume");
+        // this.receiver.subscribe("newgame");
+        // this.receiver.subscribe("control");
+        // this.receiver.subscribe("help");
+        // this.receiver.subscribe("menu");
     }
 
     /**
@@ -586,6 +622,10 @@ export default class GameLevel extends Scene {
         this.switchLabel.font = "PixelSimple";
 
         */
+
+        this.gearCountLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(500, 15), text: "Gears: " + GameLevel.gearCount});
+        this.gearCountLabel.textColor = Color.BLACK;
+        this.gearCountLabel.font = "PixelSimple";
 
         this.livesCountLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(500, 30), text: "Lives: " + GameLevel.livesCount});
         this.livesCountLabel.textColor = Color.BLACK;
@@ -655,6 +695,7 @@ export default class GameLevel extends Scene {
      * Initializes the player
      */
     protected initPlayer(): void {
+        console.log("initPlayer");
         //add inventory
         this.inventory = new InventoryManager(this, 2, "inventorySlot", new Vec2(32, 32), 4, "slots", "items");
         
@@ -675,7 +716,9 @@ export default class GameLevel extends Scene {
         this.player.colliderOffset.set(0, 2);
         this.player.addAI(PlayerController, 
             {playerType: "platformer", 
-            tilemap: "Main",   
+            tilemap: "front",
+            tilemap_laser: "laser",
+            tilemap_spike: "spike",   
             inventory: this.inventory,
             items: this.items,
             });
@@ -687,32 +730,101 @@ export default class GameLevel extends Scene {
 
 
     protected initEnemies(): void {
-        //add inventory
-      
-        
-         // Add the player
+        console.log("initEnemies");
+        const enemyData = this.load.getObject("enemyData");
+        this.enemies = new Array(enemyData.numEnemies);
+
+        let actionsMelee = [new AttackAction(3, [finalproject_Statuses.IN_RANGE],[finalproject_Statuses.REACHED_GOAL]),
+        new Move(2, [] , [finalproject_Statuses.IN_RANGE], {inRange: 100})]
+
+        //Initalize the enemies
+        for(let i = 0; i < enemyData.numEnemies; i++){
+            let data = enemyData.enemies[i];
+
+            //Create an enemy
+            this.enemies[i] = this.add.animatedSprite(data.type, "primary");
+            this.enemies[i].position.set(data.position[0],data.position[1]);
+            this.enemies[i].animation.play("IDLE",true);
+            
+            //Activate physics
+            this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(16,16)));
+
+            if(data.route){
+                //data.route = data.route.map((index: number) => this.graph.getNodePosition(index));                
+            }
+
+            if(data.guardPosition){
+                data.guardPosition = new Vec2(data.guardPosition[0]/2, data.guardPosition[1]/2);
+            }
+
+            let statusArray: Array<string> = [finalproject_Statuses.CAN_BERSERK, finalproject_Statuses.CAN_RETREAT];
+
+            //Vary weapon type and choose actions
+            let weapon;
+            let actions;
+            let range;
+
+            if (data.type === "melee_enemy"){
+                weapon = this.createWeapon("knife")
+                actions = actionsMelee;
+                range = 20;
+            }
+
+            let enemyOptions = {
+                defaultMode: data.mode,
+                patrolRoute: data.route,            // This only matters if they're a patroller
+                guardPosition: data.guardPosition,  // This only matters if the're a guard
+                health: data.health,
+                player: this.player,
+                weapon: weapon,
+                goal: finalproject_Statuses.REACHED_GOAL,
+                status: statusArray,
+                actions: actions,
+                inRange: range
+            }
+
+            this.enemies[i].addAI(EnemyAI, enemyOptions);
+        }
+/*
         this.enemy = this.add.animatedSprite("boss", "primary");
         this.enemy.scale.set(1, 1);
-        // if(!this.playerSpawn){
-        //     console.warn("Player spawn was never set - setting spawn to (0, 0)");
-        //     this.playerSpawn = Vec2.ZERO;
-        // }
         let enemyPosition=new Vec2(1216,384);
         this.enemy.position.copy(enemyPosition);
         this.enemy.addPhysics(new AABB(Vec2.ZERO, new Vec2(32, 32)));
         this.enemy.colliderOffset.set(0, 2);
-        
         this.enemy.animation.play("IDLE",true);
-        // this.player.addAI(PlayerController, 
-        //     {playerType: "platformer", 
-        //     tilemap: "Main",   
-        //     inventory: inventory,
-        //     items: this.items,
-        //     });
+*/
+    }
 
-        //this.player.setGroup("player");
+    powerset(array: Array<string>): Array<Array<string>> {
+        return array.reduce((a, v) => a.concat(a.map((r) => [v].concat(r))), [[]]);
+    }
 
-        //this.viewport.follow(this.player);
+    /**
+     * This function takes all possible actions and all possible statuses, and generates a list of all possible combinations and statuses
+     * and the actions that are taken when run through the GoapActionPlanner.
+     */
+    generateGoapPlans(actions: Array<GoapAction>, statuses: Array<string>, goal: string): string {
+        let planner = new GoapActionPlanner();
+        // Get all possible status combinations
+        let statusComboinations = this.powerset(statuses);
+        //console.log("statuses: ",statuses);
+        let map = new Map<String>();
+        //console.log(statusComboinations.toString());
+
+        for (let s of statusComboinations) {
+            // Get plan
+            console.log("s: ",s,"\ngoal: ",goal,"\nactions: ",actions);
+            console.log("mark0");
+            let plan = planner.plan(goal, actions, s, null);
+            console.log("mark1");
+            let givenStatuses = "Given: ";
+            s.forEach(v => givenStatuses = givenStatuses + v + ", ");
+
+            map.add(givenStatuses, plan.toString())
+        }
+        
+        return map.toString();
     }
 
     handleCollision(){
@@ -748,10 +860,18 @@ export default class GameLevel extends Scene {
     }
 
     /**
+     * Increments the amount of gear the player has by 1
+     */
+    protected incGearCount(): void {
+        GameLevel.gearCount += 1;
+        this.gearCountLabel.text = "Gears: " + GameLevel.gearCount;
+    }
+
+    /**
      * Returns the player to spawn
      */
     protected respawnPlayer(): void {
-        GameLevel.livesCount = 3;
+        GameLevel.livesCount = 20;
         this.emitter.fireEvent(GameEventType.STOP_SOUND, {key: "level_music"});
         this.sceneManager.changeToScene(MainMenu, {});
         Input.enableInput();
@@ -766,6 +886,9 @@ export default class GameLevel extends Scene {
             if(item.type === "healthpack"){
                 // Create a healthpack
                 this.createHealthpack(new Vec2(item.position[0], item.position[1]));
+            }
+            else if(item.type === "gear"){
+                this.createGear(new Vec2(item.position[0], item.position[1]));
             } else {
                 let weapon = this.createWeapon(item.weaponType);
                 weapon.moveSprite(new Vec2(item.position[0], item.position[1]));
@@ -793,9 +916,20 @@ export default class GameLevel extends Scene {
      */
     createHealthpack(position: Vec2): void {
         let sprite = this.add.sprite("healthpack", "primary");
-        let healthpack = new Healthpack(sprite)
+        let healthpack = new Healthpack(sprite);
         healthpack.moveSprite(position);
         this.items.push(healthpack);
+    }
+
+    /**
+     * Creates a gear at a certain position in the world
+     * @param position 
+     */
+     createGear(position: Vec2): void {
+        let sprite = this.add.sprite("gear", "primary");
+        let gear = new Gear(sprite);
+        gear.moveSprite(position);
+        this.items.push(gear);
     }
 
     /**
