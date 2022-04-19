@@ -52,7 +52,6 @@ export default class PlayerController extends StateMachineAI {
     items: Array<Item>;
     faceDirection: Vec2;
     state: String;
-    skillmode: boolean;
 
     // HOMEWORK 5 - TODO
     /**
@@ -71,7 +70,7 @@ export default class PlayerController extends StateMachineAI {
         this.tilemap = this.owner.getScene().getTilemap(options.tilemap) as OrthogonalTilemap;
         this.tilemap_laser = this.owner.getScene().getTilemap(options.tilemap_laser) as OrthogonalTilemap;
         this.tilemap_spike = this.owner.getScene().getTilemap(options.tilemap_spike) as OrthogonalTilemap;
-        this.background = this.owner.getScene().getTilemap(options.background) as OrthogonalTilemap;
+        this.background = this.owner.getScene().getTilemap(options.back) as OrthogonalTilemap;
         this.receiver = new Receiver();
 		this.emitter = new Emitter();
 
@@ -85,7 +84,6 @@ export default class PlayerController extends StateMachineAI {
         this.faceDirection = Vec2.ZERO;
         this.faceDirection.x=1;
         this.state="idle";
-        this.skillmode=false;
 
 
     }
@@ -149,6 +147,10 @@ export default class PlayerController extends StateMachineAI {
         
         let player_location=new Vec2(this.owner.position.x, this.owner.position.y);
         let below_player_location=new Vec2(this.owner.position.x, this.owner.position.y+32);
+        let above_player_location=new Vec2(this.owner.position.x, this.owner.position.y-32);
+        let right_player_location=new Vec2(this.owner.position.x+32, this.owner.position.y);
+        let left_player_location=new Vec2(this.owner.position.x-32, this.owner.position.y);
+
         //console.log("spike layer: ",this.tilemap_spike.getTileAtWorldPosition(below_player_location));
         //console.log("laser layer: ",this.tilemap_laser.getTileAtWorldPosition(player_location));
 
@@ -167,34 +169,24 @@ export default class PlayerController extends StateMachineAI {
             this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
         }
 
-        //handle if player hit trap
-        if(this.tilemap_laser.getTileAtWorldPosition(player_location)==16 || this.tilemap_spike.getTileAtWorldPosition(below_player_location)==4){
-            this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_TRAP);
+        if(this.tilemap.getTileAtWorldPosition(above_player_location)==12){
+            //set the switch to off
+            this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(above_player_location),13);
+            //set all laser to invisible
+            for (let x=0; x < this.tilemap_laser.getDimensions().x ; x++){
+                for (let y=0; y < this.tilemap_laser.getDimensions().y ; y++){
+                    if(this.tilemap_laser.getTileAtWorldPosition(new Vec2(x*32,y*32))==16){
+                        this.tilemap_laser.setTileAtRowCol(new Vec2(x,y),0);
+                    }
+                }
+            }
+            this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
         }
 
-        ///
-        
-        // if(this.owner.collidedWithTilemap && this.tilemap){
-        //     console.log("1");
-        //     let tilePosition=this.owner.position.clone();
-        //     tilePosition.y=tilePosition.y+this.tilemap.getTileSize().y;
-
-        //     let tileRowCol=this.tilemap.getColRowAt(tilePosition);
-        //     if(this.tilemap.getTileAtRowCol(tileRowCol)===3)
-        //     {
-        //     //console.info(tilePosition.toString());
-        //     //tilePosition.y=tilePosition.y-this.tilemap.getTileSize().y;        
-            
-        //     //console.log(this.tilemap.getTileSize().x);
-        //    //console.log(this.tilemap.getTileSize().y);
-        //     //this.tilemap.setTileAtRowCol(tileRowCol,9);
-        //     console.log("hit spike");
-        //     //this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SPIKE);
-        //     }
-        // }
-
-        ////
-
+        //handle if player hit trap
+        if(this.tilemap_laser.getTileAtWorldPosition(player_location)==16 || this.tilemap_spike.getTileAtWorldPosition(below_player_location)==4 || this.tilemap_spike.getTileAtWorldPosition(above_player_location)==15){
+            this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_TRAP);
+        }
 
 
         let gamelevel = <GameLevel> this.owner.getScene();
@@ -220,30 +212,41 @@ export default class PlayerController extends StateMachineAI {
             }
         }
 
+        for (let item of this.items) {
+            if (this.owner.collisionShape.overlaps(item.sprite.boundary)) {
+                if(item.sprite.imageId==="healthpack"){
+                    //If it is a health pack, don't put into inventory, but use it directly by firing PickupHealthpack event
+                    console.log("pick up healthpack event fired.");
+                    item.removeSprite();
+                    this.items.splice(this.items.indexOf(item),1);
+                    this.emitter.fireEvent(finalproject_Events.PICKUP_HEALTHPACK);
+                }
+                else if(item.sprite.imageId==="gear"){
+                    //If it is a gear, don't put into inventory, but use it directly by firing PickupGear event
+                    console.log("pick up gear event fired.");
+                    item.removeSprite();
+                    this.items.splice(this.items.indexOf(item),1);
+                    this.emitter.fireEvent(finalproject_Events.PICKUP_GEAR);
+                }
+            }
+        }
 
 
         // Check if there is an item to pick up
         if (Input.isJustPressed("interact")) {
                     // We overlap it, try to pick it up
                     //console.log(this.inventory.getItem().sprite.imageId);
+            if(this.background.getTileAtWorldPosition(player_location)==14){
+                this.emitter.fireEvent(finalproject_Events.HINT);
+                console.log("see hint");
+                ////////////////////////////////////
+                ////////////////////////////////////////////////////////////////
+                ///////////////////////////////
+            }
             for (let item of this.items) {
                 if (this.owner.collisionShape.overlaps(item.sprite.boundary)) {
                     // We overlap it, try to pick it up
-                    if(item.sprite.imageId==="healthpack"){
-                        //If it is a health pack, don't put into inventory, but use it directly by firing PickupHealthpack event
-                        console.log("pick up healthpack event fired.");
-                        item.removeSprite();
-                        this.items.splice(this.items.indexOf(item),1);
-                        this.emitter.fireEvent(finalproject_Events.PICKUP_HEALTHPACK);
-                    }
-                    else if(item.sprite.imageId==="gear"){
-                        //If it is a gear, don't put into inventory, but use it directly by firing PickupGear event
-                        console.log("pick up gear event fired.");
-                        item.removeSprite();
-                        this.items.splice(this.items.indexOf(item),1);
-                        this.emitter.fireEvent(finalproject_Events.PICKUP_GEAR);
-                    }
-                    else if (this.inventory.getItem()){
+                    if (this.inventory.getItem()){
                         this.inventory.getItem().moveSprite(this.owner.position, "primary");
                         this.items.push(this.inventory.getItem());
                         this.inventory.removeItem();

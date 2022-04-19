@@ -22,11 +22,11 @@
         },
         {
             "type": "healthpack",
-            "position": [240, 400]
+            "position": [208, 400]
         },
         {
             "type": "gear",
-            "position": [304, 400]
+            "position": [336, 400]
         }
     ]
 }
