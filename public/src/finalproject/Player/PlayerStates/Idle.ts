@@ -3,6 +3,8 @@ import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import { PlayerStates } from "../PlayerController";
 import OnGround from "./OnGround";
 import GameLevel from "../../Scenes/GameLevel";
+import MathUtils from "../../../Wolfie2D/Utils/MathUtils";
+import Sprite from "../../../Wolfie2D/Nodes/Sprites/Sprite";
 
 export default class Idle extends OnGround {
 	owner: AnimatedSprite;
@@ -52,7 +54,7 @@ export default class Idle extends OnGround {
         }
 		let dir = this.getInputDirection();
 
-		if(!dir.isZero() && dir.y === 0){
+		if(!dir.isZero()){
 			if(Input.isPressed("run")){
 				this.finished(PlayerStates.RUN);
 			} else {
@@ -63,6 +65,7 @@ export default class Idle extends OnGround {
 		this.parent.velocity.x = 0;
 
 		this.owner.move(this.parent.velocity.scaled(deltaT));
+
 	}
 
 	onExit(): Record<string, any> {

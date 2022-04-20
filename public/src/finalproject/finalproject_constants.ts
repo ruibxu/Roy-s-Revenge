@@ -2,16 +2,17 @@ export enum finalproject_Names {
     NAVMESH = "navmesh"
 }
 
+
 export enum finalproject_Events {
     //in level events
     ATTACK = "attack",
-    SHOOT_BULLET="shootBullet",
-    SLICE="slice",
-    PLAYER_HIT_WEAPON="playerHitWeapon",
-    PLAYER_HIT_TRAP="playerHitTrap",
-    PLAYER_DAMAGE="playerDamage",
-    PLAYER_DEAD="playerDead",
-    PLAYER_WEAPON_CHANGE="playerWeaponChange",
+    SHOOT_BULLET = "shootBullet",
+    SLICE = "slice",
+    PLAYER_HIT_WEAPON = "playerHitWeapon",
+    PLAYER_HIT_TRAP = "playerHitTrap",
+    PLAYER_DAMAGE = "playerDamage",
+    PLAYER_DEAD = "playerDead",
+    PLAYER_WEAPON_CHANGE = "playerWeaponChange",
     SHOT_FIRED = "shotFired",
     UNLOAD_ASSET = "unloadAsset",
     PLAYER_MOVE = "playerMove",
@@ -34,7 +35,9 @@ export enum finalproject_Events {
     NEWGAME = "newgame",
     HELP = "help",
     CONTROL = "control",
-    MENU = "menu"
+    MENU = "menu",
+    HINT = "hint",
+    SKILLMODE ="skillmode"
 }
 
 export enum finalproject_Statuses {

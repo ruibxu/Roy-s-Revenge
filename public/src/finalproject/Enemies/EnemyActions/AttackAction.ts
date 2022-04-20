@@ -16,7 +16,6 @@ export default class AttackAction extends GoapAction {
     }
 
     performAction(statuses: Array<string>, actor: StateMachineGoapAI, deltaT: number, target?: StateMachineGoapAI): Array<string> {
-        console.log("AttackAction");
         //Check if preconditions are met for this action to be performed
         if (this.checkPreconditions(statuses)){
             let enemy = <EnemyAI>actor;
@@ -25,7 +24,6 @@ export default class AttackAction extends GoapAction {
             if (enemy.getPlayerPosition() == null){
                 return null;
             }
-            
             console.log(enemy.speed);
             //Randomize attack direction, gives the enemy gun users stormtrooper aim
             let dir = enemy.getPlayerPosition().clone().sub(enemy.owner.position).normalize();

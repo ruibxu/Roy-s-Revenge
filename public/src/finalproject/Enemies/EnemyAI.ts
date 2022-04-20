@@ -58,11 +58,13 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
 
     velocity: Vec2;
 
+
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
 
             // Patrol mode
         this.addState(EnemyStates.DEFAULT, new Patrol(this, owner, options.patrolRoute));
+
         this.addState(EnemyStates.ALERT, new Alert(this, owner));
         this.addState(EnemyStates.TARGETING, new Active(this, owner));
 
@@ -112,7 +114,7 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
 
             this.emitter.fireEvent("enemyDied", {enemy: this.owner})
 
-            if (Math.random() < 1) {
+            if (Math.random() < 0.2) {
                 // Spawn a healthpack
                 this.emitter.fireEvent("healthpack", { position: this.owner.position });
             }
@@ -139,26 +141,27 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
 
         let tileSize = walls.getTileSize();
 
-        for (let col = minIndex.x; col <= maxIndex.x; col++) {
-            for (let row = minIndex.y; row <= maxIndex.y; row++) {
-                if (walls.isTileCollidable(col, row)) {
-                    // Get the position of this tile
-                    let tilePos = new Vec2(col * tileSize.x + tileSize.x / 2, row * tileSize.y + tileSize.y / 2);
+        // for (let col = minIndex.x; col <= maxIndex.x; col++) {
+        //     for (let row = minIndex.y; row <= maxIndex.y; row++) {
+        //         if (walls.isTileCollidable(col, row)) {
+        //             // Get the position of this tile
+        //             let tilePos = new Vec2(col * tileSize.x + tileSize.x / 2, row * tileSize.y + tileSize.y / 2);
 
-                    // Create a collider for this tile
-                    let collider = new AABB(tilePos, tileSize.scaled(1 / 2));
+        //             // Create a collider for this tile
+        //             let collider = new AABB(tilePos, tileSize.scaled(1 / 2));
 
-                    let hit = collider.intersectSegment(start, delta, Vec2.ZERO);
+        //             let hit = collider.intersectSegment(start, delta, Vec2.ZERO);
 
-                    if (hit !== null && start.distanceSqTo(hit.pos) < start.distanceSqTo(pos)) {
-                        // We hit a wall, we can't see the player
-                        return null;
-                    }
-                }
-            }
-        }
+        //             if (hit !== null && start.distanceSqTo(hit.pos) < start.distanceSqTo(pos)) {
+        //                 // We hit a wall, we can't see the player
+        //                 return null;
+        //             }
+        //         }
+        //     }
+        // }
 
-        return pos;
+        // return pos;
+        return null;
     }
 
     getPlayerPosition(): Vec2 {
@@ -184,7 +187,6 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
         // This is the plan that is executed in the Active state, so whenever we don't have a plan, acquire a new one given the current statuses the enemy has
         if (this.plan.isEmpty()) {
             //get a new plan
-            console.log("get a new plan, current status: ", this.currentStatus);
             this.plan = this.planner.plan(finalproject_Statuses.REACHED_GOAL, this.possibleActions, this.currentStatus, null);
         }
     }

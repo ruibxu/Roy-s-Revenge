@@ -11,18 +11,18 @@ export default class BattleManager {
         if (attackerType === "player") {
             // Check for collisions with enemies
             for (let enemy of this.enemies) {
+                console.log("Battermanage")
                 if (weapon.hits(enemy.owner)) {
                     enemy.damage(weapon.type.damage);
                 }
             }
         } else {
-            // Check for collision with player
-            for (let player of this.players) {
-                if (weapon.hits(player.owner)) {
-                    player.damage(weapon.type.damage);
+            //Check for collision with player
+
+                if (weapon.hits(this.players[0].owner)) {
+                    this.players[0].damage(weapon.type.damage);
                 }
             }
-        }
     }
 
     setPlayers(player: Array<BattlerAI>): void {

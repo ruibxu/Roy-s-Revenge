@@ -12,37 +12,55 @@ export default class Level2 extends GameLevel {
      */
     loadScene(): void {
         // Load resources
-        this.load.tilemap("level2", "final_project_assets/tilemaps/level2.json");
-        this.load.spritesheet("green", "final_project_assets/spritesheets/greenBalloon.json");
+        this.load.tilemap("level2", "final_project_assets/tilemaps/level1.tmj");
+        this.load.spritesheet("player", "final_project_assets/spritesheets/roy.json");
+        this.load.spritesheet("boss", "final_project_assets/spritesheets/boss.json");
+        this.load.spritesheet("slice", "final_project_assets/spritesheets/slice.json");
+        this.load.spritesheet("melee_enemy","final_project_assets/spritesheets/melee_enemy.json");
+   
+        this.load.object("weaponData", "final_project_assets/data/weaponData.json");
+
+        // Load the nav mesh
+        this.load.object("navmesh", "final_project_assets/data/navmesh.json");
+
+        // Load in the enemy info
+        this.load.object("enemyData", "final_project_assets/data/enemy.json");
+
+        // Load in item info
+        this.load.object("itemData", "final_project_assets/data/items.json");
+
+        // Load the healthpack sprite
+        this.load.image("healthpack", "final_project_assets/sprites/health.png");
+        this.load.image("gear", "final_project_assets/sprites/gear.png");
+        this.load.image("inventorySlot", "final_project_assets/sprites/inventory.png");
+        //weapon
+        this.load.image("knife", "final_project_assets/sprites/knife.png");
+        this.load.image("laserGun", "final_project_assets/sprites/laser_gun.png");
+        this.load.image("pistol", "final_project_assets/sprites/pistol.png");
+        this.load.image("machineGun","final_project_assets/sprites/machine_gun.png")
+        this.load.image("lightSaber", "final_project_assets/sprites/light_saber.png");
+        
     }
 
     startScene(): void {
         // Add the level 2 tilemap
-        this.add.tilemap("level2", new Vec2(2, 2));
-        this.viewport.setBounds(0, 0, 64*32, 20*32);
+        this.add.tilemap("level2", new Vec2(1, 1));
+        this.viewport.setBounds(0, 0,  128*32, 16*32);
+        this.viewport.setZoomLevel(1);
 
-        this.playerSpawn = new Vec2(4*32, 15*32);
-        //this.totalSwitches = 7;
-        //this.totalBalloons = 7;
+        this.playerSpawn = new Vec2(4*32-16, 11*32+16);
 
         // Do generic setup for a GameLevel
+
+
+        this.currentLevel = Level2;
+        //this.nextLevel = Level3;
+
         super.startScene();
+        
 
-        this.addLevelEnd(new Vec2(60, 12), new Vec2(2, 2));
+        this.addLevelEnd(new Vec2(124, 10), new Vec2(5, 5));
 
-        // Add in our green balloons to the enemies
-        /*for(let pos of [new Vec2(18, 8), new Vec2(25, 3), new Vec2(52, 5)]){
-            this.addBalloon("red", pos, {color: HW5_Color.RED});
-        }
-
-        for(let pos of [new Vec2(3, 4), new Vec2(33, 10)]){
-            this.addBalloon("green", pos, {color: HW5_Color.GREEN});
-        }
-
-        for(let pos of [new Vec2(20, 3), new Vec2(41,4)]){
-            this.addBalloon("blue", pos, {color: HW5_Color.BLUE});
-        }
-        */
         //this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "level_music", loop: true, holdReference: true});
     }
 

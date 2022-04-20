@@ -14,6 +14,8 @@ import Label from "../../Wolfie2D/Nodes/UIElements/Label";
 import Input from "../../Wolfie2D/Input/Input";
 import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
 import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
+import Level2 from "./Level2";
+import GameLevel from "./GameLevel";
 
 export default class MainMenu extends Scene {
 
@@ -22,13 +24,14 @@ export default class MainMenu extends Scene {
     private splash: Layer;
     private mainMenu: Layer;
     private level: Layer;
-    private controls: Layer;
+    private background: Layer;
     private help: Layer;
     private in_game_menu: Layer;
     private playBtn: Button;
     private levelBtn: Button;
     private CtrlBtn: Button;
     private helpBtn: Button;
+    private levelCount: number =0;
 
     
 
@@ -37,6 +40,7 @@ export default class MainMenu extends Scene {
         // Load the menu song
         this.load.audio("menu", "final_project_assets/music/menu.mp3");
         this.load.image("logo", "final_project_assets/images/banner.png");
+        this.load.image("back", "final_project_assets/images/background.png");
         this.load.image("level1", "final_project_assets/images/level1.png");
     }
 
@@ -47,6 +51,8 @@ export default class MainMenu extends Scene {
 
 
         this.mainMenu =this.addUILayer("Main");
+        this.background=this.addUILayer("Back");
+        this.background.setDepth(40);
         //this.mainMenu.setHidden(true);
 
 
@@ -56,6 +62,8 @@ export default class MainMenu extends Scene {
         this.viewport.setZoomLevel(1);
 
         this.logo = this.add.sprite("logo", "Main");
+        let back = this.add.sprite("back", "Back");
+        back.position.set(size.x, size.y);
         this.logo.position.set(size.x, size.y-250);
         this.logo.scale.set(1.5,1.5);
         // Create a play button
@@ -120,6 +128,7 @@ export default class MainMenu extends Scene {
         this.receiver.subscribe("controls");
         this.receiver.subscribe("help");
         this.receiver.subscribe("menu");
+        this.receiver.subscribe("levelpassed");
 
         //level selection layer
         this.level= this.addUILayer("level");
@@ -183,6 +192,10 @@ export default class MainMenu extends Scene {
         level2.font = "PixelSimple";
         level2.textColor = Color.BLACK;
         level2.onClickEventId="level2";
+        /*if(this.levelCount >=1){
+            level2.onClickEventId="level2";
+        }*/
+        
 
         level3.backgroundColor = new Color(99,202,253);
         level3.borderColor = Color.BLACK;
@@ -255,13 +268,106 @@ export default class MainMenu extends Scene {
                 }
                 this.sceneManager.changeToScene(Level1, {}, sceneOptions);
             }
+            if(event.type === "level2"){
+                let sceneOptions = {
+                    physics: {
+                        groupNames: ["ground", "player"],
+                        collisions:
+                        [
+                            [0, 1 ],
+                            [1, 0 ] ,
+                        ]
+                    }
+                }
+                this.sceneManager.changeToScene(Level2, {}, sceneOptions);
+            }
+            /*if(event.type === "level3"){
+                let sceneOptions = {
+                    physics: {
+                        groupNames: ["ground", "player"],
+                        collisions:
+                        [
+                            [0, 1 ],
+                            [1, 0 ] ,
+                        ]
+                    }
+                }
+                this.sceneManager.changeToScene(Level3, {}, sceneOptions);
+            }
+            if(event.type === "level4"){
+
+                let sceneOptions = {
+                    physics: {
+                        groupNames: ["ground", "player"],
+                        collisions:
+                        [
+                            [0, 1 ],
+                            [1, 0 ] ,
+                        ]
+                    }
+                }
+                this.sceneManager.changeToScene(Level4, {}, sceneOptions);
+            }
+            if(event.type === "level5"){
+
+
+                let sceneOptions = {
+                    physics: {
+                        groupNames: ["ground", "player"],
+                        collisions:
+                        [
+                            [0, 1 ],
+                            [1, 0 ] ,
+                        ]
+                    }
+                }
+                this.sceneManager.changeToScene(Level5, {}, sceneOptions);
+            }
+            if(event.type === "level6"){
+
+                let sceneOptions = {
+                    physics: {
+                        groupNames: ["ground", "player"],
+                        collisions:
+                        [
+                            [0, 1 ],
+                            [1, 0 ] ,
+                        ]
+                    }
+                }
+                this.sceneManager.changeToScene(Leve6, {}, sceneOptions);
+            }
+            */
+            if(event.type === "levelpassed"){
+                if(event.data.get("level")==Level1&&this.levelCount<1){
+                    this.levelCount+=1;
+                }
+                else if(event.data.get("level")==Level2&&this.levelCount<2){
+                    this.levelCount+=1;
+                }
+                /*else if(event.data.get("level")==Level3&&this.levelCount<3){
+                    this.levelCount+=1;
+                }
+                else if(event.data.get("level")==Level4&&this.levelCount<4){
+                    this.levelCount+=1;
+                }
+                else if(event.data.get("level")==Level5&&this.levelCount<5){
+                    this.levelCount+=1;
+                }
+                else if(event.data.get("level")==Level6&&this.levelCount<6){
+                    this.levelCount+=1;
+                }*/
+                
+            }
             if(event.type === "level"){
                 this.level.setHidden(false);
                 this.mainMenu.setHidden(true);
+                this.background.setHidden(true);
             }
             if(event.type === "menu"){
                 this.mainMenu.setHidden(false);
                 this.level.setHidden(true);
+                this.background.setHidden(false);
             }
             if(event.type === "controls"){
                 this.sceneManager.changeToScene(Controls, {});

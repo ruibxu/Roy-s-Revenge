@@ -47,8 +47,8 @@ export default class Controls extends Scene {
         const textb = "d to move right";
         const text="space and w to jump";
         const textc = "e to pick up weapons, 1 and 2 to change to each slots";
-        const textd = "Q to cast the ultimate skill";
-        const textd2 ="(which will decrease one HP and increase the attack speed for 5s)";
+        const textd = "Q to cast the skill";
+        const textd2 ="(which will reverse gravity, and Roy will be able to walk on the ceiling)";
         const texte = "left click to attack";
 
         const linea = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 150), text: texta});

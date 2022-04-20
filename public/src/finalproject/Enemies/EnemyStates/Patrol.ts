@@ -28,26 +28,26 @@ export default class Patrol extends EnemyState {
     }
 
     onEnter(options: Record<string, any>): void {
-        //this.currentPath = this.getNextPath();
+        this.currentPath = this.getNextPath();
     }
 
     handleInput(event: GameEvent): void { }
 
     update(deltaT: number): void {
         // If the enemy sees the player, start attacking
-        // this.parent.lastPlayerPos = this.parent.getPlayerPosition();
-        // if(this.parent.lastPlayerPos !== null){
-        //     this.finished(EnemyStates.TARGETING);
-        // }
-        // else{
-        //     //Move along patrol path
-        //     if(this.currentPath.isDone()){
-        //         this.currentPath = this.getNextPath();
-        //     } else {
-        //         this.owner.moveOnPath(this.parent.speed * deltaT, this.currentPath);
-        //         this.owner.rotation = Vec2.UP.angleToCCW(this.currentPath.getMoveDirection(this.owner));
-        //     }
-        // }
+        this.parent.lastPlayerPos = this.parent.getPlayerPosition();
+        if(this.parent.lastPlayerPos !== null){
+            this.finished(EnemyStates.TARGETING);
+        }
+        else{
+            //Move along patrol path
+            if(this.currentPath.isDone()){
+                this.currentPath = this.getNextPath();
+            } else {
+                this.owner.moveOnPath(this.parent.speed * deltaT, this.currentPath);
+                this.owner.rotation = Vec2.UP.angleToCCW(this.currentPath.getMoveDirection(this.owner));
+            }
+        }
     }
 
     onExit(): Record<string, any> {

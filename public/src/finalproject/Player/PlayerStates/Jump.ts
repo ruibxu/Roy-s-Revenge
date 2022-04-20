@@ -42,11 +42,17 @@ export default class Jump extends InAir {
 		super.update(deltaT);
 
 		if(this.owner.onCeiling){
-			this.parent.velocity.y = 0;
+	 		this.parent.velocity.y = 0;
 		}
+		if(this.owner.onGround){
+			this.parent.velocity.y = 0;
+	   }
 
 		// If we're falling, go to the fall state
-		if(this.parent.velocity.y >= 0){
+		if(this.parent.velocity.y >= 0&& this.parent.skillmode==false){
+			this.finished(PlayerStates.FALL);
+		}
+		if(this.parent.velocity.y <= 0&& this.parent.skillmode==true){
 			this.finished(PlayerStates.FALL);
 		}
 	}

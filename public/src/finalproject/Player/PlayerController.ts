@@ -18,6 +18,8 @@ import GameEvent from "../../Wolfie2D/Events/GameEvent";
 import Input from "../../Wolfie2D/Input/Input";
 import Item from "../GameSystems/items/Item";
 import GameLevel from "../Scenes/Gamelevel";
+import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
+import Timer from "../../Wolfie2D/Timing/Timer";
 
 
 export enum PlayerType {
@@ -44,12 +46,16 @@ export default class PlayerController extends StateMachineAI {
     tilemap: OrthogonalTilemap;
     tilemap_laser: OrthogonalTilemap;
     tilemap_spike: OrthogonalTilemap;
+    background: OrthogonalTilemap;
     isDead: boolean = false;
      //add inverntory
     inventory: InventoryManager;
     items: Array<Item>;
     faceDirection: Vec2;
     state: String;
+    skillmode: boolean;
+    skillcooldown: Timer;
+    gravity: number;
 
     // HOMEWORK 5 - TODO
     /**
@@ -68,11 +74,12 @@ export default class PlayerController extends StateMachineAI {
         this.tilemap = this.owner.getScene().getTilemap(options.tilemap) as OrthogonalTilemap;
         this.tilemap_laser = this.owner.getScene().getTilemap(options.tilemap_laser) as OrthogonalTilemap;
         this.tilemap_spike = this.owner.getScene().getTilemap(options.tilemap_spike) as OrthogonalTilemap;
-
+        this.background = this.owner.getScene().getTilemap(options.back) as OrthogonalTilemap;
         this.receiver = new Receiver();
 		this.emitter = new Emitter();
 
-
+        
+        this.receiver.subscribe(finalproject_Events.SKILLMODE);
         this.receiver.subscribe(finalproject_Events.ATTACK);
         this.receiver.subscribe(finalproject_Events.PLAYER_DAMAGE);
 
@@ -82,22 +89,22 @@ export default class PlayerController extends StateMachineAI {
         this.faceDirection = Vec2.ZERO;
         this.faceDirection.x=1;
         this.state="idle";
-
+        this.skillmode=false;
+		this.skillcooldown=new Timer(2000);
+        this.gravity=1000;
 
     }
 
 
-    handleEvent(event: GameEvent): void {
+    handleInput(event: GameEvent): void {
 		// We need to handle animations when we get hurt
 		if(event.type === finalproject_Events.PLAYER_DAMAGE){
 			if(event.data.get("health") === 0){
 				// Play animation and queue event to end game
 				this.isDead=true;
-				//this.owner.animation.play("DEAD", true);
 
 				this.emitter.fireEvent( finalproject_Events.PLAYER_DEAD);
 			} else {
-				//this.owner.animation.play("TAKING_DAMAGE", false, Homework3Event.PLAYER_I_FRAMES_END);
 			}
 		}
     
@@ -144,8 +151,13 @@ export default class PlayerController extends StateMachineAI {
      */
     update(deltaT: number): void {
 		super.update(deltaT);
+        
         let player_location=new Vec2(this.owner.position.x, this.owner.position.y);
         let below_player_location=new Vec2(this.owner.position.x, this.owner.position.y+32);
+        let above_player_location=new Vec2(this.owner.position.x, this.owner.position.y-32);
+        let right_player_location=new Vec2(this.owner.position.x+32, this.owner.position.y);
+        let left_player_location=new Vec2(this.owner.position.x-32, this.owner.position.y);
+
         //console.log("spike layer: ",this.tilemap_spike.getTileAtWorldPosition(below_player_location));
         //console.log("laser layer: ",this.tilemap_laser.getTileAtWorldPosition(player_location));
 
@@ -164,45 +176,24 @@ export default class PlayerController extends StateMachineAI {
             this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
         }
 
+        if(this.tilemap.getTileAtWorldPosition(above_player_location)==12){
+            //set the switch to off
+            this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(above_player_location),13);
+            //set all laser to invisible
+            for (let x=0; x < this.tilemap_laser.getDimensions().x ; x++){
+                for (let y=0; y < this.tilemap_laser.getDimensions().y ; y++){
+                    if(this.tilemap_laser.getTileAtWorldPosition(new Vec2(x*32,y*32))==16){
+                        this.tilemap_laser.setTileAtRowCol(new Vec2(x,y),0);
+                    }
+                }
+            }
+            this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+        }
+
         //handle if player hit trap
-        if(this.tilemap_laser.getTileAtWorldPosition(player_location)==16 || this.tilemap_spike.getTileAtWorldPosition(below_player_location)==4){
+        if(this.tilemap_laser.getTileAtWorldPosition(player_location)==16 || this.tilemap_spike.getTileAtWorldPosition(below_player_location)==4 || this.tilemap_spike.getTileAtWorldPosition(above_player_location)==15){
             this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_TRAP);
         }
-        
-        /*let spike_location=new Vec2(this.owner.position.x, this.owner.position.y+32);
-        console.log(spike_location);
-        //this.tilemap.getTileAtWorldPosition(spike_location);
-        console.log(this.tilemap.getTileAtWorldPosition(spike_location));
-
-        if(this.tilemap.getTileAtWorldPosition(spike_location)==4){
-            //this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(spike_location),9);
-            //this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SPIKE);
-            console.log("123");
-        }*/
-
-        ///
-        
-        // if(this.owner.collidedWithTilemap && this.tilemap){
-        //     console.log("1");
-        //     let tilePosition=this.owner.position.clone();
-        //     tilePosition.y=tilePosition.y+this.tilemap.getTileSize().y;
-
-        //     let tileRowCol=this.tilemap.getColRowAt(tilePosition);
-        //     if(this.tilemap.getTileAtRowCol(tileRowCol)===3)
-        //     {
-        //     //console.info(tilePosition.toString());
-        //     //tilePosition.y=tilePosition.y-this.tilemap.getTileSize().y;        
-            
-        //     //console.log(this.tilemap.getTileSize().x);
-        //    //console.log(this.tilemap.getTileSize().y);
-        //     //this.tilemap.setTileAtRowCol(tileRowCol,9);
-        //     console.log("hit spike");
-        //     //this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SPIKE);
-        //     }
-        // }
-
-        ////
-
 
 
         let gamelevel = <GameLevel> this.owner.getScene();
@@ -210,7 +201,13 @@ export default class PlayerController extends StateMachineAI {
             return;
         }
 
-
+		if(Input.isPressed("skill")&&this.skillcooldown.isStopped()&&(this.owner.onGround||this.owner.onCeiling)){	
+			this.skillcooldown.reset();
+			this.skillcooldown.start();
+			this.skillmode=!this.skillmode;
+            this.gravity=-this.gravity;
+			this.emitter.fireEvent(finalproject_Events.SKILLMODE);
+		}
 
         // Check for slot change
         if (Input.isJustPressed("slot1")) {
@@ -228,35 +225,41 @@ export default class PlayerController extends StateMachineAI {
             }
         }
 
-                // Check for slot change
-        if (Input.isJustPressed("skill")) {
-           
+        for (let item of this.items) {
+            if (this.owner.collisionShape.overlaps(item.sprite.boundary)) {
+                if(item.sprite.imageId==="healthpack"){
+                    //If it is a health pack, don't put into inventory, but use it directly by firing PickupHealthpack event
+                    console.log("pick up healthpack event fired.");
+                    item.removeSprite();
+                    this.items.splice(this.items.indexOf(item),1);
+                    this.emitter.fireEvent(finalproject_Events.PICKUP_HEALTHPACK);
+                }
+                else if(item.sprite.imageId==="gear"){
+                    //If it is a gear, don't put into inventory, but use it directly by firing PickupGear event
+                    console.log("pick up gear event fired.");
+                    item.removeSprite();
+                    this.items.splice(this.items.indexOf(item),1);
+                    this.emitter.fireEvent(finalproject_Events.PICKUP_GEAR);
+                }
+            }
         }
-
 
 
         // Check if there is an item to pick up
         if (Input.isJustPressed("interact")) {
                     // We overlap it, try to pick it up
                     //console.log(this.inventory.getItem().sprite.imageId);
+            if(this.background.getTileAtWorldPosition(player_location)==14){
+                this.emitter.fireEvent(finalproject_Events.HINT);
+                console.log("see hint");
+                ////////////////////////////////////
+                ////////////////////////////////////////////////////////////////
+                ///////////////////////////////
+            }
             for (let item of this.items) {
                 if (this.owner.collisionShape.overlaps(item.sprite.boundary)) {
                     // We overlap it, try to pick it up
-                    if(item.sprite.imageId==="healthpack"){
-                        //If it is a health pack, don't put into inventory, but use it directly by firing PickupHealthpack event
-                        console.log("pick up healthpack event fired.");
-                        item.removeSprite();
-                        this.items.splice(this.items.indexOf(item),1);
-                        this.emitter.fireEvent(finalproject_Events.PICKUP_HEALTHPACK);
-                    }
-                    else if(item.sprite.imageId==="gear"){
-                        //If it is a gear, don't put into inventory, but use it directly by firing PickupGear event
-                        console.log("pick up gear event fired.");
-                        item.removeSprite();
-                        this.items.splice(this.items.indexOf(item),1);
-                        this.emitter.fireEvent(finalproject_Events.PICKUP_GEAR);
-                    }
-                    else if (this.inventory.getItem()){
+                    if (this.inventory.getItem()){
                         this.inventory.getItem().moveSprite(this.owner.position, "primary");
                         this.items.push(this.inventory.getItem());
                         this.inventory.removeItem();
@@ -280,13 +283,11 @@ export default class PlayerController extends StateMachineAI {
         }
         
         if(Input.isMouseJustPressed()){	
-            let weapon = this.inventory.getItem();
+            let weapon = this.inventory.getItem();  
             if(this.inventory.getItem()){
                 weapon.use(this.owner,"player",this.faceDirection);}
             }
             
-
-
 
 
             if(this.currentState instanceof Jump){

@@ -12,17 +12,11 @@ export default class Level1 extends GameLevel {
      */
     loadScene(): void {
         // Load resources
-        this.load.tilemap("level1", "final_project_assets/tilemaps/level1.tmj");
+        this.load.tilemap("level1", "final_project_assets/tilemaps/level2.tmj");
         this.load.spritesheet("player", "final_project_assets/spritesheets/roy.json");
         this.load.spritesheet("boss", "final_project_assets/spritesheets/boss.json");
-        this.load.object("enemyData","final_project_assets/data/enemy.json");
-        this.load.spritesheet("melee_enemy","final_project_assets/spritesheets/melee_enemy.json");
-        // this.load.spritesheet("player_with_pistol", "final_project_assets/spritesheets/roy_with_pistol.json");
-        // this.load.spritesheet("player_with_knife", "final_project_assets/spritesheets/roy_with_knife.json");
-        // this.load.spritesheet("player_with_lightsaber", "final_project_assets/spritesheets/roy_with_lightsaber.json");
-        // this.load.spritesheet("player_with_lasergun", "final_project_assets/spritesheets/roy_with_lasergun.json");
-        // this.load.spritesheet("player_with_machinegun", "final_project_assets/spritesheets/roy_with_machinegun.json");
         this.load.spritesheet("slice", "final_project_assets/spritesheets/slice.json");
+        this.load.spritesheet("melee_enemy","final_project_assets/spritesheets/melee_enemy.json");
         //this.load.spritesheet("red", "final_project_assets/spritesheets/redBalloon.json");
         //this.load.spritesheet("blue", "final_project_assets/spritesheets/blueBalloon.json");
         //this.load.audio("jump", "final_project_assets/sounds/jump.wav");
@@ -75,7 +69,7 @@ export default class Level1 extends GameLevel {
      */
     unloadScene(){
         // Keep resources - this is up to you
-        //this.resourceManager.keepAudio("jump");
+
         //this.resourceManager.keepAudio("switch");
         //this.resourceManager.keepAudio("player_death");
         //this.resourceManager.keepAudio("pop");
@@ -91,11 +85,9 @@ export default class Level1 extends GameLevel {
         //this.viewport.setBounds(0, 0, 64*32, 32*32);
         this.viewport.setBounds(0, 0, 128*32, 16*32);
 
-        this.playerSpawn = new Vec2(4*32-16, 11*32+16); //112,368
+        this.playerSpawn = new Vec2(4*32-16, 11*32+16);
 
         // Set the total switches and balloons in the level
-        //this.totalSwitches = 4;
-        //this.totalBalloons = 6;
 
         this.currentLevel = Level1;
         this.nextLevel = Level2;
