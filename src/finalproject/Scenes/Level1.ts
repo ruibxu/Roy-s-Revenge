@@ -16,7 +16,6 @@ export default class Level1 extends GameLevel {
         this.load.spritesheet("player", "final_project_assets/spritesheets/roy.json");
         this.load.spritesheet("boss", "final_project_assets/spritesheets/boss.json");
         this.load.spritesheet("slice", "final_project_assets/spritesheets/slice.json");
-        this.load.object("enemyData","final_project_assets/data/enemy.json");
         this.load.spritesheet("melee_enemy","final_project_assets/spritesheets/melee_enemy.json");
         //this.load.spritesheet("red", "final_project_assets/spritesheets/redBalloon.json");
         //this.load.spritesheet("blue", "final_project_assets/spritesheets/blueBalloon.json");
@@ -70,7 +69,7 @@ export default class Level1 extends GameLevel {
      */
     unloadScene(){
         // Keep resources - this is up to you
-        //this.resourceManager.keepAudio("jump");
+
         //this.resourceManager.keepAudio("switch");
         //this.resourceManager.keepAudio("player_death");
         //this.resourceManager.keepAudio("pop");
@@ -89,8 +88,6 @@ export default class Level1 extends GameLevel {
         this.playerSpawn = new Vec2(4*32-16, 11*32+16);
 
         // Set the total switches and balloons in the level
-        //this.totalSwitches = 4;
-        //this.totalBalloons = 6;
 
         this.currentLevel = Level1;
         this.nextLevel = Level2;

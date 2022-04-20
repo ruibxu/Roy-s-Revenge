@@ -92,15 +92,6 @@ export default class GameLevel extends Scene {
 
 
     protected bullets:Array<CanvasNode>;
-    // Total ballons and amount currently popped
-    //protected totalBalloons: number;
-    //protected balloonLabel: Label;
-    //protected balloonsPopped: number;
-
-    // Total switches and amount currently pressed
-    //protected totalSwitches: number;
-    //protected switchLabel: Label;
-    //protected switchesPressed: number;
 
     startScene(): void {
         // Do the game level standard initializations
@@ -116,6 +107,8 @@ export default class GameLevel extends Scene {
         this.items = new Array();
         this.spawnItems();
         this.initPlayer();
+
+        console.log(this.currentLevel);
 
         // Create the navmesh
         this.createNavmesh();
@@ -189,8 +182,10 @@ export default class GameLevel extends Scene {
                 this.ingamemenu.enable();
                 this.controls.disable();
                 this.help.disable();
-                this.viewport.setZoomLevel(1);
                 this.viewport.setBounds(0, 0, 1200, 800);
+                this.viewport.setZoomLevel(1);
+                console.log(this.viewport.getZoomLevel());
+                console.log(this.viewport.getCenter());
                 this.getLayer("slots").disable();
                 this.getLayer("items").disable();
                 this.ispaused=true;
@@ -302,32 +297,30 @@ export default class GameLevel extends Scene {
                 
                 case finalproject_Events.LEVEL_END:
                     {
+                        GameLevel.gearCount=0;
+                        GameLevel.livesCount=20;
                         // Go to the next level
+
+                        this.emitter.fireEvent("levelpassed",{level: this.currentLevel}); 
+                    
                         if(this.nextLevel){
                             let sceneOptions = {
                                 physics: {
-                                    groupNames: ["ground", "player", "balloon"],
+                                    groupNames: ["ground", "player"],
                                     collisions:
                                     [
-                                        [0, 1, 1],
-                                        [1, 0, 0],
-                                        [1, 0, 0]
+                                        [0, 1],
+                                        [1, 0]
                                     ]
                                 }
                             }
                             
-                            GameLevel.gearCount=0;
-                            GameLevel.livesCount=20;
-                            if(this.nextLevel==null){
-                                this.emitter.fireEvent("menu");
-                            }
-                            else{
-                                this.emitter.fireEvent("menu");
-                                //this.sceneManager.changeToScene(this.nextLevel, {}, sceneOptions);
-                            }
+                            this.sceneManager.changeToScene(this.nextLevel, {}, sceneOptions);
+                            //this.emitter.fireEvent("menu");   
+                        }
+                        else{
+                            this.emitter.fireEvent("menu");
                             
-                           
-                           
                         }
                     }
                     break;
@@ -401,7 +394,7 @@ export default class GameLevel extends Scene {
 
 
         let resumeBtn= <Button>this.add.uiElement(UIElementType.BUTTON, "ingame", {position: new Vec2(size.x, size.y-150), text: "Resume Game"});
-        let newGameBtn = <Button>this.add.uiElement(UIElementType.BUTTON, "ingame", {position: new Vec2(size.x, size.y-50), text: "Restart this level"});
+        let newGameBtn = <Button>this.add.uiElement(UIElementType.BUTTON, "ingame", {position: new Vec2(size.x, size.y-50), text: "Restart This Level"});
         let CtrlBtn = <Button>this.add.uiElement(UIElementType.BUTTON, "ingame", {position: new Vec2(size.x, size.y+50), text: "Controls"});
         let helpBtn = <Button>this.add.uiElement(UIElementType.BUTTON, "ingame", {position: new Vec2(size.x, size.y+150), text: "Help"});
         let mainMenuBtn = <Button>this.add.uiElement(UIElementType.BUTTON, "ingame", {position: new Vec2(size.x, size.y+250), text: "Main Menu"});
@@ -483,7 +476,7 @@ export default class GameLevel extends Scene {
         const text="space and w to jump";
         const textc = "e to pick up weapons, 1 and 2 to change to each slots";
         const textd = "Q to cast the skill";
-        const textd2 ="(which will reverse gravity, and Roy will be able to work on the ceiling)";
+        const textd2 ="(which will reverse gravity, and Roy will be able to walk on the ceiling)";
         const texte = "left click to attack";
 
         const linea = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 150), text: texta});

@@ -15,12 +15,10 @@ import Debug from "../../../Wolfie2D/Debug/Debug";
 
 export default abstract class PlayerState extends State {
 	owner: GameNode;
-	gravity: number ;
 	parent:PlayerController;
 	positionTimer: Timer;
 	faceDirection: Vec2;
-	skillmode:boolean;
-	skillcooldown: Timer;
+
 
 
 	constructor(parent: StateMachine, owner: GameNode){
@@ -28,13 +26,25 @@ export default abstract class PlayerState extends State {
 		this.owner = owner;
 		this.positionTimer = new Timer(250);
 		this.positionTimer.start();
-		this.skillmode=false;
-		this.gravity=1000;
-		this.skillcooldown=new Timer(2000);
+
 	}
 	
 	// Change the suit color on receiving a suit color change event
 	handleInput(event: GameEvent): void {
+		if(event.type === finalproject_Events.SKILLMODE){
+			console.log("yes");
+
+			let direction = this.getInputDirection();
+		
+			if(this.parent.skillmode==true){
+				(<Sprite>this.owner).invertY = MathUtils.sign(direction.y) > 0 ; 
+			}
+			else{
+				(<Sprite>this.owner).invertY = false;
+			}	
+		}
+
+
 	}
 
 	/** 
@@ -71,37 +81,33 @@ export default abstract class PlayerState extends State {
 			this.positionTimer.start();
 		}
 		
-		if(Input.isPressed("skill")&&this.skillcooldown.isStopped()&&this.parent.velocity.y==0){	
-			this.skillcooldown.reset();
-			this.skillcooldown.start();
-			this.skillmode=!this.skillmode;
-			console.log(this.skillmode);
-			this.gravity=-(this.gravity);
-			let direction = this.getInputDirection();
-			
-			console.log(this.parent.velocity.y);
-			if(this.skillmode==true){
-				(<Sprite>this.owner).invertY = MathUtils.sign(direction.y) > 0 ; 
-			}
-			else{
-				(<Sprite>this.owner).invertY = false;
-			}	
-		}
 
 
-		if(this.skillmode==false){
+		if(this.parent.skillmode==false){
 			//console.log(this.parent.velocity.y);
-			this.parent.velocity.y += this.gravity*deltaT;
+			this.parent.velocity.y += this.parent.gravity*deltaT;
 		}
-		else if (this.skillmode==true){
-			
-			this.parent.velocity.y += this.gravity*deltaT;
+		else if (this.parent.skillmode==true){
+			this.parent.velocity.y += this.parent.gravity*deltaT;
 		}
 		//
-		if(this.skillmode==true){
+		if(this.parent.skillmode==true){
 			Debug.log("skillmode", "skill mode : true");
-		} else if (this.skillmode==false){
+		} else if (this.parent.skillmode==false){
 			Debug.log("skillmode", "skill mode : false");
+		}
+
+		if(this.owner.onGround==true){
+			Debug.log("onGround", "OnGround : true");
+		}
+		else if(this.owner.onGround==false){
+			Debug.log("onGround", "OnGround : false");
+		}
+		if(this.owner.onCeiling==true){
+			Debug.log("onCeiling", "onCeiling : true");
+		}
+		else if(this.owner.onCeiling==false){
+			Debug.log("onCeiling", "onCeiling : false");
 		}
 		
 

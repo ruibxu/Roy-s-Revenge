@@ -14,6 +14,8 @@ import Label from "../../Wolfie2D/Nodes/UIElements/Label";
 import Input from "../../Wolfie2D/Input/Input";
 import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
 import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
+import Level2 from "./Level2";
+import GameLevel from "./GameLevel";
 
 export default class MainMenu extends Scene {
 
@@ -29,6 +31,7 @@ export default class MainMenu extends Scene {
     private levelBtn: Button;
     private CtrlBtn: Button;
     private helpBtn: Button;
+    private levelCount: number =0;
 
     
 
@@ -125,6 +128,7 @@ export default class MainMenu extends Scene {
         this.receiver.subscribe("controls");
         this.receiver.subscribe("help");
         this.receiver.subscribe("menu");
+        this.receiver.subscribe("levelpassed");
 
         //level selection layer
         this.level= this.addUILayer("level");
@@ -188,6 +192,10 @@ export default class MainMenu extends Scene {
         level2.font = "PixelSimple";
         level2.textColor = Color.BLACK;
         level2.onClickEventId="level2";
+        /*if(this.levelCount >=1){
+            level2.onClickEventId="level2";
+        }*/
+        
 
         level3.backgroundColor = new Color(99,202,253);
         level3.borderColor = Color.BLACK;
@@ -259,6 +267,97 @@ export default class MainMenu extends Scene {
                     }
                 }
                 this.sceneManager.changeToScene(Level1, {}, sceneOptions);
+            }
+            if(event.type === "level2"){
+                let sceneOptions = {
+                    physics: {
+                        groupNames: ["ground", "player"],
+                        collisions:
+                        [
+                            [0, 1 ],
+                            [1, 0 ] ,
+                        ]
+                    }
+                }
+                this.sceneManager.changeToScene(Level2, {}, sceneOptions);
+            }
+            /*if(event.type === "level3"){
+                let sceneOptions = {
+                    physics: {
+                        groupNames: ["ground", "player"],
+                        collisions:
+                        [
+                            [0, 1 ],
+                            [1, 0 ] ,
+                        ]
+                    }
+                }
+                this.sceneManager.changeToScene(Level3, {}, sceneOptions);
+            }
+            if(event.type === "level4"){
+
+                let sceneOptions = {
+                    physics: {
+                        groupNames: ["ground", "player"],
+                        collisions:
+                        [
+                            [0, 1 ],
+                            [1, 0 ] ,
+                        ]
+                    }
+                }
+                this.sceneManager.changeToScene(Level4, {}, sceneOptions);
+            }
+            if(event.type === "level5"){
+
+
+                let sceneOptions = {
+                    physics: {
+                        groupNames: ["ground", "player"],
+                        collisions:
+                        [
+                            [0, 1 ],
+                            [1, 0 ] ,
+                        ]
+                    }
+                }
+                this.sceneManager.changeToScene(Level5, {}, sceneOptions);
+            }
+            if(event.type === "level6"){
+
+                let sceneOptions = {
+                    physics: {
+                        groupNames: ["ground", "player"],
+                        collisions:
+                        [
+                            [0, 1 ],
+                            [1, 0 ] ,
+                        ]
+                    }
+                }
+                this.sceneManager.changeToScene(Leve6, {}, sceneOptions);
+            }
+            */
+            if(event.type === "levelpassed"){
+                if(event.data.get("level")==Level1&&this.levelCount<1){
+                    this.levelCount+=1;
+                }
+                else if(event.data.get("level")==Level2&&this.levelCount<2){
+                    this.levelCount+=1;
+                }
+                /*else if(event.data.get("level")==Level3&&this.levelCount<3){
+                    this.levelCount+=1;
+                }
+                else if(event.data.get("level")==Level4&&this.levelCount<4){
+                    this.levelCount+=1;
+                }
+                else if(event.data.get("level")==Level5&&this.levelCount<5){
+                    this.levelCount+=1;
+                }
+                else if(event.data.get("level")==Level6&&this.levelCount<6){
+                    this.levelCount+=1;
+                }*/
+                
             }
             if(event.type === "level"){
                 this.level.setHidden(false);

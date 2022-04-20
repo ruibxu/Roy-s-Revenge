@@ -36,7 +36,8 @@ export enum finalproject_Events {
     HELP = "help",
     CONTROL = "control",
     MENU = "menu",
-    HINT = "hint"
+    HINT = "hint",
+    SKILLMODE ="skillmode"
 }
 
 export enum finalproject_Statuses {

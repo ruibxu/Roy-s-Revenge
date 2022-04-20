@@ -19,6 +19,7 @@ import Input from "../../Wolfie2D/Input/Input";
 import Item from "../GameSystems/items/Item";
 import GameLevel from "../Scenes/Gamelevel";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
+import Timer from "../../Wolfie2D/Timing/Timer";
 
 
 export enum PlayerType {
@@ -52,6 +53,9 @@ export default class PlayerController extends StateMachineAI {
     items: Array<Item>;
     faceDirection: Vec2;
     state: String;
+    skillmode: boolean;
+    skillcooldown: Timer;
+    gravity: number;
 
     // HOMEWORK 5 - TODO
     /**
@@ -74,7 +78,8 @@ export default class PlayerController extends StateMachineAI {
         this.receiver = new Receiver();
 		this.emitter = new Emitter();
 
-
+        
+        this.receiver.subscribe(finalproject_Events.SKILLMODE);
         this.receiver.subscribe(finalproject_Events.ATTACK);
         this.receiver.subscribe(finalproject_Events.PLAYER_DAMAGE);
 
@@ -84,12 +89,14 @@ export default class PlayerController extends StateMachineAI {
         this.faceDirection = Vec2.ZERO;
         this.faceDirection.x=1;
         this.state="idle";
-
+        this.skillmode=false;
+		this.skillcooldown=new Timer(2000);
+        this.gravity=1000;
 
     }
 
 
-    handleEvent(event: GameEvent): void {
+    handleInput(event: GameEvent): void {
 		// We need to handle animations when we get hurt
 		if(event.type === finalproject_Events.PLAYER_DAMAGE){
 			if(event.data.get("health") === 0){
@@ -194,7 +201,13 @@ export default class PlayerController extends StateMachineAI {
             return;
         }
 
-
+		if(Input.isPressed("skill")&&this.skillcooldown.isStopped()&&(this.owner.onGround||this.owner.onCeiling)){	
+			this.skillcooldown.reset();
+			this.skillcooldown.start();
+			this.skillmode=!this.skillmode;
+            this.gravity=-this.gravity;
+			this.emitter.fireEvent(finalproject_Events.SKILLMODE);
+		}
 
         // Check for slot change
         if (Input.isJustPressed("slot1")) {
