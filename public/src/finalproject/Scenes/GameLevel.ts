@@ -224,19 +224,20 @@ export default class GameLevel extends Scene {
 
 
             if(event.type === "newgame"){
-                let sceneOptions = {
-                    physics: {
-                        groupNames: ["ground", "player"],
-                        collisions:
-                        [
-                            [0, 1],
-                            [1, 0],
-                        ]
-                    }
-                }
-                GameLevel.gearCount=0;
-                GameLevel.livesCount=20;
-                this.sceneManager.changeToScene(this.currentLevel, {}, sceneOptions);
+                this.respawnPlayer();
+                // let sceneOptions = {
+                //     physics: {
+                //         groupNames: ["ground", "player"],
+                //         collisions:
+                //         [
+                //             [0, 1],
+                //             [1, 0],
+                //         ]
+                //     }
+                // }
+                // GameLevel.gearCount=0;
+                // GameLevel.livesCount=20;
+                // this.sceneManager.changeToScene(this.currentLevel, {}, sceneOptions);
             }
             if(event.type === "menu"){
                 this.viewport.setZoomLevel(1);
@@ -275,7 +276,7 @@ export default class GameLevel extends Scene {
                 case finalproject_Events.PLAYER_HIT_TRAP:
                     {
                         //take damage
-                        this.incPlayerLife(-3);
+                        this.incPlayerLife(-5);
                     }
                     break;
                 case finalproject_Events.PLAYER_ENTERED_LEVEL_END:
@@ -334,6 +335,7 @@ export default class GameLevel extends Scene {
                     break;
                 case finalproject_Events.PLAYER_KILLED:
                     {
+                        console.log("player killed");
                         this.respawnPlayer();
                     }
                     break;
@@ -939,8 +941,9 @@ export default class GameLevel extends Scene {
         if (GameLevel.livesCount <= 0){
             Input.disableInput();
             this.player.disablePhysics();
-            this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "player_death", loop: false, holdReference: false});
-            this.player.tweens.play("death");
+            //this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "player_death", loop: false, holdReference: false});
+            this.emitter.fireEvent(finalproject_Events.PLAYER_KILLED);
+            //this.player.tweens.play("death");
         }
     }
 
@@ -957,9 +960,20 @@ export default class GameLevel extends Scene {
      * Returns the player to spawn
      */
     protected respawnPlayer(): void {
-        GameLevel.livesCount = 20;
-        this.emitter.fireEvent(GameEventType.STOP_SOUND, {key: "level_music"});
-        this.sceneManager.changeToScene(MainMenu, {});
+        let sceneOptions = {
+            physics: {
+                groupNames: ["ground", "player"],
+                collisions:
+                [
+                    [0, 1],
+                    [1, 0],
+                ]
+            }
+        }
+        GameLevel.gearCount=0;
+        GameLevel.livesCount=20;
+        //this.emitter.fireEvent(GameEventType.STOP_SOUND, {key: "level_music"});
+        this.sceneManager.changeToScene(this.currentLevel, {}, sceneOptions);
         Input.enableInput();
         this.system.stopSystem();
     }

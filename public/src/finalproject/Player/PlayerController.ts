@@ -38,7 +38,6 @@ export enum PlayerStates {
 
 export default class PlayerController extends StateMachineAI {
     protected owner: GameNode;
-    health: number;
     velocity: Vec2 = Vec2.ZERO;
 	speed: number = 200;
 	MIN_SPEED: number = 200;
@@ -83,7 +82,6 @@ export default class PlayerController extends StateMachineAI {
         this.receiver.subscribe(finalproject_Events.ATTACK);
         this.receiver.subscribe(finalproject_Events.PLAYER_DAMAGE);
 
-        this.health = 3;
         this.items = options.items;
         this.inventory = options.inventory;
         this.faceDirection = Vec2.ZERO;
@@ -93,24 +91,28 @@ export default class PlayerController extends StateMachineAI {
 		this.skillcooldown=new Timer(2000);
         this.gravity=1000;
 
+
+        //death tween
+        owner.tweens.add("death", {
+            startDelay: 0,
+            duration: 1000,
+            effects: [
+                {
+                    property: "rotation",
+                    start: 0,
+                    end: 4*Math.PI,
+                    ease: EaseFunctionType.IN_OUT_QUAD
+                },
+                {
+                    property: "alpha",
+                    start: 1,
+                    end: 0,
+                    ease: EaseFunctionType.IN_OUT_QUAD
+                }
+            ],
+            onEnd: finalproject_Events.PLAYER_KILLED
+        });
     }
-
-
-    handleInput(event: GameEvent): void {
-		// We need to handle animations when we get hurt
-		if(event.type === finalproject_Events.PLAYER_DAMAGE){
-			if(event.data.get("health") === 0){
-				// Play animation and queue event to end game
-				this.isDead=true;
-
-				this.emitter.fireEvent( finalproject_Events.PLAYER_DEAD);
-			} else {
-			}
-		}
-    
-        
-	}
-
 
     initializePlatformer(): void {
         this.speed = 400;
