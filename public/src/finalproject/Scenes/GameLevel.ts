@@ -55,6 +55,7 @@ export default class GameLevel extends Scene {
     protected ingamemenu: Layer;
     protected controls: Layer;
     protected help: Layer;
+    protected hintLayer: Layer;
 
 
 
@@ -200,6 +201,9 @@ export default class GameLevel extends Scene {
                 this.ingamemenu.enable();
                 this.controls.disable();
                 this.help.disable();
+                ///////
+                this.hintLayer.disable();
+                ///////
                 this.viewport.setBounds(0, 0, 1200, 800);
                 this.viewport.setZoomLevel(1);
                 console.log(this.viewport.getZoomLevel());
@@ -221,6 +225,11 @@ export default class GameLevel extends Scene {
                 this.ingamemenu.disable();
                 this.getLayer("slots").enable();
                 this.getLayer("items").enable();
+                //////fix this
+                if(this.nextLevel!=null){
+                    this.hintLayer.enable();
+                }
+                ///////
                 this.viewport.setZoomLevel(2.25);
                 this.viewport.setBounds(0, 0, 128*32, 16*32);
                 this.ispaused=false;
@@ -426,6 +435,60 @@ export default class GameLevel extends Scene {
 
         let size = this.viewport.getHalfSize();
         let center = this.viewport.getCenter();
+
+
+//////////////////////////////////////////////////////////////
+        //////////////////hints layer/////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////
+        this.hintLayer=this.addLayer("hints");
+        //////fix this//////////
+        if(this.nextLevel==null){
+            this.hintLayer.disable();
+        }
+        
+
+        let hint1 = "a to move left, d to move right";
+        let hint2 = "w or space to jump, be careful with the spikes";
+        let hint3= "e to pick up weapons,1 and 2 to change to each slots";
+
+        let hint4 = "Q to cast the skill, which will reverse gravity and Roy will walk on the ceiling";
+        let hint5 = "every 3 gears you collected will give you a random weapon";
+
+        let hint6 = "Sometimes laser will block the way, and try to find a switch and step on it to turn off the laser";
+        
+        let hint7 = "Kill the enemies and try to get to the endpoint";
+       
+
+
+        const msg1 = <Label>this.add.uiElement(UIElementType.LABEL, "hints", {position: new Vec2(128, 360), text: hint1});
+        const msg2 = <Label>this.add.uiElement(UIElementType.LABEL, "hints", {position: new Vec2(128, 368), text: hint2});
+        const msg3 = <Label>this.add.uiElement(UIElementType.LABEL, "hints", {position: new Vec2(140, 376), text: hint3});
+        const msg4 = <Label>this.add.uiElement(UIElementType.LABEL, "hints", {position: new Vec2(576, 368), text: hint4});
+        const msg5 = <Label>this.add.uiElement(UIElementType.LABEL, "hints", {position: new Vec2(576, 376), text: hint5});
+        const msg6 = <Label>this.add.uiElement(UIElementType.LABEL, "hints", {position: new Vec2(2400,376), text: hint6});
+        const msg7 = <Label>this.add.uiElement(UIElementType.LABEL, "hints", {position: new Vec2(2912,376), text: hint7});
+
+        msg1.fontSize=15;
+        msg2.fontSize=15;
+        msg3.fontSize=15;
+        msg4.fontSize=15;
+        msg5.fontSize=15;
+        msg6.fontSize=15;
+        msg7.fontSize=15;
+
+        msg1.textColor=Color.BLACK;
+        msg2.textColor=Color.BLACK;
+        msg3.textColor=Color.BLACK;
+        msg4.textColor=Color.BLACK;
+        msg5.textColor=Color.BLACK;
+        msg6.textColor=Color.BLACK;
+        msg7.textColor=Color.BLACK;
+
+
+
+
+        ///////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////
 
 
 
