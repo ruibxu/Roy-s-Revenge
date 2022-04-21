@@ -49,7 +49,7 @@ export default class Active extends EnemyState {
     pickRetreatPath(pathToPlayer: NavigationPath){    
         let x =new Vec2(-(this.parent.path.getMoveDirection(this.owner).x),-(this.parent.path.getMoveDirection(this.owner).y));
         x=x.scale(1000);
-        this.parent.retreatPath= this.owner.getScene().getNavigationManager().getPath(finalproject_Names.NAVMESH, this.owner.position, x.add(this.owner.position), true);
+        //this.parent.retreatPath= this.owner.getScene().getNavigationManager().getPath(finalproject_Names.NAVMESH, this.owner.position, x.add(this.owner.position), true);
     }
 
     update(deltaT: number): void {

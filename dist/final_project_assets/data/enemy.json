@@ -1,10 +1,17 @@
 {
-  "numEnemies": 1,
+  "numEnemies": 2,
   "enemies": [
     {
-      "position": [144, 240],
+      "position": [3472,304],
       "mode": "patrol",
-      "route": [0, 1, 2],
+      "route": [0, 1],
+      "health": 5,
+      "type": "melee_enemy"
+    },
+    {
+      "position": [3248,400],
+      "mode": "patrol",
+      "route": [2, 3],
       "health": 5,
       "type": "melee_enemy"
     }

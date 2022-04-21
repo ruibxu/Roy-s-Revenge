@@ -13,27 +13,34 @@ export default class Walk extends OnGround {
 	}
 
 	updateSuit() {
+		if(this.parent.taking_damage==false){		
 		if(this.parent.inventory.getItem())
-		{
-			if(this.parent.inventory.getItem().sprite.imageId==="pistol"){
-				this.owner.animation.playIfNotAlready("PISTOL_WALK", true);
+			{
+				if(this.parent.inventory.getItem().sprite.imageId==="pistol"){
+					this.owner.animation.playIfNotAlready("PISTOL_WALK", true);
+				}
+				else if(this.parent.inventory.getItem().sprite.imageId==="knife"){
+					this.owner.animation.playIfNotAlready("KNIFE_WALK", true);
+				}
+				else if(this.parent.inventory.getItem().sprite.imageId==="machineGun"){
+					this.owner.animation.playIfNotAlready("MACHINEGUN_WALK", true);
+				}
+				else if(this.parent.inventory.getItem().sprite.imageId==="laserGun"){
+					this.owner.animation.playIfNotAlready("LASERGUN_WALK", true);
+				}
+				else if(this.parent.inventory.getItem().sprite.imageId==="lightSaber"){
+					this.owner.animation.playIfNotAlready("LIGHTSABER_WALK", true);
+				}
 			}
-			else if(this.parent.inventory.getItem().sprite.imageId==="knife"){
-				this.owner.animation.playIfNotAlready("KNIFE_WALK", true);
-			}
-			else if(this.parent.inventory.getItem().sprite.imageId==="machineGun"){
-				this.owner.animation.playIfNotAlready("MACHINEGUN_WALK", true);
-			}
-			else if(this.parent.inventory.getItem().sprite.imageId==="laserGun"){
-				this.owner.animation.playIfNotAlready("LASERGUN_WALK", true);
-			}
-			else if(this.parent.inventory.getItem().sprite.imageId==="lightSaber"){
-				this.owner.animation.playIfNotAlready("LIGHTSABER_WALK", true);
+			else{
+				this.owner.animation.playIfNotAlready("WALK", true);
 			}
 		}
-		else{
-			this.owner.animation.playIfNotAlready("WALK", true);
-		}
+        else{
+             this.owner.animation.playIfNotAlready("TAKING_DAMAGE",false);
+             this.parent.taking_damage=false;
+            }
+
 	}
 
 	update(deltaT: number): void {
