@@ -61,18 +61,14 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
 
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
-
-            // Patrol mode
         this.addState(EnemyStates.DEFAULT, new Patrol(this, owner, options.patrolRoute));
-
         this.addState(EnemyStates.ALERT, new Alert(this, owner));
         this.addState(EnemyStates.TARGETING, new Active(this, owner));
 
         this.maxHealth = options.health;
-
         this.health = options.health;
 
-        //this.weapon = options.weapon;
+        this.weapon = options.weapon;
 
         this.player = options.player;
 
@@ -98,13 +94,14 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
 
     damage(damage: number): void {
         this.health -= damage;
+        this.owner.animation.playIfNotAlready("TAKING DAMAGE", false);
 
         // If we're low enough, add Low Health status to enemy
-        if (this.health <= Math.floor(this.maxHealth/2)) {
+        /*if (this.health <= Math.floor(this.maxHealth/2)) {
             if (this.currentStatus.indexOf(finalproject_Statuses.LOW_HEALTH) === -1){
                 this.currentStatus.push(finalproject_Statuses.LOW_HEALTH);
             }
-        }
+        }*/
 
         // If health goes below 0, disable AI and fire enemyDied event
         if (this.health <= 0) {
@@ -114,10 +111,11 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
 
             this.emitter.fireEvent("enemyDied", {enemy: this.owner})
 
-            if (Math.random() < 0.2) {
+            if (Math.random() < 1) {
                 // Spawn a healthpack
                 this.emitter.fireEvent("healthpack", { position: this.owner.position });
             }
+        
         }
     }
     isPlayerVisible(pos: Vec2): Vec2{

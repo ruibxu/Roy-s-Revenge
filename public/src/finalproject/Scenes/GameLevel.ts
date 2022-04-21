@@ -40,6 +40,7 @@ import Navmesh from "../../Wolfie2D/Pathfinding/Navmesh";
 import Gear from "../GameSystems/items/Gear";
 
 
+
 export default class GameLevel extends Scene {
     // protected enemy: AnimatedSprite;
     // Every level will have a player, which will be an animated sprite
@@ -55,6 +56,8 @@ export default class GameLevel extends Scene {
     protected controls: Layer;
     protected help: Layer;
 
+
+
     protected inventory: InventoryManager;
 
     protected ispaused: boolean;
@@ -64,6 +67,8 @@ export default class GameLevel extends Scene {
     protected livesCountLabel: Label;
     protected static gearCount: number = 0;
     protected gearCountLabel: Label;
+
+
 
     // Stuff to end the level and go to the next level
     
@@ -92,6 +97,9 @@ export default class GameLevel extends Scene {
 
     //Timer for invincible time
     private damageTimer: Timer;
+
+    //Player is dead
+    private isDead: number = 0;
 
 
     protected bullets:Array<CanvasNode>;
@@ -129,9 +137,12 @@ export default class GameLevel extends Scene {
         //1 second timer for player invincible
         this.damageTimer = new Timer(1000);
         this.damageTimer.start();
+        this.respawnTimer = new Timer(3000);
+
+        //this.isDead = false;
 
         this.levelTransitionScreen.tweens.play("fadeOut");
-        
+
         this.levelTransitionTimer = new Timer(500);
         this.levelEndTimer = new Timer(3000, () => {
             // After the level end timer ends, fade to black and then go to the next scene
@@ -221,23 +232,14 @@ export default class GameLevel extends Scene {
                 
                 //this.emitter.fireEvent("currentLevel",{level: this});
             }
+            if(event.isType("enemyDied")){
+                this.enemies = this.enemies.filter(enemy => enemy !== event.data.get("enemy"));
+                this.battleManager.enemies = this.battleManager.enemies.filter(enemy => enemy !== <BattlerAI>(event.data.get("enemy")._ai));
+            }
 
 
             if(event.type === "newgame"){
                 this.respawnPlayer();
-                // let sceneOptions = {
-                //     physics: {
-                //         groupNames: ["ground", "player"],
-                //         collisions:
-                //         [
-                //             [0, 1],
-                //             [1, 0],
-                //         ]
-                //     }
-                // }
-                // GameLevel.gearCount=0;
-                // GameLevel.livesCount=20;
-                // this.sceneManager.changeToScene(this.currentLevel, {}, sceneOptions);
             }
             if(event.type === "menu"){
                 this.viewport.setZoomLevel(1);
@@ -264,6 +266,7 @@ export default class GameLevel extends Scene {
             if(Input.isKeyJustPressed("g")){
                 this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
             }
+            
             switch(event.type){
                 case finalproject_Events.PLAYER_HIT_SWITCH:
                     {
@@ -273,12 +276,24 @@ export default class GameLevel extends Scene {
                         // this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "switch", loop: false, holdReference: false});
                     }
                     break;
-                case finalproject_Events.PLAYER_HIT_TRAP:
+                case finalproject_Events.PLAYER_DAMAGE:
                     {
                         //take damage
-                        this.incPlayerLife(-5);
+                        this.incPlayerLife(-event.data.get("damage"));
                     }
                     break;
+                // case finalproject_Events.PLAYER_HIT_LASER:
+                //     {
+                //         //take damage
+                //         this.incPlayerLife(-20);
+                //     }
+                //     break;
+                // case finalproject_Events.PLAYER_HIT_SPIKE:
+                //     {
+                //         //take damage
+                //         this.incPlayerLife(-10);
+                //     }
+                //     break;
                 case finalproject_Events.PLAYER_ENTERED_LEVEL_END:
                     {
                         //Check if the player has pressed all the switches and popped all of the balloons
@@ -335,8 +350,9 @@ export default class GameLevel extends Scene {
                     break;
                 case finalproject_Events.PLAYER_KILLED:
                     {
-                        console.log("player killed");
-                        this.respawnPlayer();
+                        this.player.animation.play("DEAD",false,"newgame");
+                        //this.respawnPlayer;
+
                     }
                     break;
                 case finalproject_Events.PICKUP_HEALTHPACK:
@@ -382,9 +398,6 @@ export default class GameLevel extends Scene {
             this.emitter.fireEvent("back_to_game");
         }
 
-        // if((<Weapon>(<PlayerController>this.player._ai).inventory.getItem()).type===)
-        // {this.handleScreenDespawn((<Weapon>(<PlayerController>this.player._ai).inventory.getItem()).type.bullets[0],this.viewport.getCenter(),this.viewport.getHalfSize().scaled(2));}
-        
         //drop random weapon after 3 gears collected
         if(GameLevel.gearCount==3){
             //console.log("3 gears");
@@ -393,6 +406,10 @@ export default class GameLevel extends Scene {
             this.dropWeapon(randomWeapon,this.player.position);
             this.incGearCount(-3);
         }
+
+
+        // if((<Weapon>(<PlayerController>this.player._ai).inventory.getItem()).type===)
+        // {this.handleScreenDespawn((<Weapon>(<PlayerController>this.player._ai).inventory.getItem()).type.bullets[0],this.viewport.getCenter(),this.viewport.getHalfSize().scaled(2));}
     }
 
     /**
@@ -401,11 +418,11 @@ export default class GameLevel extends Scene {
     protected initLayers(): void {
         // Add a layer for UI
         this.ui_layer=this.addUILayer("UI");    
-        this.game=this.addLayer("primary", 1);
+       this.game=this.addLayer("primary", 1);
         this.ingamemenu=this.addLayer("ingame",0);
         this.ingamemenu.disable();
-        
 
+        
 
         let size = this.viewport.getHalfSize();
         let center = this.viewport.getCenter();
@@ -616,6 +633,8 @@ export default class GameLevel extends Scene {
 
     }
 
+
+
     /**
      * Initializes the viewport
      */
@@ -629,9 +648,13 @@ export default class GameLevel extends Scene {
      protected subscribeToEvents(){
         //in level events
         this.receiver.subscribe([
+            finalproject_Events.ENEMY_DEAD,
             finalproject_Events.PLAYER_HIT_SWITCH,
             finalproject_Events.PLAYER_HIT_WEAPON,
-            finalproject_Events.PLAYER_HIT_TRAP,
+            // finalproject_Events.PLAYER_HIT_TRAP,
+            // finalproject_Events.PLAYER_HIT_LASER,
+            // finalproject_Events.PLAYER_HIT_SPIKE,
+            finalproject_Events.PLAYER_DAMAGE,
             finalproject_Events.PLAYER_ENTERED_LEVEL_END,
             finalproject_Events.LEVEL_START,
             finalproject_Events.LEVEL_PAUSED,
@@ -643,7 +666,13 @@ export default class GameLevel extends Scene {
             
             finalproject_Events.PLAYER_WEAPON_CHANGE,
             finalproject_Events.UNLOAD_ASSET,
-            finalproject_Events.SHOOT_BULLET
+            finalproject_Events.SHOOT_BULLET,
+            finalproject_Events.HINT1,
+            finalproject_Events.HINT2,
+            finalproject_Events.HINT3,
+            finalproject_Events.HINT4,
+            finalproject_Events.HINT5,
+            
 
         ]);
         //menu events
@@ -656,6 +685,7 @@ export default class GameLevel extends Scene {
             finalproject_Events.CONTROL,
             finalproject_Events.HELP,
             finalproject_Events.MENU
+            
         ])
     }
 
@@ -681,6 +711,15 @@ export default class GameLevel extends Scene {
         this.livesCountLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(500, 30), text: "Lives: " + GameLevel.livesCount});
         this.livesCountLabel.textColor = Color.BLACK;
         this.livesCountLabel.font = "PixelSimple";
+
+
+
+
+
+
+
+
+
 
         // End of level label (start off screen)
         this.levelEndLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(-300, 200), text: "Level Complete"});
@@ -808,12 +847,16 @@ export default class GameLevel extends Scene {
     }
 
      protected initEnemies(): void {
-        console.log("initEnemies");
+        // console.log("initEnemies");
+        // let actionsRange = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
+        // new Move(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 100})];
+     
+        let actionsMelee = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
+         new Move(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 20})];
+     
+
         const enemyData = this.load.getObject("enemyData");
         this.enemies = new Array(enemyData.numEnemies);
-
-        let actionsMelee = [new AttackAction(3, [finalproject_Statuses.IN_RANGE],[finalproject_Statuses.REACHED_GOAL]),
-        new Move(2, [] , [finalproject_Statuses.IN_RANGE], {inRange: 20})]
 
         //Initalize the enemies
         for(let i = 0; i < enemyData.numEnemies; i++){
@@ -823,6 +866,8 @@ export default class GameLevel extends Scene {
             this.enemies[i] = this.add.animatedSprite(data.type, "primary");
             this.enemies[i].position.set(data.position[0],data.position[1]);
             this.enemies[i].animation.play("IDLE",true);
+
+
             
             //Activate physics
             this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(16,16)));
@@ -848,6 +893,11 @@ export default class GameLevel extends Scene {
                 actions = actionsMelee;
                 range = 20;
             }
+            // else if (data.type === "range_enemy") {
+            //     weapon = this.createWeapon("pistol")
+            //     //actions = actionsRange;
+            //     range = 200;
+            // }
 
             let enemyOptions = {
                 defaultMode: data.mode,
@@ -920,6 +970,9 @@ export default class GameLevel extends Scene {
         this.levelEndArea.color = new Color(0, 0, 0, 0);
     }
 
+    protected isInvincable(): boolean {
+        return true;
+    }
 
     /**
      * Increments the amount of life the player has
@@ -927,33 +980,37 @@ export default class GameLevel extends Scene {
      */
     protected incPlayerLife(amt: number): void {
         //taking damage
-        if(amt<=0){
-            if (this.damageTimer.isStopped()){
-                GameLevel.livesCount += amt;
-                this.damageTimer.start();
+        if (GameLevel.livesCount > 0){
+            if(amt<=0){
+                if (this.damageTimer.isStopped()){
+                    GameLevel.livesCount += amt;
+                    this.damageTimer.start();
+                }
             }
-        }
-        //gaining life
-        else{
-            GameLevel.livesCount += amt;
-        }
-        this.livesCountLabel.text = "Lives: " + GameLevel.livesCount;
-        if (GameLevel.livesCount <= 0){
+            //gaining life
+            else{
+                GameLevel.livesCount += amt;
+            }
+            this.livesCountLabel.text = "Lives: " + GameLevel.livesCount;
+        }else{
             Input.disableInput();
+            if(this.isDead<=2){
+                this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "player_death", loop: false, holdReference: false});
+                this.emitter.fireEvent(finalproject_Events.PLAYER_KILLED);
+                this.isDead+=1;
+                console.log("killed");
+            }
             this.player.disablePhysics();
-            //this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "player_death", loop: false, holdReference: false});
-            this.emitter.fireEvent(finalproject_Events.PLAYER_KILLED);
-            //this.player.tweens.play("death");
         }
     }
 
     /**
      * Increments the amount of gear the player has by 1
      */
-         protected incGearCount(amt: number): void {
-            GameLevel.gearCount += amt;
-            this.gearCountLabel.text = "Gears: " + GameLevel.gearCount;
-        }
+    protected incGearCount(amt: number): void {
+        GameLevel.gearCount += amt;
+        this.gearCountLabel.text = "Gears: " + GameLevel.gearCount;
+    }
     
 
     /**
@@ -1015,12 +1072,12 @@ export default class GameLevel extends Scene {
      * @param type The weaponType of the weapon, as a string
      * @param position 
      */
-    dropWeapon(type: string, position: Vec2){
-        let weaponType = <WeaponType>RegistryManager.getRegistry("weaponTypes").get(type);
-        let sprite = this.add.sprite(weaponType.spriteKey, "primary");
-        let weapon = new Weapon(sprite, weaponType, this.battleManager);
-        weapon.moveSprite(position);
-        this.items.push(weapon);
+         dropWeapon(type: string, position: Vec2){
+            let weaponType = <WeaponType>RegistryManager.getRegistry("weaponTypes").get(type);
+            let sprite = this.add.sprite(weaponType.spriteKey, "primary");
+            let weapon = new Weapon(sprite, weaponType, this.battleManager);
+            weapon.moveSprite(position);
+            this.items.push(weapon);
     }
 
     /**
@@ -1029,7 +1086,7 @@ export default class GameLevel extends Scene {
      */
     createHealthpack(position: Vec2): void {
         let sprite = this.add.sprite("healthpack", "primary");
-        let healthpack = new Healthpack(sprite);
+        let healthpack = new Healthpack(sprite)
         healthpack.moveSprite(position);
         this.items.push(healthpack);
     }
@@ -1096,6 +1153,7 @@ export default class GameLevel extends Scene {
                     if(bullet.boundary.overlaps(enemy.boundary)){
                         // A collision happened - destroy the bullet
                         console.log("bullet hit");
+                        (<EnemyAI>enemy.ai).damage(1);
                         this.bullets.forEach((element,index)=>{
                             if(element.id==bullet.id) this.bullets.splice(index,1);
                          });
@@ -1113,31 +1171,31 @@ export default class GameLevel extends Scene {
                 !this.player.animation.isPlaying("MACHINEGUN_TAKING_DAMAGE")||!this.player.animation.isPlaying("LIGHTSABER_TAKING_DAMAGE")||
                 !this.player.animation.isPlaying("LASERGUN_TAKING_DAMAGE")
                 ))
-                {   this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE);
+                {   this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE,{"damage":2});
                     // A collision happened - destroy the bullet
-                    if((<PlayerController>this.player._ai).inventory.getItem())
-                    {   console.log("got damage");
-                        if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="pistol"){
-                            console.log("got damage1");
-                            this.player.animation.play("PISTOL_TAKING_DAMAGE");
-                        }
-                        else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="knife"){
-                            this.player.animation.playIfNotAlready("KNIFE_TAKING_DAMAGE");
-                        }
-                        else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="machineGun"){
-                            this.player.animation.playIfNotAlready("MACHINEGUN_TAKING_DAMAGE");
-                        }
-                        else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="laserGun"){
-                            this.player.animation.playIfNotAlready("LASERGUN_TAKING_DAMAGE");
-                        }
-                        else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="lightSaber"){
-                            this.player.animation.playIfNotAlready("LIGHTSABER_TAKING_DAMAGE");
-                        }
-                    }
-                    else{
-                       console.log("dama");
-                        this.player.animation.playIfNotAlready("TAKING_DAMAGE", true);
-                    }
+                    // if((<PlayerController>this.player._ai).inventory.getItem())
+                    // {   console.log("got damage");
+                    //     if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="pistol"){
+                    //         console.log("got damage1");
+                    //         this.player.animation.play("PISTOL_TAKING_DAMAGE");
+                    //     }
+                    //     else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="knife"){
+                    //         this.player.animation.playIfNotAlready("KNIFE_TAKING_DAMAGE");
+                    //     }
+                    //     else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="machineGun"){
+                    //         this.player.animation.playIfNotAlready("MACHINEGUN_TAKING_DAMAGE");
+                    //     }
+                    //     else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="laserGun"){
+                    //         this.player.animation.playIfNotAlready("LASERGUN_TAKING_DAMAGE");
+                    //     }
+                    //     else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="lightSaber"){
+                    //         this.player.animation.playIfNotAlready("LIGHTSABER_TAKING_DAMAGE");
+                    //     }
+                    // }
+                    // else{
+                    //    console.log("dama");
+                    //     this.player.animation.playIfNotAlready("TAKING_DAMAGE", true);
+                    // }
                     
                     
                     // Increase the hp of the enemy

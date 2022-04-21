@@ -27,7 +27,7 @@ export default class Level2 extends GameLevel {
         this.load.object("enemyData", "final_project_assets/data/enemy.json");
 
         // Load in item info
-        this.load.object("itemData", "final_project_assets/data/items.json");
+        this.load.object("itemData", "final_project_assets/data/items2.json");
 
         // Load the healthpack sprite
         this.load.image("healthpack", "final_project_assets/sprites/health.png");

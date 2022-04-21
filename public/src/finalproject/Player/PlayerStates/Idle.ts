@@ -10,6 +10,7 @@ export default class Idle extends OnGround {
 	owner: AnimatedSprite;
 
 	onEnter(options: Record<string, any>): void {
+		
 		let gamelevel = <GameLevel> this.owner.getScene();
 		if(gamelevel.isPaused()){
 			this.parent.speed =0;
@@ -22,28 +23,33 @@ export default class Idle extends OnGround {
 
 	
 	updateSuit() {
-
-		if(this.parent.inventory.getItem())
-		{
-			if(this.parent.inventory.getItem().sprite.imageId==="pistol"){
-				this.owner.animation.playIfNotAlready("PISTOL_IDLE", true);
-			}
-			else if(this.parent.inventory.getItem().sprite.imageId==="knife"){
-				this.owner.animation.playIfNotAlready("KNIFE_IDLE", true);
-			}
-			else if(this.parent.inventory.getItem().sprite.imageId==="machineGun"){
-				this.owner.animation.playIfNotAlready("MACHINEGUN_IDLE", true);
-			}
-			else if(this.parent.inventory.getItem().sprite.imageId==="laserGun"){
-				this.owner.animation.playIfNotAlready("LASERGUN_IDLE", true);
-			}
-			else if(this.parent.inventory.getItem().sprite.imageId==="lightSaber"){
-				this.owner.animation.playIfNotAlready("LIGHTSABER_IDLE", true);
-			}
+		if(this.parent.taking_damage==false){
+				if(this.parent.inventory.getItem())
+				{
+					if(this.parent.inventory.getItem().sprite.imageId==="pistol"){
+						this.owner.animation.playIfNotAlready("PISTOL_IDLE", true);
+					}
+					else if(this.parent.inventory.getItem().sprite.imageId==="knife"){
+						this.owner.animation.playIfNotAlready("KNIFE_IDLE", true);
+					}
+					else if(this.parent.inventory.getItem().sprite.imageId==="machineGun"){
+						this.owner.animation.playIfNotAlready("MACHINEGUN_IDLE", true);
+					}
+					else if(this.parent.inventory.getItem().sprite.imageId==="laserGun"){
+						this.owner.animation.playIfNotAlready("LASERGUN_IDLE", true);
+					}
+					else if(this.parent.inventory.getItem().sprite.imageId==="lightSaber"){
+						this.owner.animation.playIfNotAlready("LIGHTSABER_IDLE", true);
+					}
+				}
+				else{
+					this.owner.animation.playIfNotAlready("IDLE", true);
+				}
 		}
 		else{
-			this.owner.animation.playIfNotAlready("IDLE", true);
-		}
+			this.owner.animation.playIfNotAlready("TAKING_DAMAGE",false);
+			this.parent.taking_damage=false;
+			}
 	}
 
 	update(deltaT: number): void {

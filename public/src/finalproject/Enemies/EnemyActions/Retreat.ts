@@ -45,7 +45,7 @@ export default class Retreat extends GoapAction {
             }
 
             //Otherwise move on path
-            this.path = enemy.retreatPath;
+            //this.path = enemy.retreatPath;
             enemy.owner.rotation = Vec2.UP.angleToCCW(this.path.getMoveDirection(enemy.owner));
             enemy.owner.moveOnPath(enemy.speed * deltaT, this.path);
             return null;

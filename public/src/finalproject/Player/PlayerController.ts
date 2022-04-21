@@ -38,6 +38,7 @@ export enum PlayerStates {
 
 export default class PlayerController extends StateMachineAI {
     protected owner: GameNode;
+    health: number;
     velocity: Vec2 = Vec2.ZERO;
 	speed: number = 200;
 	MIN_SPEED: number = 200;
@@ -55,6 +56,8 @@ export default class PlayerController extends StateMachineAI {
     skillmode: boolean;
     skillcooldown: Timer;
     gravity: number;
+    
+    taking_damage:boolean;
 
     // HOMEWORK 5 - TODO
     /**
@@ -82,6 +85,7 @@ export default class PlayerController extends StateMachineAI {
         this.receiver.subscribe(finalproject_Events.ATTACK);
         this.receiver.subscribe(finalproject_Events.PLAYER_DAMAGE);
 
+        this.health = 3;
         this.items = options.items;
         this.inventory = options.inventory;
         this.faceDirection = Vec2.ZERO;
@@ -90,29 +94,25 @@ export default class PlayerController extends StateMachineAI {
         this.skillmode=false;
 		this.skillcooldown=new Timer(2000);
         this.gravity=1000;
-
-
-        //death tween
-        owner.tweens.add("death", {
-            startDelay: 0,
-            duration: 1000,
-            effects: [
-                {
-                    property: "rotation",
-                    start: 0,
-                    end: 4*Math.PI,
-                    ease: EaseFunctionType.IN_OUT_QUAD
-                },
-                {
-                    property: "alpha",
-                    start: 1,
-                    end: 0,
-                    ease: EaseFunctionType.IN_OUT_QUAD
-                }
-            ],
-            onEnd: finalproject_Events.PLAYER_KILLED
-        });
+        this.taking_damage=false;
     }
+
+
+    // handleInput(event: GameEvent): void {
+	// 	// We need to handle animations when we get hurt
+	// 	if(event.type === finalproject_Events.PLAYER_DAMAGE){
+	// 		if(event.data.get("health") === 0){
+	// 			// Play animation and queue event to end game
+	// 			this.isDead=true;
+
+	// 			this.emitter.fireEvent( finalproject_Events.PLAYER_DEAD);
+	// 		} else {
+	// 		}
+	// 	}
+    
+        
+	// }
+
 
     initializePlatformer(): void {
         this.speed = 400;
@@ -193,9 +193,15 @@ export default class PlayerController extends StateMachineAI {
         }
 
         //handle if player hit trap
-        if(this.tilemap_laser.getTileAtWorldPosition(player_location)==16 || this.tilemap_spike.getTileAtWorldPosition(below_player_location)==4 || this.tilemap_spike.getTileAtWorldPosition(above_player_location)==15){
-            this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_TRAP);
-        }
+        // if(this.tilemap_laser.getTileAtWorldPosition(player_location)==16 || this.tilemap_spike.getTileAtWorldPosition(below_player_location)==4 || this.tilemap_spike.getTileAtWorldPosition(above_player_location)==15){
+        //     this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_TRAP);
+        // }
+        //handle if player hit laser
+        if(this.tilemap_laser.getTileAtWorldPosition(player_location)==16)
+            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":20});}
+        //handle if player hit spike
+        if(this.tilemap_spike.getTileAtWorldPosition(below_player_location)==4 || this.tilemap_spike.getTileAtWorldPosition(above_player_location)==15)
+            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":10});}
 
 
         let gamelevel = <GameLevel> this.owner.getScene();
@@ -252,12 +258,22 @@ export default class PlayerController extends StateMachineAI {
                     // We overlap it, try to pick it up
                     //console.log(this.inventory.getItem().sprite.imageId);
             if(this.background.getTileAtWorldPosition(player_location)==14){
-                this.emitter.fireEvent(finalproject_Events.HINT);
-                console.log("see hint");
-                ////////////////////////////////////
-                ////////////////////////////////////////////////////////////////
-                ///////////////////////////////
+                this.emitter.fireEvent(finalproject_Events.HINT1);
             }
+            if(this.background.getTileAtWorldPosition(player_location)==21){
+                this.emitter.fireEvent(finalproject_Events.HINT2); 
+            }
+            if(this.background.getTileAtWorldPosition(player_location)==22){
+                this.emitter.fireEvent(finalproject_Events.HINT3);
+
+            }
+            if(this.background.getTileAtWorldPosition(player_location)==24){
+                this.emitter.fireEvent(finalproject_Events.HINT4);
+            }
+            if(this.background.getTileAtWorldPosition(player_location)==25){
+                this.emitter.fireEvent(finalproject_Events.HINT5);
+            }
+
             for (let item of this.items) {
                 if (this.owner.collisionShape.overlaps(item.sprite.boundary)) {
                     // We overlap it, try to pick it up

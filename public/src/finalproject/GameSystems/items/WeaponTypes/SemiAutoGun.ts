@@ -139,9 +139,9 @@ export default class SemiAutoGun extends WeaponType {
     }
 
     hits(node: GameNode, line: Rect): boolean {
-        console.log("hit");
+       // console.log("hit");
         //return node.collisionShape.getBoundingRect().intersectSegment(line.start, line.end.clone().sub(line.start)) !== null;
-        return true;
+        return false;
     }
 
     clone(): WeaponType {

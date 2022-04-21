@@ -1,0 +1,442 @@
+{
+    "name": "Roy",
+    "spriteSheetImage": "roy.png",
+    "spriteWidth": 32,
+    "spriteHeight": 32,
+    "columns": 8,
+    "rows": 9,
+    "durationType": "time",
+    "animations": [
+        { 
+            "name": "IDLE",
+            "frames": [ 
+			{
+			"index": 0,
+			"duration": 100
+			},
+			{
+			"index": 1,
+			"duration": 5
+			},
+			{
+			"index": 2,
+			"duration": 5
+			}
+			 ]
+        },
+        {
+            "name": "WALK",
+            "frames": [ 
+			{
+			"index": 3,
+			"duration": 10
+			},
+			{
+			"index": 4,
+			"duration": 10
+			},
+			{
+			"index": 5,
+			"duration": 10
+			},
+			{
+			"index": 6,
+			"duration": 10
+			}
+			]
+        },
+        {
+            "name": "JUMP",
+             "frames": [ 
+			{
+			"index": 7,
+			"duration": 5
+			},
+			{
+			"index": 8,
+			"duration": 100
+			}
+			]
+        },
+        {
+            "name": "FALL",
+            "frames":[ {"index": 7, "duration": 100	}]
+        },
+
+	{
+            "name": "TAKING_DAMAGE",
+            "frames":[ {"index": 10, "duration": 10}]
+        },
+	
+	{
+            "name": "DEAD",
+            "frames":[ {"index": 11, "duration": 100}]
+        },
+
+
+
+        { 
+            "name": "KNIFE_IDLE",
+            "frames": [ 
+			{
+			"index": 12,
+			"duration": 100
+			},
+			{
+			"index": 13,
+			"duration": 5
+			},
+			{
+			"index": 14,
+			"duration": 5
+			}
+			 ]
+        },
+        {
+            "name": "KNIFE_WALK",
+            "frames": [ 
+			{
+			"index": 15,
+			"duration": 10
+			},
+			{
+			"index": 16,
+			"duration": 10
+			},
+			{
+			"index": 17,
+			"duration": 10
+			},
+			{
+			"index": 18,
+			"duration": 10
+			}
+			]
+        },
+        {
+            "name": "KNIFE_JUMP",
+             "frames": [ 
+			{
+			"index": 19,
+			"duration": 5
+			},
+			{
+			"index": 20,
+			"duration": 100
+			}
+			]
+        },
+        {
+            "name": "KNIFE_ATTACK",
+             "frames": [ 
+			{
+			"index": 20,
+			"duration": 5
+			},
+			{
+			"index": 21,
+			"duration": 5
+			}
+			]
+        },
+        {
+            "name": "KNIFE_FALL",
+            "frames":[ {"index": 19, "duration": 100	}]
+        },
+
+	{
+            "name": "KNIFE_TAKING_DAMAGE",
+            "frames":[ {"index": 22, "duration": 10}]
+        },
+	
+	{
+            "name": "KNIFE_DEAD",
+            "frames":[ {"index": 23, "duration": 30}]
+        },
+
+
+
+	 { 
+            "name": "PISTOL_IDLE",
+            "frames": [ 
+			{
+			"index": 24,
+			"duration": 100
+			},
+			{
+			"index": 25,
+			"duration": 5
+			},
+			{
+			"index": 26,
+			"duration": 5
+			}
+			 ]
+        },
+        {
+            "name": "PISTOL_WALK",
+            "frames": [ 
+			{
+			"index": 27,
+			"duration": 10
+			},
+			{
+			"index": 28,
+			"duration": 10
+			},
+			{
+			"index": 29,
+			"duration": 10
+			},
+			{
+			"index": 30,
+			"duration": 10
+			}
+			]
+        },
+        {
+            "name": "PISTOL_JUMP",
+             "frames": [ 
+			{
+			"index": 31,
+			"duration": 5
+			},
+			{
+			"index": 32,
+			"duration": 100
+			}
+			]
+        },
+        {
+            "name": "PISTOL_FALL",
+            "frames":[ {"index": 31, "duration": 100	}]
+        },
+
+	{
+            "name": "PISTOL_TAKING_DAMAGE",
+            "frames":[ {"index": 34, "duration": 10}]
+        },
+	
+	{
+            "name": "PISTOL_DEAD",
+            "frames":[ {"index": 35, "duration": 30}]
+        },
+
+	{ 
+            "name": "MACHINEGUN_IDLE",
+            "frames": [ 
+			{
+			"index": 36,
+			"duration": 100
+			},
+			{
+			"index": 37,
+			"duration": 5
+			},
+			{
+			"index": 38,
+			"duration": 5
+			}
+			 ]
+        },
+        {
+            "name": "MACHINEGUN_WALK",
+            "frames": [ 
+			{
+			"index": 39,
+			"duration": 10
+			},
+			{
+			"index": 40,
+			"duration": 10
+			},
+			{
+			"index": 41,
+			"duration": 10
+			},
+			{
+			"index": 42,
+			"duration": 10
+			}
+			]
+        },
+        {
+            "name": "MACHINEGUN_JUMP",
+             "frames": [ 
+			{
+			"index": 43,
+			"duration": 5
+			},
+			{
+			"index": 44,
+			"duration": 100
+			}
+			]
+        },
+        {
+            "name": "MACHINEGUN_FALL",
+            "frames":[ {"index": 43, "duration": 100	}]
+        },
+
+	{
+            "name": "MACHINEGUN_TAKING_DAMAGE",
+            "frames":[ {"index": 46, "duration": 10}]
+        },
+	
+	{
+            "name": "MACHINEGUN_DEAD",
+            "frames":[ {"index": 47, "duration": 30}]
+        },
+
+
+        { 
+            "name": "LIGHTSABER_IDLE",
+            "frames": [ 
+			{
+			"index": 48,
+			"duration": 100
+			},
+			{
+			"index": 49,
+			"duration": 5
+			},
+			{
+			"index": 50,
+			"duration": 5
+			}
+			 ]
+        },
+        {
+            "name": "LIGHTSABER_WALK",
+            "frames": [ 
+			{
+			"index": 51,
+			"duration": 10
+			},
+			{
+			"index": 52,
+			"duration": 10
+			},
+			{
+			"index": 53,
+			"duration": 10
+			},
+			{
+			"index": 54,
+			"duration": 10
+			}
+			]
+        },
+        {
+            "name": "LIGHTSABER_JUMP",
+             "frames": [ 
+			{
+			"index": 55,
+			"duration": 5
+			},
+			{
+			"index": 56,
+			"duration": 100
+			}
+			]
+        },
+        {
+            "name": "LIGHTSABER_ATTACK",
+             "frames": [ 
+			{
+			"index": 56,
+			"duration": 5
+			},
+			{
+			"index": 57,
+			"duration": 5
+			}
+			]
+        },
+        {
+            "name": "LIGHTSABER_FALL",
+            "frames":[ {"index": 55, "duration": 100	}]
+        },
+
+	{
+            "name": "LIGHTSABER_TAKING_DAMAGE",
+            "frames":[ {"index": 58, "duration": 10}]
+        },
+	
+	{
+            "name": "LIGHTSABER_DEAD",
+            "frames":[ {"index": 59, "duration": 30}]
+        },
+
+
+
+        { 
+            "name": "LASERGUN_IDLE",
+            "frames": [ 
+			{
+			"index": 60,
+			"duration": 100
+			},
+			{
+			"index": 61,
+			"duration": 5
+			},
+			{
+			"index": 62,
+			"duration": 5
+			}
+			 ]
+        },
+        {
+            "name": "LASERGUN_WALK",
+            "frames": [ 
+			{
+			"index": 63,
+			"duration": 10
+			},
+			{
+			"index": 64,
+			"duration": 10
+			},
+			{
+			"index": 65,
+			"duration": 10
+			},
+			{
+			"index": 66,
+			"duration": 10
+			}
+			]
+        },
+        {
+            "name": "LASERGUN_JUMP",
+             "frames": [ 
+			{
+			"index": 67,
+			"duration": 5
+			},
+			{
+			"index": 68,
+			"duration": 100
+			}
+			]
+        },
+        {
+            "name": "LASERGUN_FALL",
+            "frames":[ {"index": 67, "duration": 100	}]
+        },
+
+	{
+            "name": "LASERGUN_TAKING_DAMAGE",
+            "frames":[ {"index": 70, "duration": 10}]
+        },
+	
+	{
+            "name": "LASERGUN_DEAD",
+            "frames":[ {"index": 71, "duration": 30}]
+        }
+        
+
+   
+    ]
+}

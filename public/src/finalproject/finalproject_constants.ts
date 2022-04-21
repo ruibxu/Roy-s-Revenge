@@ -9,7 +9,9 @@ export enum finalproject_Events {
     SHOOT_BULLET = "shootBullet",
     SLICE = "slice",
     PLAYER_HIT_WEAPON = "playerHitWeapon",
-    PLAYER_HIT_TRAP = "playerHitTrap",
+    // PLAYER_HIT_TRAP = "playerHitTrap",
+    // PLAYER_HIT_LASER = "playerHitLaser",
+    // PLAYER_HIT_SPIKE = "playerHitSpike",
     PLAYER_DAMAGE = "playerDamage",
     PLAYER_DEAD = "playerDead",
     PLAYER_WEAPON_CHANGE = "playerWeaponChange",
@@ -26,6 +28,7 @@ export enum finalproject_Events {
     PICKUP_HEALTHPACK = "pickupHealthpack",
     PICKUP_GEAR = "pickupGear",
     GEAR = "gear",
+    ENEMY_DEAD = "enemyDied",
 
     //menu events
     IN_GAME_MENU = "ingame_menu",
@@ -36,7 +39,11 @@ export enum finalproject_Events {
     HELP = "help",
     CONTROL = "control",
     MENU = "menu",
-    HINT = "hint",
+    HINT1 = "hint1",
+    HINT2 = "hint2",
+    HINT3 = "hint3",
+    HINT4 = "hint4",
+    HINT5 = "hint5",
     SKILLMODE ="skillmode"
 }
 

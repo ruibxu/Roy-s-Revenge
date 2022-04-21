@@ -18,6 +18,10 @@
       {
         "source": "/benchmark1",
         "destination": "/benchmark_1/designdoc.html"
+      },
+      {
+        "source": "/benchmark3",
+        "destination": "/benchmark3/index.html"
       }
     ]
   }
