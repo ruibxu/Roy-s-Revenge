@@ -4,12 +4,8 @@ import { GameEventType } from "../../Wolfie2D/Events/GameEventType";
 import GameLevel from "./GameLevel";
 
 export default class Level2 extends GameLevel {
-    // HOMEWORK 5 - TODO
-    /**
-     * Decide which resource to keep and which to cull.
-     * 
-     * Not all of these loads are needed. Decide which to remove and handle keeping resources in Level1
-     */
+
+
     loadScene(): void {
         // Load resources
         this.load.tilemap("level2", "final_project_assets/tilemaps/level1.tmj");
@@ -21,10 +17,10 @@ export default class Level2 extends GameLevel {
         this.load.object("weaponData", "final_project_assets/data/weaponData.json");
 
         // Load the nav mesh
-        this.load.object("navmesh", "final_project_assets/data/navmesh.json");
+        this.load.object("navmesh", "final_project_assets/data/navmesh2.json");
 
         // Load in the enemy info
-        this.load.object("enemyData", "final_project_assets/data/enemy.json");
+        this.load.object("enemyData", "final_project_assets/data/enemy2.json");
 
         // Load in item info
         this.load.object("itemData", "final_project_assets/data/items2.json");
@@ -43,6 +39,8 @@ export default class Level2 extends GameLevel {
     }
 
     startScene(): void {
+
+        this.levelnumber=2;
         // Add the level 2 tilemap
         this.add.tilemap("level2", new Vec2(1, 1));
         this.viewport.setBounds(0, 0,  128*32, 16*32);

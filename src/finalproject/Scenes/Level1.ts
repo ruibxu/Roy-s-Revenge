@@ -10,6 +10,10 @@ export default class Level1 extends GameLevel {
     /**
      * Add your balloon pop sound here and use it throughout the code
      */
+
+
+
+
     loadScene(): void {
         // Load resources
         this.load.tilemap("level1", "final_project_assets/tilemaps/level2.tmj");
@@ -80,6 +84,7 @@ export default class Level1 extends GameLevel {
     }
 
     startScene(): void {
+        this.levelnumber=1;
         // Add the level 1 tilemap
         this.add.tilemap("level1", new Vec2(1, 1));
         //this.viewport.setBounds(0, 0, 64*32, 32*32);

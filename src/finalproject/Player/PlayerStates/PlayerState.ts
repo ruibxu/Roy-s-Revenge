@@ -13,6 +13,7 @@ import MathUtils from "../../../Wolfie2D/Utils/MathUtils";
 import Debug from "../../../Wolfie2D/Debug/Debug";
 
 
+
 export default abstract class PlayerState extends State {
 	owner: GameNode;
 	parent:PlayerController;
@@ -43,10 +44,15 @@ export default abstract class PlayerState extends State {
 				(<Sprite>this.owner).invertY = false;
 			}	
 		}
-
-
-
+		if(event.type === "taking_damage"){
+			this.owner.tweens.play("damage");
+            this.parent.is_taking_damage=true;
+	 	}
+        if(event.type === "damagefinish"){
+            this.parent.is_taking_damage=false;
+	 	}
 	}
+
 
 	/** 
 	 * Get the inputs from the keyboard, or Vec2.Zero if nothing is being pressed
@@ -82,6 +88,7 @@ export default abstract class PlayerState extends State {
 			this.positionTimer.start();
 		}
 		
+
 
 
 		if(this.parent.skillmode==false){

@@ -15,7 +15,12 @@ import GameLevel from "./GameLevel";
 
 export default class Controls extends Scene {
     private controls: Layer;
-
+    private isInvincible: boolean;
+    private levelCount: number;
+    initScene(init: Record<string, any>):void {
+        this.isInvincible = init.isInvincible;
+        this.levelCount=init.levelCount;
+    }
     startScene(): void {
         // Center the viewport
         
@@ -43,44 +48,41 @@ export default class Controls extends Scene {
 
         controlsHeader.fontSize = 70;
         controlsHeader.textColor=Color.WHITE;
-        const texta = "a to move left";
-        const textb = "d to move right";
-        const text="space and w to jump";
+        const texta = "a to move left, d to move right";
+        const text="space and w to jump, left click to attack";
         const textc = "e to pick up weapons, 1 and 2 to change to each slots";
         const textd = "Q to cast the skill";
         const textd2 ="(which will reverse gravity, and Roy will be able to walk on the ceiling)";
-        const texte = "left click to attack";
 
-        const linea = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 150), text: texta});
-        const lineb = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y-100), text: textb});
-        const line = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y-50), text: text});
-        const linec = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: textc});
-        const lined = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y+50), text: textd});
-        const lined2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y+100), text: textd2});
-        const linee = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y+150), text: texte});
-
-        linea.fontSize=40;
-        lineb.fontSize=40;
-        line.fontSize=40;
-        linec.fontSize=40;
-        lined.fontSize=40;
-        lined2.fontSize=40;
-        linee.fontSize=40;
+        const linea = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 200), text: texta});
+        const line = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y-150), text: text});
+        const linec = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y-100), text: textc});
+        const lined = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y-50), text: textd});
+        const lined2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: textd2});
 
         linea.textColor=Color.WHITE;
-        lineb.textColor=Color.WHITE;
         line.textColor=Color.WHITE;
         linec.textColor=Color.WHITE;
         lined.textColor=Color.WHITE;
         lined2.textColor=Color.WHITE;
-        linee.textColor=Color.WHITE;
+
+        const txt1= "press esc ingame to enter the ingame menu. ";
+        const txt2= "press esc or click the resume button to return back to the game";
+        const testmsg1=<Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + 100), text: txt1});
+        const testmsg2=<Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + 150), text: txt2});
+
+        testmsg1.textColor=Color.WHITE;
+        testmsg2.textColor=Color.WHITE;
 
     }
     updateScene(){
         while(this.receiver.hasNextEvent()){
             let event = this.receiver.getNextEvent();
             if(event.type === "menu"){
-                this.sceneManager.changeToScene(MainMenu, {});
+                this.sceneManager.changeToScene(MainMenu, {
+                    isInvincible: this.isInvincible,
+                    levelCount: this.levelCount
+                });
             }
 
         }

@@ -39,11 +39,8 @@ export enum finalproject_Events {
     HELP = "help",
     CONTROL = "control",
     MENU = "menu",
-    HINT1 = "hint1",
-    HINT2 = "hint2",
-    HINT3 = "hint3",
-    HINT4 = "hint4",
-    HINT5 = "hint5",
+    HINT = "hint",
+    HINTDISABLE = "hintdisable",
     SKILLMODE ="skillmode"
 }
 

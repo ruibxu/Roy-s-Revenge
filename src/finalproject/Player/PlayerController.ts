@@ -56,8 +56,10 @@ export default class PlayerController extends StateMachineAI {
     skillmode: boolean;
     skillcooldown: Timer;
     gravity: number;
+
+    hintopened: boolean = false;
     
-    taking_damage:boolean;
+    is_taking_damage:boolean;
 
     // HOMEWORK 5 - TODO
     /**
@@ -84,7 +86,9 @@ export default class PlayerController extends StateMachineAI {
         this.receiver.subscribe(finalproject_Events.SKILLMODE);
         this.receiver.subscribe(finalproject_Events.ATTACK);
         this.receiver.subscribe(finalproject_Events.PLAYER_DAMAGE);
-
+        this.receiver.subscribe("taking_damage");
+        this.receiver.subscribe("damagefinish");
+        
         this.health = 3;
         this.items = options.items;
         this.inventory = options.inventory;
@@ -94,24 +98,26 @@ export default class PlayerController extends StateMachineAI {
         this.skillmode=false;
 		this.skillcooldown=new Timer(2000);
         this.gravity=1000;
-        this.taking_damage=false;
+        this.is_taking_damage=false;
+
+        owner.tweens.add("damage", {
+            startDelay: 0,
+            duration: 800,
+            effects: [
+                {
+                    property: "alpha",
+                    start: 0.2,
+                    end: 1,
+                    ease: EaseFunctionType.IN_OUT_QUAD
+                }
+            ]
+        });
     }
 
 
-    // handleInput(event: GameEvent): void {
-	// 	// We need to handle animations when we get hurt
-	// 	if(event.type === finalproject_Events.PLAYER_DAMAGE){
-	// 		if(event.data.get("health") === 0){
-	// 			// Play animation and queue event to end game
-	// 			this.isDead=true;
-
-	// 			this.emitter.fireEvent( finalproject_Events.PLAYER_DEAD);
-	// 		} else {
-	// 		}
-	// 	}
-    
-        
-	// }
+    /*handleInput(event: GameEvent): void {
+        // We need to handle animations when we get hurt
+    }*/
 
 
     initializePlatformer(): void {
@@ -125,7 +131,6 @@ export default class PlayerController extends StateMachineAI {
         this.addState(PlayerStates.JUMP, jump);
         let fall = new Fall(this, this.owner);
         this.addState(PlayerStates.FALL, fall);
-        
         this.initialize(PlayerStates.IDLE);
     }
 
@@ -191,17 +196,19 @@ export default class PlayerController extends StateMachineAI {
             }
             this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
         }
+        if(this.background.getTileAtWorldPosition(player_location)==14&&this.hintopened==false){
+            this.emitter.fireEvent(finalproject_Events.HINT);
+            this.hintopened=true;
+        }
+        else if (this.background.getTileAtWorldPosition(player_location)!=14){
+            this.emitter.fireEvent(finalproject_Events.HINTDISABLE);
+            this.hintopened=false;
+        }
 
-        //handle if player hit trap
-        // if(this.tilemap_laser.getTileAtWorldPosition(player_location)==16 || this.tilemap_spike.getTileAtWorldPosition(below_player_location)==4 || this.tilemap_spike.getTileAtWorldPosition(above_player_location)==15){
-        //     this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_TRAP);
-        // }
-        //handle if player hit laser
-        if(this.tilemap_laser.getTileAtWorldPosition(player_location)==16)
-            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":20});}
-        //handle if player hit spike
-        if(this.tilemap_spike.getTileAtWorldPosition(below_player_location)==4 || this.tilemap_spike.getTileAtWorldPosition(above_player_location)==15)
-            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":10});}
+        
+        if(this.tilemap_laser.getTileAtWorldPosition(player_location)==16 || this.tilemap_spike.getTileAtWorldPosition(below_player_location)==4 || this.tilemap_spike.getTileAtWorldPosition(above_player_location)==15){
+            this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE,{"damage":20});
+        }
 
 
         let gamelevel = <GameLevel> this.owner.getScene();
@@ -257,23 +264,6 @@ export default class PlayerController extends StateMachineAI {
         if (Input.isJustPressed("interact")) {
                     // We overlap it, try to pick it up
                     //console.log(this.inventory.getItem().sprite.imageId);
-            if(this.background.getTileAtWorldPosition(player_location)==14){
-                this.emitter.fireEvent(finalproject_Events.HINT1);
-            }
-            if(this.background.getTileAtWorldPosition(player_location)==21){
-                this.emitter.fireEvent(finalproject_Events.HINT2); 
-            }
-            if(this.background.getTileAtWorldPosition(player_location)==22){
-                this.emitter.fireEvent(finalproject_Events.HINT3);
-
-            }
-            if(this.background.getTileAtWorldPosition(player_location)==24){
-                this.emitter.fireEvent(finalproject_Events.HINT4);
-            }
-            if(this.background.getTileAtWorldPosition(player_location)==25){
-                this.emitter.fireEvent(finalproject_Events.HINT5);
-            }
-
             for (let item of this.items) {
                 if (this.owner.collisionShape.overlaps(item.sprite.boundary)) {
                     // We overlap it, try to pick it up

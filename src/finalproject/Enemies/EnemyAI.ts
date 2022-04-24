@@ -52,9 +52,9 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
     path: NavigationPath;
 
     // Path away from player
-    //retreatPath: NavigationPath;
+    retreatPath: NavigationPath;
 
-    gravity: number = 1000;
+    //gravity: number = 1000;
 
     velocity: Vec2;
 

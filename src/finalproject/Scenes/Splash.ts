@@ -15,13 +15,18 @@ import MainMenu from "./MainMenu";
 export default class Splash extends Scene {
     private splash: Layer;
     logo: Sprite;
-
+    protected isInvincible: boolean;
+    protected levelCount: number;
     loadScene(): void {
         this.load.image("logo", "final_project_assets/images/banner.png");
     }
+
     startScene(): void {
         // Center the viewport
         
+        this.isInvincible=false;
+        this.levelCount=1;
+
         let size = this.viewport.getHalfSize();
         let center = this.viewport.getCenter();
         this.viewport.setFocus(size);
@@ -40,7 +45,11 @@ export default class Splash extends Scene {
     }
     updateScene(){
         if(Input.isMouseJustPressed()){
-            this.sceneManager.changeToScene(MainMenu, {});
+            this.sceneManager.changeToScene(MainMenu, {
+                isInvincible: this.isInvincible,
+                levelCount: this.levelCount
+            });
+
         }
     }
 }
