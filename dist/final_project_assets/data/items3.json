@@ -1,0 +1,78 @@
+{
+    "items": [
+        {
+            "type": "gear",
+            "position": [2320, 560]
+        },
+        {
+            "type": "gear",
+            "position": [1456, 304]
+        },
+        {
+            "type": "gear",
+            "position": [3440, 48]
+        },
+        {
+            "type": "gear",
+            "position": [2704, 752]
+        },
+        {
+            "type": "gear",
+            "position": [1328, 464]
+        },
+        {
+            "type": "gear",
+            "position": [912, 528]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "lightSaber", 
+            "position": [752, 944]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "machineGun", 
+            "position": [720, 976]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "laserGun", 
+            "position": [784, 976]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "knife", 
+            "position": [688, 944]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "pistol", 
+            "position": [656, 976]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "lightSaber", 
+            "position": [1072, 944]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "machineGun", 
+            "position": [1104, 976]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "laserGun", 
+            "position": [1040, 976]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "knife", 
+            "position": [1136, 944]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "pistol", 
+            "position": [1168, 976]
+        }
+    ]
+}

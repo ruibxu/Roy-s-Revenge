@@ -2,6 +2,8 @@ import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import Debug from "../../Wolfie2D/Debug/Debug";
 import { GameEventType } from "../../Wolfie2D/Events/GameEventType";
 import GameLevel from "./GameLevel";
+import Level3 from "./Level3";
+
 
 export default class Level2 extends GameLevel {
 
@@ -13,6 +15,9 @@ export default class Level2 extends GameLevel {
         this.load.spritesheet("boss", "final_project_assets/spritesheets/boss.json");
         this.load.spritesheet("slice", "final_project_assets/spritesheets/slice.json");
         this.load.spritesheet("melee_enemy","final_project_assets/spritesheets/melee_enemy.json");
+        this.load.spritesheet("melee_enemy_air","final_project_assets/spritesheets/melee_enemy_air.json");
+        this.load.spritesheet("ranged_enemy","final_project_assets/spritesheets/ranged_enemy.json");
+        this.load.spritesheet("ranged_enemy_air","final_project_assets/spritesheets/ranged_enemy_air.json");
    
         this.load.object("weaponData", "final_project_assets/data/weaponData.json");
 
@@ -52,7 +57,7 @@ export default class Level2 extends GameLevel {
 
 
         this.currentLevel = Level2;
-        //this.nextLevel = Level3;
+        this.nextLevel = Level3;
 
         super.startScene();
         

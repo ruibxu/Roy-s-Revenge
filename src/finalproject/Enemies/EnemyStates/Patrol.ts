@@ -39,6 +39,7 @@ export default class Patrol extends EnemyState {
         // If the enemy sees the player, start attacking
         this.parent.lastPlayerPos = this.parent.getPlayerPosition();
         if(this.parent.lastPlayerPos !== null){
+            console.log("yes");
             this.finished(EnemyStates.TARGETING);
         }
         else{
@@ -47,6 +48,9 @@ export default class Patrol extends EnemyState {
                 this.currentPath = this.getNextPath();
             } else {
                 this.owner.moveOnPath(this.parent.speed * deltaT, this.currentPath);
+
+                //this.owner.rotation = Vec2.UP.angleToCCW(this.currentPath.getMoveDirection(this.owner));
+                
                 if (this.currentPath.getMoveDirection(this.owner).x>=0){
                     this.owner.rotation = Vec2.RIGHT.angleToCCW(this.currentPath.getMoveDirection(this.owner));
                     (<Sprite>this.owner).invertX=false;

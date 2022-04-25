@@ -2,9 +2,9 @@ import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import Debug from "../../Wolfie2D/Debug/Debug";
 import { GameEventType } from "../../Wolfie2D/Events/GameEventType";
 import GameLevel from "./GameLevel";
-import Level2 from "./Level2";
+import Level6 from "./Level6";
 
-export default class Level1 extends GameLevel {
+export default class Level5 extends GameLevel {
     
     // HOMEWORK 5 - TODO
     /**
@@ -16,7 +16,7 @@ export default class Level1 extends GameLevel {
 
     loadScene(): void {
         // Load resources
-        this.load.tilemap("level1", "final_project_assets/tilemaps/level2.tmj");
+        this.load.tilemap("level5", "final_project_assets/tilemaps/level5.tmj");
         this.load.spritesheet("player", "final_project_assets/spritesheets/roy.json");
         this.load.spritesheet("boss", "final_project_assets/spritesheets/boss.json");
         this.load.spritesheet("slice", "final_project_assets/spritesheets/slice.json");
@@ -24,8 +24,7 @@ export default class Level1 extends GameLevel {
         this.load.spritesheet("melee_enemy_air","final_project_assets/spritesheets/melee_enemy_air.json");
         this.load.spritesheet("ranged_enemy","final_project_assets/spritesheets/ranged_enemy.json");
         this.load.spritesheet("ranged_enemy_air","final_project_assets/spritesheets/ranged_enemy_air.json");
-        //this.load.spritesheet("red", "final_project_assets/spritesheets/redBalloon.json");
-        //this.load.spritesheet("blue", "final_project_assets/spritesheets/blueBalloon.json");
+
         //this.load.audio("jump", "final_project_assets/sounds/jump.wav");
         //this.load.audio("switch", "final_project_assets/sounds/switch.wav");
         //this.load.audio("player_death", "final_project_assets/sounds/player_death.wav");
@@ -87,9 +86,9 @@ export default class Level1 extends GameLevel {
     }
 
     startScene(): void {
-        this.levelnumber=1;
+        this.levelnumber=5;
         // Add the level 1 tilemap
-        this.add.tilemap("level1", new Vec2(1, 1));
+        this.add.tilemap("level5", new Vec2(1, 1));
         //this.viewport.setBounds(0, 0, 64*32, 32*32);
         this.viewport.setBounds(0, 0, 128*32, 16*32);
 
@@ -97,8 +96,8 @@ export default class Level1 extends GameLevel {
 
         // Set the total switches and balloons in the level
 
-        this.currentLevel = Level1;
-        this.nextLevel = Level2;
+        this.currentLevel = Level5;
+        this.nextLevel = Level6;
         
         // Do generic setup for a GameLevel
         super.startScene();

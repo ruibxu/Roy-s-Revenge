@@ -16,6 +16,10 @@ import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
 import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import Level2 from "./Level2";
 import GameLevel from "./GameLevel";
+import Level3 from "./Level3";
+import Level6 from "./Level6";
+import Level5 from "./Level5";
+import Level4 from "./Level4";
 
 export default class MainMenu extends Scene {
 
@@ -245,7 +249,6 @@ export default class MainMenu extends Scene {
         level6.setPadding(new Vec2(50, 10));
         level6.font = "PixelSimple";
         level6.textColor = Color.BLACK;
-        level6.onClickEventId="level6";
         if(this.levelCount >=6){
             level6.backgroundColor = new Color(99,202,253);
             level6.onClickEventId="level6";
@@ -295,7 +298,7 @@ export default class MainMenu extends Scene {
                     levelCount: this.levelCount
                 }, sceneOptions);
             }
-            /*if(event.type === "level3"){
+            if(event.type === "level3"){
                 let sceneOptions = {
                     physics: {
                         groupNames: ["ground", "player"],
@@ -358,12 +361,12 @@ export default class MainMenu extends Scene {
                         ]
                     }
                 }
-                this.sceneManager.changeToScene(Leve6, {
+                this.sceneManager.changeToScene(Level6, {
                     isInvincible: this.isInvincible,
                     levelCount: this.levelCount
                 }, sceneOptions);
             }
-            */
+            
             if(event.type === "level"){
                 this.level.setHidden(false);
                 this.mainMenu.setHidden(true);
@@ -400,6 +403,30 @@ export default class MainMenu extends Scene {
                 this.levelCount=2;
             }
             this.emitter.fireEvent("level2");
+        }
+        if(Input.isKeyJustPressed("3")){
+            if(this.levelCount<3){
+                this.levelCount=3;
+            }
+            this.emitter.fireEvent("level3");
+        }
+        if(Input.isKeyJustPressed("4")){
+            if(this.levelCount<4){
+                this.levelCount=4;
+            }
+            this.emitter.fireEvent("level4");
+        }
+        if(Input.isKeyJustPressed("5")){
+            if(this.levelCount<5){
+                this.levelCount=5;
+            }
+            this.emitter.fireEvent("level5");
+        }
+        if(Input.isKeyJustPressed("6")){
+            if(this.levelCount<6){
+                this.levelCount=6;
+            }
+            this.emitter.fireEvent("level6");
         }
     }
     unloadScene(): void {

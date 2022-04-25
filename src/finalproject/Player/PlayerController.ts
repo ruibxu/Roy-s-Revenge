@@ -61,6 +61,12 @@ export default class PlayerController extends StateMachineAI {
     
     is_taking_damage:boolean;
 
+    // currentLevelLabel : String;
+    // private laserReds : Vec2[] = [];
+    // private laserGreens : Vec2[] = [];
+    // private laserBlues : Vec2[] = [];
+    // switchTimer : Timer;
+
     // HOMEWORK 5 - TODO
     /**
      * Implement a death animation for the player using tweens. The animation rotate the player around itself multiple times

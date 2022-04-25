@@ -38,6 +38,7 @@ import BattlerAI from "../Enemies/BattlerAI";
 import PositionGraph from "../../Wolfie2D/DataTypes/Graphs/PositionGraph";
 import Navmesh from "../../Wolfie2D/Pathfinding/Navmesh";
 import Gear from "../GameSystems/items/Gear";
+import Idle from "../Enemies/EnemyActions/Idle";
 
 
 
@@ -57,6 +58,8 @@ export default class GameLevel extends Scene {
     protected help: Layer;
     protected hintLayer: Layer;
 
+
+    protected item: Item;
 
 
     protected inventory: InventoryManager;
@@ -143,7 +146,7 @@ export default class GameLevel extends Scene {
         this.bullets = new Array();
         this.ispaused=false;
         // Send the player and enemies to the battle manager
-        this.battleManager.setPlayers([<BattlerAI>this.player._ai]);
+        this.battleManager.setPlayers(<BattlerAI>this.player._ai);
         this.battleManager.setEnemies(this.enemies.map(enemy => <BattlerAI>enemy._ai));
 
         this.ispaused=false;
@@ -275,6 +278,32 @@ export default class GameLevel extends Scene {
             // Debug mode graph
             if(Input.isKeyJustPressed("g")){
                 this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
+            }
+            if(Input.isKeyJustPressed("c")){
+                let weapon = this.createWeapon("knife");
+                weapon.moveSprite(this.player.position);
+                this.items.push(weapon);
+                
+            }
+            if(Input.isKeyJustPressed("v")){
+                let weapon = this.createWeapon("pistol");
+                weapon.moveSprite(this.player.position);
+                this.items.push(weapon);
+            }
+            if(Input.isKeyJustPressed("b")){
+                let weapon = this.createWeapon("machineGun");
+                weapon.moveSprite(this.player.position);
+                this.items.push(weapon);
+            }
+            if(Input.isKeyJustPressed("n")){
+                let weapon = this.createWeapon("laserGun");
+                weapon.moveSprite(this.player.position);
+                this.items.push(weapon);
+            }
+            if(Input.isKeyJustPressed("m")){
+                let weapon = this.createWeapon("lightSaber");
+                weapon.moveSprite(this.player.position);
+                this.items.push(weapon);
             }
             
             switch(event.type){
@@ -734,20 +763,40 @@ export default class GameLevel extends Scene {
         const cheatb = "Player becomes invincible ";
         const cheatb2 = "Or you can press i ingame to turn invincible on and off ";
         const cheatc = "Press the level number in the main menu to access the level you want, ex. press 1 to enter level 1";
+        const cheatd = "Press c in game to spawn a knife at your current location";
+        const cheate = "Press v in game to spawn a pistol at your current location";
+        const cheatf = "Press b in game to spawn a machine gun at your current location";
+        const cheatg = "Press n in game to spawn a laser gun at your current location";
+        const cheath = "Press m in game to spawn a lightsaber at your current location";
         const cheat1 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-325, center.y +100), text: cheata});
         const cheat2 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-300, center.y +125), text: cheatb});
         const cheat22 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x+300, center.y +125), text: cheatb2});
         const cheat3 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-17, center.y +150), text: cheatc});
+        const cheat4 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-180, center.y +175), text: cheatd});
+        const cheat5 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-178, center.y +200), text: cheate});
+        const cheat6 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-147, center.y +225), text: cheatf});
+        const cheat7 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-162, center.y +250), text: cheatg});
+        const cheat8 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-158, center.y +275), text: cheath});
 
         cheat1.textColor=Color.WHITE;
         cheat2.textColor=Color.WHITE;
         cheat22.textColor=Color.WHITE;
         cheat3.textColor=Color.WHITE;
+        cheat4.textColor=Color.WHITE;
+        cheat5.textColor=Color.WHITE;
+        cheat6.textColor=Color.WHITE;
+        cheat7.textColor=Color.WHITE;
+        cheat8.textColor=Color.WHITE;
 
         cheat1.fontSize=18;
         cheat2.fontSize=18;
         cheat22.fontSize=18;
         cheat3.fontSize=18;
+        cheat4.fontSize=18;
+        cheat5.fontSize=18;
+        cheat6.fontSize=18;
+        cheat7.fontSize=18;
+        cheat8.fontSize=18;
 
         this.invinciblebtn=<Button>this.add.uiElement(UIElementType.BUTTON, "help", {position: new Vec2(center.x, center.y +125), text: "OFF"});
         this.invinciblebtn.size.set(100, 25);
@@ -968,8 +1017,15 @@ export default class GameLevel extends Scene {
         // let actionsRange = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
         // new Move(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 100})];
      
-        let actionsMelee = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
-         new Move(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 20})];
+        let actionsmelee = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
+         new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 40})];
+         let actionsrange = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
+         new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 150})];
+        /*let actionsBerserk = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
+        new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 20})];
+        let actionsRetreat = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
+        new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 20})];*/
+         
      
 
         const enemyData = this.load.getObject("enemyData");
@@ -992,9 +1048,9 @@ export default class GameLevel extends Scene {
                 data.route = data.route.map((index: number) => this.graph.getNodePosition(index));                
             }
 
-            /*if(data.guardPosition){
+            if(data.guardPosition){
                 data.guardPosition = new Vec2(data.guardPosition[0], data.guardPosition[1]);
-            }*/
+            }
 
             let statusArray: Array<string> = [finalproject_Statuses.CAN_BERSERK, finalproject_Statuses.CAN_RETREAT];
 
@@ -1005,14 +1061,12 @@ export default class GameLevel extends Scene {
 
             if (data.type === "melee_enemy"){
                 weapon = this.createWeapon("knife")
-                actions = actionsMelee;
-                range = 20;
+                actions = actionsmelee;
             }
-            // else if (data.type === "range_enemy") {
-            //     weapon = this.createWeapon("pistol")
-            //     //actions = actionsRange;
-            //     range = 200;
-            // }
+            else if (data.type === "ranged_enemy") {
+                weapon = this.createWeapon("laserGun")
+                actions = actionsrange;
+            }
 
             let enemyOptions = {
                 defaultMode: data.mode,
@@ -1021,9 +1075,9 @@ export default class GameLevel extends Scene {
                 health: data.health,
                 player: this.player,
                 weapon: weapon,
+                actions: actions,
                 goal: finalproject_Statuses.REACHED_GOAL,
                 status: statusArray,
-                actions: actions,
                 inRange: range
             }
 
@@ -1032,7 +1086,7 @@ export default class GameLevel extends Scene {
 /*
         this.enemy = this.add.animatedSprite("boss", "primary");
         this.enemy.scale.set(1, 1);
-        let enemyPosition=new Vec2(1216,384);
+        let enemyPosition=new Vec2(1216 ,384);
         this.enemy.position.copy(enemyPosition);
         this.enemy.addPhysics(new AABB(Vec2.ZERO, new Vec2(32, 32)));
         this.enemy.colliderOffset.set(0, 2);

@@ -24,7 +24,7 @@ export default class GoapActionPlanner {
 
         //Build tree from 0 to 1
         this.buildTree(0, goal, possibleActions, currentStatus);
-        console.log(this.graph.toString());
+        //console.log(this.graph.toString());
 
         //Run djikstra to find shortest path
         this.path = GraphUtils.djikstra(this.graph, 0);

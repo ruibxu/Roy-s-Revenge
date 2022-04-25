@@ -1,0 +1,40 @@
+{
+    "items": [
+        {
+            "type": "gear",
+            "position": [1168, 624]
+        },
+        {
+            "type": "gear",
+            "position": [1456, 720]
+        },
+        {
+            "type": "gear",
+            "position": [1744, 720]
+        },
+        {
+            "type": "gear",
+            "position": [1776, 720]
+        },
+        {
+            "type": "gear",
+            "position": [1808, 720]
+        },
+        {
+            "type": "gear",
+            "position": [3056, 560]
+        },
+        {
+            "type": "gear",
+            "position": [3696, 976]
+        },
+        {
+            "type": "gear",
+            "position": [3984, 976]
+        },
+        {
+            "type": "gear",
+            "position": [3632, 304]
+        }
+    ]
+}
