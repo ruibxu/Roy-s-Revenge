@@ -9,6 +9,8 @@ import Color from "../../../../Wolfie2D/Utils/Color";
 import { EaseFunctionType } from "../../../../Wolfie2D/Utils/EaseFunctions";
 import { finalproject_Events } from "../../../finalproject_constants";
 import WeaponType from "./WeaponType";
+import Emitter from "../../../../Wolfie2D/Events/Emitter";
+import { GameEventType } from "../../../../Wolfie2D/Events/GameEventType";
 
 export default class LaserGun extends WeaponType {
 
@@ -23,9 +25,11 @@ export default class LaserGun extends WeaponType {
         this.displayName = options.displayName;
         this.spriteKey = options.spriteKey;
         this.useVolume = options.useVolume;
+        this.emitter = new Emitter();
     }
 
     doAnimation(shooter: GameNode, direction: Vec2, line: Line): void {
+        this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "lasergun", loop: false, holdReference: false});
         let start = shooter.position.clone();
         start.y+=5;
         let end = shooter.position.clone().add(direction.scaled(200));

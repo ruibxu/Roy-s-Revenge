@@ -43,10 +43,10 @@ export default class MainMenu extends Scene {
 
     loadScene(): void {
         // Load the menu song
-        this.load.audio("menu", "final_project_assets/music/menu.mp3");
         this.load.image("logo", "final_project_assets/images/banner.png");
         this.load.image("back", "final_project_assets/images/background.png");
         this.load.image("level1", "final_project_assets/images/level1.png");
+        this.load.audio("menu", "final_project_assets/music/mainmenu.mp3");
     }
 
 
@@ -57,6 +57,8 @@ export default class MainMenu extends Scene {
 
     startScene(): void {
         // Center the viewport
+        this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "menu", loop: true, holdReference: true});
+
         let size = this.viewport.getHalfSize();
         let center = this.viewport.getCenter();
 

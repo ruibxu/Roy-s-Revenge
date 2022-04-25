@@ -239,7 +239,13 @@ export default class GameLevel extends Scene {
                 this.getLayer("slots").enable();
                 this.getLayer("items").enable();
                 this.viewport.setZoomLevel(2.25);
-                this.viewport.setBounds(0, 0, 128*32, 16*32);
+                if(this.levelnumber==1||this.levelnumber==2){
+                    this.viewport.setBounds(0, 0, 128*32, 16*32);
+                }
+                else{
+                    this.viewport.setBounds(0, 0, 128*32, 32*32);
+                }
+               
                 this.ispaused=false;
                 this.tilemaps.forEach(tilemap => {
                     tilemap.visible = true;
@@ -309,7 +315,7 @@ export default class GameLevel extends Scene {
             switch(event.type){
                 case finalproject_Events.PLAYER_HIT_SWITCH:
                     {
-                        // this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "switch", loop: false, holdReference: false});
+                        this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "switch", loop: false, holdReference: false});
                     }
                     break;
                 case finalproject_Events.PLAYER_DAMAGE:
@@ -972,11 +978,14 @@ export default class GameLevel extends Scene {
         this.player.addAI(PlayerController, 
             {playerType: "platformer", 
             tilemap: "front",   
-            tilemap_laser: "laser",
+            tilemap_laser_red: "laser_red",
+            tilemap_laser_green: "laser_green",
+            tilemap_laser_blue: "laser_blue",
             tilemap_spike: "spike",
             back:"background",
             inventory: this.inventory,
             items: this.items,
+            levelnumber: this.levelnumber
             });
 
         this.player.setGroup("player");
@@ -1019,7 +1028,7 @@ export default class GameLevel extends Scene {
      
         let actionsmelee = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
          new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 40})];
-         let actionsrange = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
+        let actionsrange = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
          new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 150})];
         /*let actionsBerserk = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
         new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 20})];
@@ -1064,6 +1073,14 @@ export default class GameLevel extends Scene {
                 actions = actionsmelee;
             }
             else if (data.type === "ranged_enemy") {
+                weapon = this.createWeapon("laserGun")
+                actions = actionsrange;
+            }
+            else if (data.type === "melee_enemy_air") {
+                weapon = this.createWeapon("knife")
+                actions = actionsmelee;
+            }
+            else if (data.type === "ranged_enemy_air") {
                 weapon = this.createWeapon("laserGun")
                 actions = actionsrange;
             }
@@ -1163,6 +1180,7 @@ export default class GameLevel extends Scene {
             this.isDead=true;
             this.player.disablePhysics();
         }
+       
     }
 
     /**

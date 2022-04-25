@@ -12,6 +12,8 @@ import WeaponType from "./WeaponType";
 import Rect from "../../../../Wolfie2D/Nodes/Graphics/Rect";
 import BulletBehavior from "../../../Player/BulletAI";
 import Circle from "../../../../Wolfie2D/DataTypes/Shapes/Circle";
+import Emitter from "../../../../Wolfie2D/Events/Emitter";
+import { GameEventType } from "../../../../Wolfie2D/Events/GameEventType";
 
 export default class SemiAutoGun extends WeaponType {
 
@@ -28,11 +30,13 @@ export default class SemiAutoGun extends WeaponType {
         this.displayName = options.displayName;
         this.spriteKey = options.spriteKey;
         this.useVolume = options.useVolume;
+        this.emitter = new Emitter();
         //this.MAX_BULLETS_SIZE=5;
         //this.bullets=new Array(this.MAX_BULLETS_SIZE);
     }
 
     doAnimation(shooter: GameNode, direction: Vec2, bullet: Rect): void {
+        this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "fire", loop: false, holdReference: false});
         // let start = shooter.position.clone();
         // start.y+=5;
         // let end = shooter.position.clone().add(direction.scaled(200));

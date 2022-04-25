@@ -1,5 +1,6 @@
 import GameNode from "../../../../Wolfie2D/Nodes/GameNode";
 import Scene from "../../../../Wolfie2D/Scene/Scene";
+import Emitter from "../../../../Wolfie2D/Events/Emitter";
 
 export default abstract class WeaponType {
     /** The key for this sprite image */
@@ -32,4 +33,6 @@ export default abstract class WeaponType {
     abstract hits(node: GameNode, ...args: any): boolean;
 
     abstract clone(): WeaponType;
+
+    protected emitter: Emitter;
 }
