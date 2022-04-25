@@ -2,9 +2,9 @@ import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import Debug from "../../Wolfie2D/Debug/Debug";
 import { GameEventType } from "../../Wolfie2D/Events/GameEventType";
 import GameLevel from "./GameLevel";
-import Level3 from "./Level3";
+import Level4 from "./Level4";
 
-export default class Level2 extends GameLevel {
+export default class Level3 extends GameLevel {
     // HOMEWORK 5 - TODO
     /**
      * Decide which resource to keep and which to cull.
@@ -13,7 +13,7 @@ export default class Level2 extends GameLevel {
      */
     loadScene(): void {
         // Load resources
-        this.load.tilemap("level2", "final_project_assets/tilemaps/level1.tmj");
+        this.load.tilemap("level3", "final_project_assets/tilemaps/level3.tmj");
         this.load.spritesheet("player", "final_project_assets/spritesheets/roy.json");
         this.load.spritesheet("boss", "final_project_assets/spritesheets/boss.json");
         this.load.spritesheet("slice", "final_project_assets/spritesheets/slice.json");
@@ -22,13 +22,13 @@ export default class Level2 extends GameLevel {
         this.load.object("weaponData", "final_project_assets/data/weaponData.json");
 
         // Load the nav mesh
-        this.load.object("navmesh", "final_project_assets/data/navmesh2.json");
+        this.load.object("navmesh", "final_project_assets/data/navmesh3.json");
 
         // Load in the enemy info
-        this.load.object("enemyData", "final_project_assets/data/enemy2.json");
+        this.load.object("enemyData", "final_project_assets/data/enemy3.json");
 
         // Load in item info
-        this.load.object("itemData", "final_project_assets/data/items2.json");
+        this.load.object("itemData", "final_project_assets/data/items3.json");
 
         // Load the healthpack sprite
         this.load.image("healthpack", "final_project_assets/sprites/health.png");
@@ -45,22 +45,22 @@ export default class Level2 extends GameLevel {
 
     startScene(): void {
         // Add the level 2 tilemap
-        this.add.tilemap("level2", new Vec2(1, 1));
-        this.viewport.setBounds(0, 0,  128*32, 16*32);
+        this.add.tilemap("level3", new Vec2(1, 1));
+        this.viewport.setBounds(0, 0,  128*32, 32*32);
         this.viewport.setZoomLevel(1);
 
-        this.playerSpawn = new Vec2(4*32-16, 11*32+16);
+        this.playerSpawn = new Vec2(6*32-16, 28*32+16);
 
         // Do generic setup for a GameLevel
 
 
-        this.currentLevel = Level2;
-        this.nextLevel = Level3;
+        this.currentLevel = Level3;
+        this.nextLevel = Level4;
 
         super.startScene();
         
 
-        this.addLevelEnd(new Vec2(124, 10), new Vec2(5, 5));
+        this.addLevelEnd(new Vec2(15, 12), new Vec2(3, 3));
 
         //this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "level_music", loop: true, holdReference: true});
     }

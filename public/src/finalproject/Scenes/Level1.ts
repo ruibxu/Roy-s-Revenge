@@ -19,7 +19,7 @@ export default class Level1 extends GameLevel {
         this.load.spritesheet("melee_enemy","final_project_assets/spritesheets/melee_enemy.json");
         //this.load.spritesheet("red", "final_project_assets/spritesheets/redBalloon.json");
         //this.load.spritesheet("blue", "final_project_assets/spritesheets/blueBalloon.json");
-        //this.load.audio("jump", "final_project_assets/sounds/jump.wav");
+        this.load.audio("jump", "final_project_assets/sounds/jump.wav");
         //this.load.audio("switch", "final_project_assets/sounds/switch.wav");
         //this.load.audio("player_death", "final_project_assets/sounds/player_death.wav");
         //this.load.audio("pop", "final_project_assets/sounds/pop.wav");

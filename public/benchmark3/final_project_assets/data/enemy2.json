@@ -1,0 +1,40 @@
+{
+    "numEnemies": 5,
+    "enemies": [
+      {
+        "position": [800,176],
+        "mode": "patrol",
+        "route": [0, 1],
+        "health": 5,
+        "type": "melee_enemy"
+      },
+      {
+        "position": [1408,336],
+        "mode": "patrol",
+        "route": [2, 3],
+        "health": 5,
+        "type": "melee_enemy"
+      },
+      {
+        "position": [1664,80],
+        "mode": "patrol",
+        "route": [4, 5],
+        "health": 5,
+        "type": "melee_enemy"
+      },
+      {
+        "position": [2720,240],
+        "mode": "patrol",
+        "route": [6, 7],
+        "health": 5,
+        "type": "melee_enemy"
+      },
+      {
+        "position": [3264,176],
+        "mode": "patrol",
+        "route": [8, 9],
+        "health": 5,
+        "type": "melee_enemy"
+      }
+    ]
+  }

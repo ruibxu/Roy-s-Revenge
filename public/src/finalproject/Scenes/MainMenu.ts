@@ -16,6 +16,8 @@ import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
 import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import Level2 from "./Level2";
 import GameLevel from "./GameLevel";
+import Level3 from "./Level3";
+import Level4 from "./Level4";
 
 export default class MainMenu extends Scene {
 
@@ -281,7 +283,7 @@ export default class MainMenu extends Scene {
                 }
                 this.sceneManager.changeToScene(Level2, {}, sceneOptions);
             }
-            /*if(event.type === "level3"){
+            if(event.type === "level3"){
                 let sceneOptions = {
                     physics: {
                         groupNames: ["ground", "player"],
@@ -308,7 +310,7 @@ export default class MainMenu extends Scene {
                 }
                 this.sceneManager.changeToScene(Level4, {}, sceneOptions);
             }
-            if(event.type === "level5"){
+            /*if(event.type === "level5"){
 
 
                 let sceneOptions = {
@@ -345,13 +347,13 @@ export default class MainMenu extends Scene {
                 else if(event.data.get("level")==Level2&&this.levelCount<2){
                     this.levelCount+=1;
                 }
-                /*else if(event.data.get("level")==Level3&&this.levelCount<3){
+                else if(event.data.get("level")==Level3&&this.levelCount<3){
                     this.levelCount+=1;
                 }
                 else if(event.data.get("level")==Level4&&this.levelCount<4){
                     this.levelCount+=1;
                 }
-                else if(event.data.get("level")==Level5&&this.levelCount<5){
+                /*else if(event.data.get("level")==Level5&&this.levelCount<5){
                     this.levelCount+=1;
                 }
                 else if(event.data.get("level")==Level6&&this.levelCount<6){

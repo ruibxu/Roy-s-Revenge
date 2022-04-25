@@ -5,7 +5,7 @@ import GameNode, { TweenableProperties } from "../../Wolfie2D/Nodes/GameNode";
 import Sprite from "../../Wolfie2D/Nodes/Sprites/Sprite";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
-import { finalproject_Events } from "../finalproject_constants";
+import { finalproject_Events, level1_tiles, level3_tiles, level5_tiles } from "../finalproject_constants";
 import Fall from "./PlayerStates/Fall";
 import Idle from "./PlayerStates/Idle";
 import InAir from "./PlayerStates/InAir";
@@ -20,7 +20,6 @@ import Item from "../GameSystems/items/Item";
 import GameLevel from "../Scenes/Gamelevel";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import Timer from "../../Wolfie2D/Timing/Timer";
-
 
 export enum PlayerType {
     PLATFORMER = "platformer",
@@ -44,7 +43,9 @@ export default class PlayerController extends StateMachineAI {
 	MIN_SPEED: number = 200;
     MAX_SPEED: number = 300;
     tilemap: OrthogonalTilemap;
-    tilemap_laser: OrthogonalTilemap;
+    tilemap_laser_red: OrthogonalTilemap;
+    tilemap_laser_green: OrthogonalTilemap;
+    tilemap_laser_blue: OrthogonalTilemap;
     tilemap_spike: OrthogonalTilemap;
     background: OrthogonalTilemap;
     isDead: boolean = false;
@@ -58,6 +59,12 @@ export default class PlayerController extends StateMachineAI {
     gravity: number;
     
     taking_damage:boolean;
+
+    currentLevelLabel : String;
+    private laserReds : Vec2[] = [];
+    private laserGreens : Vec2[] = [];
+    private laserBlues : Vec2[] = [];
+    switchTimer : Timer;
 
     // HOMEWORK 5 - TODO
     /**
@@ -74,7 +81,9 @@ export default class PlayerController extends StateMachineAI {
     
         this.initializePlatformer();
         this.tilemap = this.owner.getScene().getTilemap(options.tilemap) as OrthogonalTilemap;
-        this.tilemap_laser = this.owner.getScene().getTilemap(options.tilemap_laser) as OrthogonalTilemap;
+        this.tilemap_laser_red = this.owner.getScene().getTilemap(options.tilemap_laser_red) as OrthogonalTilemap;
+        this.tilemap_laser_green = this.owner.getScene().getTilemap(options.tilemap_laser_green) as OrthogonalTilemap;
+        this.tilemap_laser_blue = this.owner.getScene().getTilemap(options.tilemap_laser_blue) as OrthogonalTilemap;
         this.tilemap_spike = this.owner.getScene().getTilemap(options.tilemap_spike) as OrthogonalTilemap;
         this.background = this.owner.getScene().getTilemap(options.back) as OrthogonalTilemap;
         this.receiver = new Receiver();
@@ -95,6 +104,8 @@ export default class PlayerController extends StateMachineAI {
 		this.skillcooldown=new Timer(2000);
         this.gravity=1000;
         this.taking_damage=false;
+        this.currentLevelLabel=options.currentLevelLabel;
+        this.switchTimer = new Timer(1000);
     }
 
 
@@ -140,6 +151,96 @@ export default class PlayerController extends StateMachineAI {
         super.changeState(stateName);
     }
 
+    handleLaserOnOFF (tileLayer : OrthogonalTilemap , turnOn : boolean) : void {
+        let level;
+        if(this.currentLevelLabel=="level1"){level = level1_tiles;}
+        else if(this.currentLevelLabel=="level3"){level = level3_tiles;}
+        else {level = level5_tiles;}
+
+        if(tileLayer==this.tilemap_laser_red){
+            if (!turnOn){ //turn off lasers
+                for (let x=0; x < tileLayer.getDimensions().x ; x++){
+                    for (let y=0; y < tileLayer.getDimensions().y ; y++){
+                        if(tileLayer.getTileAtWorldPosition(new Vec2(x*32,y*32))==level.LASER_RED){
+                            tileLayer.setTileAtRowCol(new Vec2(x,y),level.EMPTY);
+                            console.log("append: ", new Vec2(x,y));
+                            this.laserReds.push(new Vec2(x,y)); //store the position of laser tiles
+                        }
+                        if (this.tilemap.getTileAtWorldPosition(new Vec2(x*32,y*32))==level.SWITCH_RED_ON){
+                            this.tilemap.setTileAtRowCol(new Vec2(x,y),level.SWITCH_RED_OFF); //set the switch to off
+                        }
+                    }
+                }
+            }else{      //turn on lasers
+                for (let i=0; i<this.laserReds.length; i++){
+                    tileLayer.setTileAtRowCol(this.laserReds[i],level.LASER_RED);
+                }
+                this.laserReds = [];
+                for (let x=0; x < tileLayer.getDimensions().x ; x++){
+                    for (let y=0; y < tileLayer.getDimensions().y ; y++){
+                        if (this.tilemap.getTileAtWorldPosition(new Vec2(x*32,y*32))==level.SWITCH_RED_OFF){
+                            this.tilemap.setTileAtRowCol(new Vec2(x,y),level.SWITCH_RED_ON); //set the switch to off
+                        }
+                    }
+                }
+            }
+        }
+        else if (tileLayer==this.tilemap_laser_green){
+            if (!turnOn){ 
+                for (let x=0; x < tileLayer.getDimensions().x ; x++){
+                    for (let y=0; y < tileLayer.getDimensions().y ; y++){
+                        if(tileLayer.getTileAtWorldPosition(new Vec2(x*32,y*32))==level.LASER_GREEN){
+                            tileLayer.setTileAtRowCol(new Vec2(x,y),level.EMPTY);
+                            this.laserGreens.push(new Vec2(x,y)); //store the position of laser tiles
+                        }
+                        if (this.tilemap.getTileAtWorldPosition(new Vec2(x*32,y*32))==level.SWITCH_GREEN_ON){
+                            this.tilemap.setTileAtRowCol(new Vec2(x,y),level.SWITCH_GREEN_OFF); //set the switch to off
+                        }
+                    }
+                }
+            }else{
+                for (let i=0; i<this.laserGreens.length; i++){
+                    tileLayer.setTileAtRowCol(this.laserGreens[i],level.LASER_GREEN);
+                }
+                this.laserGreens = [];
+                for (let x=0; x < tileLayer.getDimensions().x ; x++){
+                    for (let y=0; y < tileLayer.getDimensions().y ; y++){
+                        if (this.tilemap.getTileAtWorldPosition(new Vec2(x*32,y*32))==level.SWITCH_GREEN_OFF){
+                            this.tilemap.setTileAtRowCol(new Vec2(x,y),level.SWITCH_GREEN_ON); //set the switch to off
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            if (!turnOn){
+                for (let x=0; x < tileLayer.getDimensions().x ; x++){
+                    for (let y=0; y < tileLayer.getDimensions().y ; y++){
+                        if(tileLayer.getTileAtWorldPosition(new Vec2(x*32,y*32))==level.LASER_BLUE){
+                            tileLayer.setTileAtRowCol(new Vec2(x,y),level.EMPTY);
+                            this.laserBlues.push(new Vec2(x,y)); //store the position of laser tiles
+                        }
+                        if (this.tilemap.getTileAtWorldPosition(new Vec2(x*32,y*32))==level.SWITCH_BLUE_ON){
+                            this.tilemap.setTileAtRowCol(new Vec2(x,y),level.SWITCH_BLUE_OFF); //set the switch to off
+                        }
+                    }
+                }
+            }else{
+                for (let i=0; i<this.laserBlues.length; i++){
+                    tileLayer.setTileAtRowCol(this.laserBlues[i],level.LASER_BLUE);
+                }
+                this.laserBlues = [];
+                for (let x=0; x < tileLayer.getDimensions().x ; x++){
+                    for (let y=0; y < tileLayer.getDimensions().y ; y++){
+                        if (this.tilemap.getTileAtWorldPosition(new Vec2(x*32,y*32))==level.SWITCH_BLUE_OFF){
+                            this.tilemap.setTileAtRowCol(new Vec2(x,y),level.SWITCH_BLUE_ON); //set the switch to off
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // HOMEWORK 5 - TODO
     /**
      * We want to detect when our player is moving over one of the switches in the world, and along with the sound
@@ -160,36 +261,93 @@ export default class PlayerController extends StateMachineAI {
         let right_player_location=new Vec2(this.owner.position.x+32, this.owner.position.y);
         let left_player_location=new Vec2(this.owner.position.x-32, this.owner.position.y);
 
+        let level;
+        if(this.currentLevelLabel=="level1"){level = level1_tiles;}
+        else if(this.currentLevelLabel=="level3"){level = level3_tiles;}
+        else {level = level5_tiles;}
+
         //console.log("spike layer: ",this.tilemap_spike.getTileAtWorldPosition(below_player_location));
         //console.log("laser layer: ",this.tilemap_laser.getTileAtWorldPosition(player_location));
 
         //handle if player on switch
-        if(this.tilemap.getTileAtWorldPosition(below_player_location)==12){
-            //set the switch to off
-            this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(below_player_location),13);
-            //set all laser to invisible
-            for (let x=0; x < this.tilemap_laser.getDimensions().x ; x++){
-                for (let y=0; y < this.tilemap_laser.getDimensions().y ; y++){
-                    if(this.tilemap_laser.getTileAtWorldPosition(new Vec2(x*32,y*32))==16){
-                        this.tilemap_laser.setTileAtRowCol(new Vec2(x,y),0);
-                    }
-                }
-            }
+        //red lasers
+        //turn off red lasers from above
+        if(this.tilemap.getTileAtWorldPosition(below_player_location)==level.SWITCH_RED_ON && this.switchTimer.isStopped()){
+            this.handleLaserOnOFF(this.tilemap_laser_red,false); //turn off red lasers
             this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+            this.switchTimer.start();
         }
-
-        if(this.tilemap.getTileAtWorldPosition(above_player_location)==12){
-            //set the switch to off
-            this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(above_player_location),13);
-            //set all laser to invisible
-            for (let x=0; x < this.tilemap_laser.getDimensions().x ; x++){
-                for (let y=0; y < this.tilemap_laser.getDimensions().y ; y++){
-                    if(this.tilemap_laser.getTileAtWorldPosition(new Vec2(x*32,y*32))==16){
-                        this.tilemap_laser.setTileAtRowCol(new Vec2(x,y),0);
-                    }
-                }
-            }
+        //turn on red lasers from above
+        if(this.tilemap.getTileAtWorldPosition(below_player_location)==level.SWITCH_RED_OFF && this.switchTimer.isStopped()){
+            this.handleLaserOnOFF(this.tilemap_laser_red,true); //turn on red lasers
             this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+            this.switchTimer.start();
+        }
+        //turn off red lasers from below
+        if(this.tilemap.getTileAtWorldPosition(above_player_location)==level.SWITCH_RED_ON && this.switchTimer.isStopped()){
+            this.handleLaserOnOFF(this.tilemap_laser_red,false); //turn off red lasers
+            this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+            this.switchTimer.start();
+        }
+        //turn on red lasers from below
+        if(this.tilemap.getTileAtWorldPosition(above_player_location)==level.SWITCH_RED_OFF && this.switchTimer.isStopped()){
+            this.handleLaserOnOFF(this.tilemap_laser_red,true); //turn on red lasers
+            this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+            this.switchTimer.start();
+        }
+        //green lasers
+        if(this.tilemap_laser_green){
+            //turn off green lasers from above
+            if(this.tilemap.getTileAtWorldPosition(below_player_location)==level.SWITCH_GREEN_ON && this.switchTimer.isStopped()){
+                this.handleLaserOnOFF(this.tilemap_laser_green,false); //turn off green lasers
+                this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+                this.switchTimer.start();
+            }
+            //turn on green lasers from above
+            if(this.tilemap.getTileAtWorldPosition(below_player_location)==level.SWITCH_GREEN_OFF && this.switchTimer.isStopped()){
+                this.handleLaserOnOFF(this.tilemap_laser_green,true); //turn on green lasers
+                this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+                this.switchTimer.start();
+            }
+            //turn off green lasers from below
+            if(this.tilemap.getTileAtWorldPosition(above_player_location)==level.SWITCH_GREEN_ON && this.switchTimer.isStopped()){
+                this.handleLaserOnOFF(this.tilemap_laser_green,false); //turn off green lasers
+                this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+                this.switchTimer.start();
+            }
+            //turn on green lasers from below
+            if(this.tilemap.getTileAtWorldPosition(above_player_location)==level.SWITCH_GREEN_OFF && this.switchTimer.isStopped()){
+                this.handleLaserOnOFF(this.tilemap_laser_green,true); //turn on green lasers
+                this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+                this.switchTimer.start();
+            }
+        }
+        //blue lasers
+        if(this.tilemap_laser_blue){
+            //turn off blue lasers from above
+            if(this.tilemap.getTileAtWorldPosition(below_player_location)==level.SWITCH_BLUE_ON && this.switchTimer.isStopped()){
+                this.handleLaserOnOFF(this.tilemap_laser_blue,false); //turn off blue lasers
+                this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+                this.switchTimer.start();
+            }
+            //turn on blue lasers from above
+            if(this.tilemap.getTileAtWorldPosition(below_player_location)==level.SWITCH_BLUE_OFF && this.switchTimer.isStopped()){
+                this.handleLaserOnOFF(this.tilemap_laser_blue,true); //turn on blue lasers
+                this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+                this.switchTimer.start();
+            }
+            //turn off blue lasers from below
+            if(this.tilemap.getTileAtWorldPosition(above_player_location)==level.SWITCH_BLUE_ON && this.switchTimer.isStopped()){
+                this.handleLaserOnOFF(this.tilemap_laser_blue,false); //turn off blue lasers
+                this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+                this.switchTimer.start();
+            }
+            //turn on blue lasers from below
+            if(this.tilemap.getTileAtWorldPosition(above_player_location)==level.SWITCH_BLUE_OFF && this.switchTimer.isStopped()){
+                this.handleLaserOnOFF(this.tilemap_laser_blue,true); //turn on blue lasers
+                this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_SWITCH);
+                this.switchTimer.start();
+            }
         }
 
         //handle if player hit trap
@@ -197,10 +355,21 @@ export default class PlayerController extends StateMachineAI {
         //     this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_TRAP);
         // }
         //handle if player hit laser
-        if(this.tilemap_laser.getTileAtWorldPosition(player_location)==16)
+        if(this.tilemap_laser_red.getTileAtWorldPosition(player_location)==level.LASER_RED)
             {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":20});}
+        if(this.tilemap_laser_green){
+            if(this.tilemap_laser_green.getTileAtWorldPosition(player_location)==level.LASER_GREEN)
+            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":20});}
+        }
+        if(this.tilemap_laser_blue){
+            if(this.tilemap_laser_blue.getTileAtWorldPosition(player_location)==level.LASER_BLUE)
+            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":20});}
+        }
         //handle if player hit spike
-        if(this.tilemap_spike.getTileAtWorldPosition(below_player_location)==4 || this.tilemap_spike.getTileAtWorldPosition(above_player_location)==15)
+        console.log("above player: ",this.tilemap.getTileAtWorldPosition(above_player_location));
+        console.log("at player: ",this.tilemap.getTileAtWorldPosition(player_location));
+        console.log("below player: ",this.tilemap.getTileAtWorldPosition(below_player_location));
+        if(this.tilemap_spike.getTileAtWorldPosition(below_player_location)==level.SPIKE_DOWN || this.tilemap_spike.getTileAtWorldPosition(above_player_location)==level.SPIKE_UP)
             {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":10});}
 
 

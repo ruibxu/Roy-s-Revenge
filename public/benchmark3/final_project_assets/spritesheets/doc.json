@@ -1,8 +1,8 @@
 
 
 {
-	"name": "doc",
-	"spriteSheetImage": "doc.png",
+	"name": "Doc",
+	"spriteSheetImage": "Doc.png",
 	"spriteWidth": 32,
 	"spriteHeight": 32,
 	"leftBuffer": 0,

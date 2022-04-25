@@ -38,6 +38,12 @@ import BattlerAI from "../Enemies/BattlerAI";
 import PositionGraph from "../../Wolfie2D/DataTypes/Graphs/PositionGraph";
 import Navmesh from "../../Wolfie2D/Pathfinding/Navmesh";
 import Gear from "../GameSystems/items/Gear";
+//import Level1 from "./Level1";
+//import Level2 from "./Level2";
+//import Level3 from "./Level3";
+//import Level4 from "./Level4";
+//import Level5 from "./Level5";
+//import Level6 from "./Level6";
 
 
 
@@ -105,8 +111,14 @@ export default class GameLevel extends Scene {
 
     protected bullets:Array<CanvasNode>;
 
+    private currentLevelLabel: String;
+
     startScene(): void {
         // Do the game level standard initializations
+
+        if(this.currentLevel.name=="Level1" || this.currentLevel.name=="Level2"){this.currentLevelLabel = "level1";}
+        else if(this.currentLevel.name=="Level3" || this.currentLevel.name=="Level4"){this.currentLevelLabel = "level3";}
+        else {this.currentLevelLabel = "level5";}
      
         this.initWeapons();
         this.initLayers();
@@ -151,7 +163,8 @@ export default class GameLevel extends Scene {
         });
 
         this.levelTransitionScreen.tweens.play("fadeOut");
-        
+
+
 
         // Initialize the timers
         /*
@@ -869,11 +882,14 @@ export default class GameLevel extends Scene {
         this.player.addAI(PlayerController, 
             {playerType: "platformer", 
             tilemap: "front",   
-            tilemap_laser: "laser",
+            tilemap_laser_red: "laser_red",
+            tilemap_laser_green: "laser_green",
+            tilemap_laser_blue: "laser_blue",
             tilemap_spike: "spike",
             back:"background",
             inventory: this.inventory,
             items: this.items,
+            currentLevelLabel: this.currentLevelLabel,
             });
 
         this.player.setGroup("player");
