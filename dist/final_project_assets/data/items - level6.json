@@ -1,0 +1,32 @@
+{
+    "items": [
+	    {
+            "type": "weapon",
+            "weaponType": "lightSaber", 
+            "position": [368, 272]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "machineGun", 
+            "position": [240, 336]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "laserGun", 
+            "position": [496, 208]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "knife", 
+            "position": [304, 112]
+        },
+        {
+            "type": "healthpack",
+            "position": [208, 400]
+        },
+        {
+            "type": "gear",
+            "position": [336, 400]
+        }
+    ]
+}

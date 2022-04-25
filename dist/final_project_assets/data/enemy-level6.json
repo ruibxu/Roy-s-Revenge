@@ -1,0 +1,12 @@
+{
+  "numEnemies": 1,
+  "enemies": [
+    {
+      "position": [144, 240],
+      "mode": "patrol",
+      "route": [0, 1, 2],
+      "health": 5,
+      "type": "melee_enemy"
+    }
+  ]
+}
