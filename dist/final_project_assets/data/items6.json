@@ -2,57 +2,47 @@
     "items": [
         {
             "type": "gear",
-            "position": [256, 480]
+            "position": [2080, 144]
         },
         {
             "type": "gear",
-            "position": [1504, 441]
+            "position": [544, 112]
         },
         {
             "type": "gear",
-            "position": [864, 448]
+            "position": [600, 944]
         },
         {
             "type": "gear",
-            "position": [1792, 160]
+            "position": [640, 528]
         },
         {
             "type": "gear",
-            "position": [1952, 864]
+            "position": [1024, 912]
         },
         {
             "type": "gear",
-            "position": [2752, 1024]
+            "position": [1552, 208]
         },
         {
             "type": "weapon",
             "weaponType": "lightSaber", 
-            "position": [576, 576]
+            "position": [1260, 912]
         },
         {
             "type": "weapon",
             "weaponType": "machineGun", 
-            "position": [1504, 1024]
+            "position": [544, 560]
         },
         {
             "type": "weapon",
             "weaponType": "laserGun", 
-            "position": [2624, 960]
+            "position": [1450, 208]
         },
         {
             "type": "weapon",
             "weaponType": "lightSaber", 
-            "position": [1072, 944]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "knife", 
-            "position": [3264, 256]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "pistol", 
-            "position": [256, 510]
+            "position": [800, 528]
         }
     ]
 }

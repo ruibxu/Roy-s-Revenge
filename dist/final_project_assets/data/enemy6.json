@@ -2,47 +2,47 @@
   "numEnemies": 7,
   "enemies": [
     {
-      "position": [768, 768],
+      "position": [512, 560],
       "mode": "patrol",
       "route": [0, 1, 0],
       "health": 5,
-      "type": "melee_enemy"
+      "type": "ranged_enemy"
     },
     {
-      "position": [1056, 672],
+      "position": [576, 944],
       "mode": "patrol",
       "route": [2, 3, 2],
       "health": 5,
       "type": "melee_enemy"
     },
     {
-      "position": [1280, 928],
+      "position": [800, 944],
       "mode": "patrol",
-      "route": [4, 5, 4],
+      "route": [3, 2, 3],
       "health": 5,
       "type": "melee_enemy"
     }, {
-      "position": [1792, 864],
+      "position": [1344, 646],
+      "mode": "patrol",
+      "route": [4, 5, 4],
+      "health": 5,
+      "type": "ranged_enemy"
+    }, {
+      "position": [2688, 944],
       "mode": "patrol",
       "route": [6, 7, 6],
       "health": 5,
       "type": "melee_enemy"
     }, {
-      "position": [2432, 960],
+      "position": [3760, 880],
       "mode": "patrol",
       "route": [8, 9, 8],
       "health": 5,
-      "type": "melee_enemy"
+      "type": "ranged_enemy"
     }, {
-      "position": [3264, 256],
+      "position": [3776, 368],
       "mode": "patrol",
       "route": [10, 11, 10],
-      "health": 5,
-      "type": "melee_enemy"
-    }, {
-      "position": [3680, 512],
-      "mode": "patrol",
-      "route": [12, 13, 12],
       "health": 5,
       "type": "melee_enemy"
     }
