@@ -38,8 +38,8 @@ export default class Patrol extends EnemyState {
     update(deltaT: number): void {
         // If the enemy sees the player, start attacking
         this.parent.lastPlayerPos = this.parent.getPlayerPosition();
-        if(this.parent.lastPlayerPos !== null){
-            console.log("yes");
+        console.log(this.parent.lastPlayerPos);
+        if(this.parent.lastPlayerPos !== null&&this.parent.lastPlayerPos.distanceTo(this.owner.position)<this.parent.inRange){
             this.finished(EnemyStates.TARGETING);
         }
         else{
@@ -51,14 +51,21 @@ export default class Patrol extends EnemyState {
 
                 //this.owner.rotation = Vec2.UP.angleToCCW(this.currentPath.getMoveDirection(this.owner));
                 
-                if (this.currentPath.getMoveDirection(this.owner).x>=0){
-                    this.owner.rotation = Vec2.RIGHT.angleToCCW(this.currentPath.getMoveDirection(this.owner));
+                if (this.currentPath.getMoveDirection(this.owner).x>0){
                     (<Sprite>this.owner).invertX=false;
-                }else{
-                    this.owner.rotation = Vec2.LEFT.angleToCCW(this.currentPath.getMoveDirection(this.owner));
+                }
+                else{
                     (<Sprite>this.owner).invertX=true;
                 }
 
+                if((<Sprite>this.owner).imageId==="platform"){
+                    if ((this.currentPath.getMoveDirection(this.owner).y>=0)){
+                        (<Sprite>this.owner).invertY=false;
+                    }
+                    else{
+                        (<Sprite>this.owner).invertY=true;
+                    }
+                }
             }
         }
     }

@@ -39,6 +39,7 @@ import PositionGraph from "../../Wolfie2D/DataTypes/Graphs/PositionGraph";
 import Navmesh from "../../Wolfie2D/Pathfinding/Navmesh";
 import Gear from "../GameSystems/items/Gear";
 import Idle from "../Enemies/EnemyActions/Idle";
+import Decision from "./Decision";
 
 
 
@@ -110,7 +111,7 @@ export default class GameLevel extends Scene {
 
 
     protected bullets:Array<CanvasNode>;
-
+    protected enemy_bullets:Array<CanvasNode>;
     private invinciblebtn: Button;
     levelnumber: number;
     private msglayer: Layer;
@@ -144,6 +145,7 @@ export default class GameLevel extends Scene {
         this.initEnemies();
 
         this.bullets = new Array();
+        this.enemy_bullets = new Array();
         this.ispaused=false;
         // Send the player and enemies to the battle manager
         this.battleManager.setPlayers(<BattlerAI>this.player._ai);
@@ -207,6 +209,9 @@ export default class GameLevel extends Scene {
         for(let bullet of this.bullets){
 				this.handleScreenDespawn(bullet, viewportCenter, ViewportSize);
 		}
+        for(let bullet of this.enemy_bullets){
+            this.handleScreenDespawn(bullet, viewportCenter, ViewportSize);
+        }
         this.handleCollisions();
         
         while(this.receiver.hasNextEvent()){
@@ -256,6 +261,15 @@ export default class GameLevel extends Scene {
             if(event.type === "newgame"){
                 this.viewport.setZoomLevel(1);
                 this.respawnPlayer();
+            }
+            if(event.type === "select"){
+                this.viewport.setZoomLevel(1);
+                GameLevel.gearCount=0;
+                GameLevel.livesCount=20;
+                this.sceneManager.changeToScene(Decision, {
+                    isInvincible: this.isInvincible,
+                    levelCount: this.levelCount
+                });
             }
             if(event.type === "menu"){
                 this.viewport.setZoomLevel(1);
@@ -317,6 +331,11 @@ export default class GameLevel extends Scene {
                     {
                         this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "switch", loop: false, holdReference: false});
                     }
+                    break;
+                case finalproject_Events.PLAYER_HIT_GEAR:
+                        {
+                            this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "gear", loop: false, holdReference: false});
+                        }
                     break;
                 case finalproject_Events.PLAYER_DAMAGE:
                     {
@@ -403,7 +422,7 @@ export default class GameLevel extends Scene {
                             //this.emitter.fireEvent("menu");   
                         }
                         else{
-                            this.emitter.fireEvent("menu");
+                            this.emitter.fireEvent("select");
                             
                         }
                     }
@@ -430,6 +449,12 @@ export default class GameLevel extends Scene {
                         {
                         let asset = this.sceneGraph.getNode(event.data.get("node"));
                         this.bullets.push(asset);
+                        }
+                        break;
+                    case finalproject_Events.ENEMY_SHOOT_BULLET:
+                        {
+                        let asset = this.sceneGraph.getNode(event.data.get("node"));
+                        this.enemy_bullets.push(asset);
                         }
                         break;
                     case finalproject_Events.UNLOAD_ASSET:
@@ -656,7 +681,7 @@ export default class GameLevel extends Scene {
         controlsBack.borderWidth = 2;
         controlsBack.borderColor = Color.BLACK;
         controlsBack.textColor = Color.BLACK;
-        controlsBack.backgroundColor = new Color(142,142,142);
+        controlsBack.backgroundColor = new Color(99,202,253);
         controlsBack.onClickEventId = "ingame_menu";
 
        
@@ -712,7 +737,7 @@ export default class GameLevel extends Scene {
         helpBack.borderWidth = 2;
         helpBack.borderColor = Color.BLACK;
         helpBack.textColor = Color.BLACK;
-        helpBack.backgroundColor = new Color(142,142,142);
+        helpBack.backgroundColor = new Color(99,202,253);
         helpBack.onClickEventId = "ingame_menu";
 
         const storya = "Roy is a robot created by Dr. G that is used to help people in daily lives. Dr. G is a nice,";
@@ -851,6 +876,7 @@ export default class GameLevel extends Scene {
             finalproject_Events.ENEMY_DEAD,
             finalproject_Events.PLAYER_HIT_SWITCH,
             finalproject_Events.PLAYER_HIT_WEAPON,
+            finalproject_Events.PLAYER_HIT_GEAR,
             finalproject_Events.PLAYER_DAMAGE,
             finalproject_Events.PLAYER_ENTERED_LEVEL_END,
             finalproject_Events.LEVEL_START,
@@ -864,6 +890,7 @@ export default class GameLevel extends Scene {
             finalproject_Events.PLAYER_WEAPON_CHANGE,
             finalproject_Events.UNLOAD_ASSET,
             finalproject_Events.SHOOT_BULLET,
+            finalproject_Events.ENEMY_SHOOT_BULLET,
             finalproject_Events.HINT,
             finalproject_Events.HINTDISABLE
             
@@ -878,7 +905,8 @@ export default class GameLevel extends Scene {
             finalproject_Events.NEWGAME,
             finalproject_Events.CONTROL,
             finalproject_Events.HELP,
-            finalproject_Events.MENU
+            finalproject_Events.MENU,
+            finalproject_Events.SELECT,
             
         ])
     }
@@ -1027,9 +1055,11 @@ export default class GameLevel extends Scene {
         // new Move(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 100})];
      
         let actionsmelee = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
-         new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 40})];
+         new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 60})];
         let actionsrange = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
          new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 150})];
+        let actionsplatform = [new AttackAction(2, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
+         new Idle(1, [], [finalproject_Statuses.IN_RANGE], {inRange: 2})];
         /*let actionsBerserk = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
         new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 20})];
         let actionsRetreat = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
@@ -1050,7 +1080,16 @@ export default class GameLevel extends Scene {
             this.enemies[i].animation.play("IDLE",true);
 
             //Activate physics
-            this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(16,16)));
+            if (data.type=="platform"){
+                this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(48,16)));
+            }
+            else if (data.type=="boss"){
+                this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(32,32)));
+            }
+            else{ 
+                this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(16,16)));
+            }
+            
 
             if(data.route){
                 //console.log(this.graph);
@@ -1067,24 +1106,45 @@ export default class GameLevel extends Scene {
             let weapon;
             let actions;
             let range;
+            let speed;
 
             if (data.type === "melee_enemy"){
                 weapon = this.createWeapon("knife")
                 actions = actionsmelee;
+                range = 60;
+                speed = 20;
             }
             else if (data.type === "ranged_enemy") {
-                weapon = this.createWeapon("laserGun")
+                weapon = this.createWeapon("weak_pistol")
                 actions = actionsrange;
+                range = 150;
+                speed = 20;
             }
             else if (data.type === "melee_enemy_air") {
                 weapon = this.createWeapon("knife")
                 actions = actionsmelee;
+                range = 60;
+                speed = 30;
             }
             else if (data.type === "ranged_enemy_air") {
-                weapon = this.createWeapon("laserGun")
+                weapon = this.createWeapon("weak_pistol")
                 actions = actionsrange;
+                range = 150;
+                speed = 30;
             }
+            else if (data.type === "platform") {
+                weapon = this.createWeapon("knife")
+                actions = actionsplatform;
+                range = 2;
+                speed = 50;
 
+            }
+            else if(data.type === "boss"){
+                weapon = this.createWeapon("weak_laserGun")
+                actions = actionsrange;
+                speed = 50;
+                range = 150;
+            }
             let enemyOptions = {
                 defaultMode: data.mode,
                 patrolRoute: data.route,            // This only matters if they're a patroller
@@ -1095,7 +1155,8 @@ export default class GameLevel extends Scene {
                 actions: actions,
                 goal: finalproject_Statuses.REACHED_GOAL,
                 status: statusArray,
-                inRange: range
+                inRange: range,
+                speed: speed
             }
 
             this.enemies[i].addAI(EnemyAI, enemyOptions);
@@ -1165,13 +1226,18 @@ export default class GameLevel extends Scene {
         //taking damage
         if (GameLevel.livesCount > 0){
             GameLevel.livesCount += amt;
+            if(GameLevel.livesCount<0){
+                GameLevel.livesCount=0;
+            }
             this.livesCountLabel.text = "Lives: " + GameLevel.livesCount;
             if(GameLevel.livesCount<=0){
                 Input.disableInput();
                 this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "player_death", loop: false, holdReference: false});
+                (<PlayerController>this.player._ai).changeState("fall");
                 this.emitter.fireEvent(finalproject_Events.PLAYER_KILLED);
                 this.isDead=true;
                 this.player.disablePhysics();
+               
             }
         }else{
             Input.disableInput();
@@ -1317,6 +1383,9 @@ export default class GameLevel extends Scene {
             this.bullets.forEach((element,index)=>{
                 if(element.id==node.id) this.bullets.splice(index,1);
              });
+             this.enemy_bullets.forEach((element,index)=>{
+                if(element.id==node.id) this.enemy_bullets.splice(index,1);
+             });
             this.emitter.fireEvent(finalproject_Events.UNLOAD_ASSET,{"node":node.id});
 
         }
@@ -1344,19 +1413,21 @@ export default class GameLevel extends Scene {
                     }
 				}				
             }   
+        for(let bullet of this.enemy_bullets){
+                
+            if(bullet.boundary.overlaps(this.player.boundary)){
+                // A collision happened - destroy the bullet
+                console.log("bullet hit");
+                this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE,{"damage":2});
+                this.enemy_bullets.forEach((element,index)=>{
+                    if(element.id==bullet.id) this.enemy_bullets.splice(index,1);
+                });
+                this.emitter.fireEvent(finalproject_Events.UNLOAD_ASSET,{"node":bullet.id})
+                // Increase the hp of the enemy
+            }   
+        }   
         
-      
-            for(let enemy of this.enemies)
-            {   
-                if(this.player.boundary.overlaps(enemy.boundary)&&(!this.player.animation.isPlaying("TAKING_DAMAGE")||
-                !this.player.animation.isPlaying("KNIFE_TAKING_DAMAGE")||!this.player.animation.isPlaying("PISTOL_TAKING_DAMAGE")||
-                !this.player.animation.isPlaying("MACHINEGUN_TAKING_DAMAGE")||!this.player.animation.isPlaying("LIGHTSABER_TAKING_DAMAGE")||
-                !this.player.animation.isPlaying("LASERGUN_TAKING_DAMAGE")
-                ))
-                {   
-                    this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE,{"damage":2});
-                }
-            }			
+      		
     }   
     
 }

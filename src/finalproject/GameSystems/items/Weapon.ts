@@ -58,7 +58,7 @@ export default class Weapon extends Item {
 
         // Rely on the weapon type to create any necessary assets
 
-        this.assets = this.type.createRequiredAssets(this.sprite.getScene());
+        this.assets = this.type.createRequiredAssets(userType,this.sprite.getScene());
         // Do a type specific weapon animation
         this.type.doAnimation(user, direction, ...this.assets);
 

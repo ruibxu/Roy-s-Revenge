@@ -246,11 +246,11 @@ export default class PlayerController extends StateMachineAI {
         else {level = level5_tiles;}
         
         //handle if player hit hint
-        if(this.background.getTileAtWorldPosition(player_location)==14&&this.hintopened==false){
+        if(this.background.getTileAtWorldPosition(player_location)==100&&this.hintopened==false){
             this.emitter.fireEvent(finalproject_Events.HINT);
             this.hintopened=true;
         }
-        else if (this.background.getTileAtWorldPosition(player_location)!=14){
+        else if (this.background.getTileAtWorldPosition(player_location)!=100){
             this.emitter.fireEvent(finalproject_Events.HINTDISABLE);
             this.hintopened=false;
         }
@@ -337,18 +337,18 @@ export default class PlayerController extends StateMachineAI {
 
         //handle if player hit laser
         if(this.tilemap_laser_red.getTileAtWorldPosition(player_location)==level.LASER_RED)
-            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":20});}
+            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":100});}
         if(this.tilemap_laser_green){
             if(this.tilemap_laser_green.getTileAtWorldPosition(player_location)==level.LASER_GREEN)
-            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":20});}
+            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":100});}
         }
         if(this.tilemap_laser_blue){
             if(this.tilemap_laser_blue.getTileAtWorldPosition(player_location)==level.LASER_BLUE)
-            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":20});}
+            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":100});}
         }
         //handle if player hit spike
         if(this.tilemap_spike.getTileAtWorldPosition(below_player_location)==level.SPIKE_DOWN || this.tilemap_spike.getTileAtWorldPosition(above_player_location)==level.SPIKE_UP)
-            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":20});}
+            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":100});}
 
         let gamelevel = <GameLevel> this.owner.getScene();
         if(gamelevel.isPaused()){
@@ -392,6 +392,7 @@ export default class PlayerController extends StateMachineAI {
                 else if(item.sprite.imageId==="gear"){
                     //If it is a gear, don't put into inventory, but use it directly by firing PickupGear event
                     console.log("pick up gear event fired.");
+                    this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_GEAR);
                     item.removeSprite();
                     this.items.splice(this.items.indexOf(item),1);
                     this.emitter.fireEvent(finalproject_Events.PICKUP_GEAR);

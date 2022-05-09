@@ -23,6 +23,7 @@ export default class Level1 extends GameLevel {
         this.load.audio("lasergun", "final_project_assets/sounds/lasergun.wav");
         this.load.audio("slice", "final_project_assets/sounds/slice.wav");
         this.load.audio("skill", "final_project_assets/sounds/skill.wav");
+        this.load.audio("gear", "final_project_assets/sounds/gear.wav");
         this.load.audio("level_music", "final_project_assets/music/level1.mp3");
 
         // Load the scene info

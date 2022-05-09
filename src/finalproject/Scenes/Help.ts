@@ -53,7 +53,7 @@ export default class Help extends Scene {
         helpBack.borderWidth = 2;
         helpBack.borderColor = Color.BLACK;
         helpBack.textColor = Color.BLACK;
-        helpBack.backgroundColor = new Color(142,142,142);
+        helpBack.backgroundColor = new Color(99,202,253);
 
         helpBack.onClickEventId = "menu";
 
@@ -207,10 +207,6 @@ export default class Help extends Scene {
                 this.invinciblebtn.onClickEventId = "invincibleOn";
                 this.invinciblebtn.backgroundColor = Color.RED;
                 this.invinciblebtn.text ="Off";
-            }
-
-            if(event.type === "allLevel"){
-                //this.allLevel=true;
             }
                 
         }

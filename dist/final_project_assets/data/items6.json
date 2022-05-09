@@ -35,13 +35,11 @@
             "position": [544, 560]
         },
         {
-            "type": "weapon",
-            "weaponType": "laserGun", 
+            "type": "gear",
             "position": [1450, 208]
         },
         {
-            "type": "weapon",
-            "weaponType": "lightSaber", 
+            "type": "gear",
             "position": [800, 528]
         }
     ]

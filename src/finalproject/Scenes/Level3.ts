@@ -23,14 +23,15 @@ export default class Level3 extends GameLevel {
         this.load.audio("lasergun", "final_project_assets/sounds/lasergun.wav");
         this.load.audio("slice", "final_project_assets/sounds/slice.wav");
         this.load.audio("skill", "final_project_assets/sounds/skill.wav");
+        this.load.audio("gear", "final_project_assets/sounds/gear.wav");
         this.load.audio("level_music", "final_project_assets/music/level3music.mp3");
         // Load the scene info
         //Load the weapon data
         this.load.object("weaponData", "final_project_assets/data/weaponData.json");
         // Load the nav mesh
-        this.load.object("navmesh", "final_project_assets/data/navmesh.json");
+        this.load.object("navmesh", "final_project_assets/data/navmesh3.json");
         // Load in the enemy info
-        this.load.object("enemyData", "final_project_assets/data/enemy.json");
+        this.load.object("enemyData", "final_project_assets/data/enemy3.json");
         // Load in item info
         this.load.object("itemData", "final_project_assets/data/items3.json");
 
@@ -56,6 +57,7 @@ export default class Level3 extends GameLevel {
         // Add the level 1 tilemap
         this.add.tilemap("level3", new Vec2(1, 1));
         this.viewport.setBounds(0, 0, 128*32, 32*32);
+        this.viewport.setZoomLevel(1);
 
         this.playerSpawn = new Vec2(6*32-16, 28*32+16);
 
@@ -64,7 +66,7 @@ export default class Level3 extends GameLevel {
         this.nextLevel = Level4;
 
         super.startScene();
-        this.addLevelEnd(new Vec2(15, 12), new Vec2(3, 3));
+        this.addLevelEnd(new Vec2(15.5, 12.5), new Vec2(1.5, 1.5));
         
         this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "level_music", loop: true, holdReference: true});
     }

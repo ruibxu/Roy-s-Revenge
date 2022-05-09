@@ -14,6 +14,7 @@ export default class Level4 extends GameLevel {
         this.load.spritesheet("melee_enemy_air","final_project_assets/spritesheets/melee_enemy_air.json");
         this.load.spritesheet("ranged_enemy","final_project_assets/spritesheets/ranged_enemy.json");
         this.load.spritesheet("ranged_enemy_air","final_project_assets/spritesheets/ranged_enemy_air.json");
+        this.load.spritesheet("platform","final_project_assets/spritesheets/platform.json");
 
         //Load audio
         this.load.audio("jump", "final_project_assets/sounds/jump.wav");
@@ -23,15 +24,16 @@ export default class Level4 extends GameLevel {
         this.load.audio("lasergun", "final_project_assets/sounds/lasergun.wav");
         this.load.audio("slice", "final_project_assets/sounds/slice.wav");
         this.load.audio("skill", "final_project_assets/sounds/skill.wav");
+        this.load.audio("gear", "final_project_assets/sounds/gear.wav");
         this.load.audio("level_music", "final_project_assets/music/level4music.mp3");
         
         // Load the scene info
         //Load the weapon data
         this.load.object("weaponData", "final_project_assets/data/weaponData.json");
         // Load the nav mesh
-        this.load.object("navmesh", "final_project_assets/data/navmesh.json");
+        this.load.object("navmesh", "final_project_assets/data/navmesh4.json");
         // Load in the enemy info
-        this.load.object("enemyData", "final_project_assets/data/enemy.json");
+        this.load.object("enemyData", "final_project_assets/data/enemy4.json");
         // Load in item info
         this.load.object("itemData", "final_project_assets/data/items4.json");
 
@@ -43,7 +45,7 @@ export default class Level4 extends GameLevel {
         this.load.image("knife", "final_project_assets/sprites/knife.png");
         this.load.image("laserGun", "final_project_assets/sprites/laser_gun.png");
         this.load.image("pistol", "final_project_assets/sprites/pistol.png");
-        this.load.image("machineGun","final_project_assets/sprites/machine_gun.png")
+        this.load.image("machineGun","final_project_assets/sprites/machine_gun.png");
         this.load.image("lightSaber", "final_project_assets/sprites/light_saber.png");
         
     }
@@ -58,6 +60,7 @@ export default class Level4 extends GameLevel {
         this.add.tilemap("level4", new Vec2(1, 1));
         //this.viewport.setBounds(0, 0, 64*32, 32*32);
         this.viewport.setBounds(0, 0,  128*32, 32*32);
+        this.viewport.setZoomLevel(1);
 
         this.playerSpawn = new Vec2(7*32-16, 26*32+16);
 
@@ -66,7 +69,7 @@ export default class Level4 extends GameLevel {
         this.nextLevel = Level5;
 
         super.startScene();
-        this.addLevelEnd(new Vec2(15, 12), new Vec2(3, 3));
+        this.addLevelEnd(new Vec2(13.5, 10.5), new Vec2(1.5, 1.5));
 
         this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "level_music", loop: true, holdReference: true});
     }

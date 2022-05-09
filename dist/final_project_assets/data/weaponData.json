@@ -1,5 +1,5 @@
 {
-    "numWeapons": 5,
+    "numWeapons": 7,
     "weapons": [
         {
             "weaponType": "slice",
@@ -35,11 +35,21 @@
         },
         {
             "weaponType": "semiAutoGun",
+            "name": "weak_pistol",
+            "displayName": "weak_pistol",
+            "spriteKey": "pistol",
+            "damage": 1,
+            "cooldown": 1000,
+            "useVolume": 320,
+            "color": "#FFEEDD"
+        },
+        {
+            "weaponType": "semiAutoGun",
             "name": "machineGun",
             "displayName": "machineGun",
             "spriteKey": "machineGun",
             "damage": 1,
-            "cooldown": 100,
+            "cooldown": 200,
             "useVolume": 320,
             "color": "#FFEEDD"
         },
@@ -49,7 +59,17 @@
             "displayName": "laserGun",
             "spriteKey": "laserGun",
             "damage": 2,
-            "cooldown": 100,
+            "cooldown": 300,
+            "useVolume": 320,
+            "color": "#eba487"
+        },
+        {
+            "weaponType": "laserGun",
+            "name": "weak_laserGun",
+            "displayName": "laserGun",
+            "spriteKey": "laserGun",
+            "damage": 2,
+            "cooldown": 500,
             "useVolume": 320,
             "color": "#eba487"
         }

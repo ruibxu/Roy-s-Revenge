@@ -23,6 +23,7 @@ export default class Level2 extends GameLevel {
         this.load.audio("lasergun", "final_project_assets/sounds/lasergun.wav");
         this.load.audio("slice", "final_project_assets/sounds/slice.wav");
         this.load.audio("skill", "final_project_assets/sounds/skill.wav");
+        this.load.audio("gear", "final_project_assets/sounds/gear.wav");
         this.load.audio("level_music", "final_project_assets/music/level2.mp3");
 
         // Load the scene info
@@ -34,6 +35,7 @@ export default class Level2 extends GameLevel {
         this.load.object("enemyData", "final_project_assets/data/enemy2.json");
         // Load in item info
         this.load.object("itemData", "final_project_assets/data/items2.json");
+        
 
         // Load the healthpack sprite
         this.load.image("healthpack", "final_project_assets/sprites/health.png");
@@ -43,7 +45,7 @@ export default class Level2 extends GameLevel {
         this.load.image("knife", "final_project_assets/sprites/knife.png");
         this.load.image("laserGun", "final_project_assets/sprites/laser_gun.png");
         this.load.image("pistol", "final_project_assets/sprites/pistol.png");
-        this.load.image("machineGun","final_project_assets/sprites/machine_gun.png")
+        this.load.image("machineGun","final_project_assets/sprites/machine_gun.png");
         this.load.image("lightSaber", "final_project_assets/sprites/light_saber.png");
         
     }

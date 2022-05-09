@@ -28,7 +28,7 @@ export default abstract class WeaponType {
      */
     abstract doAnimation(...args: any): void;
 
-    abstract createRequiredAssets(scene: Scene): Array<any>;
+    abstract createRequiredAssets(userType:String,scene: Scene): Array<any>;
 
     abstract hits(node: GameNode, ...args: any): boolean;
 

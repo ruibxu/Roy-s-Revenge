@@ -25,8 +25,7 @@
             "position": [2752, 1040]
         },
         {
-            "type": "weapon",
-            "weaponType": "lightSaber", 
+            "type": "gear",
             "position": [672, 784]
         },
         {
@@ -40,8 +39,7 @@
             "position": [2624, 976]
         },
         {
-            "type": "weapon",
-            "weaponType": "lightSaber", 
+            "type": "gear",
             "position": [1072, 976]
         },
         {

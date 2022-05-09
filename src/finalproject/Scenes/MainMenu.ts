@@ -20,6 +20,7 @@ import Level3 from "./Level3";
 import Level6 from "./Level6";
 import Level5 from "./Level5";
 import Level4 from "./Level4";
+import Decision from "./Decision";
 
 export default class MainMenu extends Scene {
 
@@ -46,6 +47,11 @@ export default class MainMenu extends Scene {
         this.load.image("logo", "final_project_assets/images/banner.png");
         this.load.image("back", "final_project_assets/images/background.png");
         this.load.image("level1", "final_project_assets/images/level1.png");
+        this.load.image("level2", "final_project_assets/images/level2.png");
+        this.load.image("level3", "final_project_assets/images/level3.png");
+        this.load.image("level4", "final_project_assets/images/level4.png");
+        this.load.image("level5", "final_project_assets/images/level5.png");
+        this.load.image("level6", "final_project_assets/images/level6.png");
         this.load.audio("menu", "final_project_assets/music/mainmenu.mp3");
     }
 
@@ -158,23 +164,23 @@ export default class MainMenu extends Scene {
         level1pic.position.set(center.x-400, center.y-130);
         level1pic.scale.set(0.2,0.2);
 
-        let level2pic=this.add.sprite("level1","level");
+        let level2pic=this.add.sprite("level2","level");
         level2pic.position.set(center.x, center.y-130);
         level2pic.scale.set(0.2,0.2);
 
-        let level3pic=this.add.sprite("level1","level");
+        let level3pic=this.add.sprite("level3","level");
         level3pic.position.set(center.x+400, center.y-130);
         level3pic.scale.set(0.2,0.2);
 
-        let level4pic=this.add.sprite("level1","level");
+        let level4pic=this.add.sprite("level4","level");
         level4pic.position.set(center.x-400, center.y+170);
         level4pic.scale.set(0.2,0.2);
 
-        let level5pic=this.add.sprite("level1","level");
+        let level5pic=this.add.sprite("level5","level");
         level5pic.position.set(center.x, center.y+170);
         level5pic.scale.set(0.2,0.2);
 
-        let level6pic=this.add.sprite("level1","level");
+        let level6pic=this.add.sprite("level6","level");
         level6pic.position.set(center.x+400, center.y+170);
         level6pic.scale.set(0.2,0.2);
 
@@ -187,7 +193,7 @@ export default class MainMenu extends Scene {
         levelBack.borderWidth = 2;
         levelBack.borderColor = Color.BLACK;
         levelBack.textColor = Color.BLACK;
-        levelBack.backgroundColor = new Color(142,142,142);
+        levelBack.backgroundColor = new Color(99,202,253);
         levelBack.onClickEventId = "menu";
 
         level1.backgroundColor = new Color(99,202,253);

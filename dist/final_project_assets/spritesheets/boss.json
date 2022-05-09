@@ -25,7 +25,7 @@
 			]
 		},
 		{
-			"name": "RUN",
+			"name": "WALK",
 			"repeat": true,
 			"frames": [
 				{
@@ -90,7 +90,20 @@
 			]
 		},
 		{
-			"name": "dying",
+			"name": "TAKING_DAMAGE",
+			"repeat": true,
+			"frames": [
+				{
+					"index": 21,
+					"duration": 2
+				},
+				{
+					"index": 22,
+					"duration": 2
+				}]
+		},
+		{
+			"name": "DEAD",
 			"repeat": true,
 			"frames": [
 				{

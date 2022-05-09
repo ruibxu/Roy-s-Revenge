@@ -66,7 +66,7 @@ export default class Active extends EnemyState {
             // We haven't seen the player in a while, go check out where we last saw them, if possible
             if (this.parent.lastPlayerPos !== null) {
                 this.retObj = { target: this.parent.lastPlayerPos }
-                this.finished(EnemyStates.ALERT);
+                    this.finished(EnemyStates.ALERT);
             } else {
                 this.finished(EnemyStates.DEFAULT);
             }

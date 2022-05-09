@@ -1,5 +1,5 @@
 {
-  "numEnemies": 2,
+  "numEnemies": 7,
   "enemies": [
     {
       "position": [3472,304],
@@ -14,6 +14,42 @@
       "route": [2, 3],
       "health": 5,
       "type": "melee_enemy"
+    },
+    {
+      "position": [3008,128],
+      "mode": "patrol",
+      "route": [4, 5],
+      "health": 5,
+      "type": "ranged_enemy_air"
+    },
+    {
+      "position": [3072,304],
+      "mode": "patrol",
+      "route": [6, 7],
+      "health": 5,
+      "type": "ranged_enemy"
+    },
+    {
+      "position": [2976,272],
+      "mode": "patrol",
+      "route": [8, 9],
+      "health": 5,
+      "type": "melee_enemy"
+    },
+    {
+      "position": [3104,64],
+      "mode": "patrol",
+      "route": [10, 11],
+      "health": 5,
+      "type": "ranged_enemy_air"
+    },
+    {
+      "position": [2816,96],
+      "mode": "patrol",
+      "route": [12, 13],
+      "health": 5,
+      "type": "melee_enemy_air"
     }
+    
   ]
 }

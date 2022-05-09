@@ -41,7 +41,7 @@ export default class Controls extends Scene {
         controlsBack.borderWidth = 2;
         controlsBack.borderColor = Color.BLACK;
         controlsBack.textColor = Color.BLACK;
-        controlsBack.backgroundColor = new Color(142,142,142);
+        controlsBack.backgroundColor = new Color(99,202,253);
         controlsBack.onClickEventId = "menu";
 
         const controlsHeader = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 300), text: "Controls"});

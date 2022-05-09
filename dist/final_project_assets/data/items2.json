@@ -1,48 +1,45 @@
 {
     "items": [
-	    {
-            "type": "weapon",
-            "weaponType": "lightSaber", 
-            "position": [368, 272]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "machineGun", 
-            "position": [240, 336]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "laserGun", 
-            "position": [496, 208]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "knife", 
-            "position": [304, 112]
-        },
         {
             "type": "gear",
             "position": [64, 80]
         },
         {
             "type": "gear",
-            "position": [960, 48]
+            "position": [272, 112]
+        },
+        {
+            "type": "gear",
+            "position": [368, 240]
+        },
+        {
+            "type": "gear",
+            "position": [656, 48]
+        },
+        {
+            "type": "gear",
+            "position": [1040, 176]
+        },
+        {
+            "type": "gear",
+            "position": [1328, 304]
+        },
+        {
+            "type": "gear",
+            "position": [656, 48]
+        },
+        {
+            "type": "gear",
+            "position": [2448, 400]
         },
         {
             "type": "gear",
             "position": [2224, 48]
         },
         {
-            "type": "gear",
-            "position": [1760, 80]
-        },
-        {
-            "type": "gear",
-            "position": [2976, 48]
-        },
-        {
-            "type": "gear",
-            "position": [3008, 304]
+            "type": "weapon",
+            "weaponType": "machineGun", 
+            "position": [1232, 400]
         }
     ]
 }

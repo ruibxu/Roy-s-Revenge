@@ -24,17 +24,18 @@ export default class Level6 extends GameLevel {
         this.load.audio("lasergun", "final_project_assets/sounds/lasergun.wav");
         this.load.audio("slice", "final_project_assets/sounds/slice.wav");
         this.load.audio("skill", "final_project_assets/sounds/skill.wav");
+        this.load.audio("gear", "final_project_assets/sounds/gear.wav");
         this.load.audio("level_music", "final_project_assets/music/level6.mp3");
 
         // Load the scene info
         //Load the weapon data
         this.load.object("weaponData", "final_project_assets/data/weaponData.json");
         // Load the nav mesh
-        this.load.object("navmesh", "final_project_assets/data/navmesh.json");
+        this.load.object("navmesh", "final_project_assets/data/navmesh6.json");
         // Load in the enemy info
-        this.load.object("enemyData", "final_project_assets/data/enemy.json");
+        this.load.object("enemyData", "final_project_assets/data/enemy6.json");
         // Load in item info
-        this.load.object("itemData", "final_project_assets/data/items1.json");
+        this.load.object("itemData", "final_project_assets/data/items6.json");
 
         // Load the healthpack sprite
         this.load.image("healthpack", "final_project_assets/sprites/health.png");
@@ -59,6 +60,7 @@ export default class Level6 extends GameLevel {
         this.add.tilemap("level6", new Vec2(1, 1));
         //this.viewport.setBounds(0, 0, 64*32, 32*32);
         this.viewport.setBounds(0, 0, 128*32, 32*32);
+        this.viewport.setZoomLevel(1);
 
         this.playerSpawn = new Vec2(3*32-16, 22*32+16);
 

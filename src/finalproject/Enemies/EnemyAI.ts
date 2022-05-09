@@ -31,7 +31,7 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
     health: number;
 
     /** The default movement speed of this AI */
-    speed: number = 20;
+    speed: number ;
 
     /** The weapon this AI has */
     weapon: Weapon;
@@ -94,6 +94,8 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
 
         this.planner = new GoapActionPlanner();
 
+        this.speed=options.speed;
+
         // Initialize to the default state
         this.initialize(EnemyStates.DEFAULT);
 
@@ -104,7 +106,8 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
 
     damage(damage: number): void {
         this.health -= damage;
-
+        this.owner.animation.playIfNotAlready("TAKING_DAMAGE",false);
+        this.owner.animation.playIfNotAlready("IDLE",false);
         // If we're low enough, add Low Health status to enemy
         if (this.health <= Math.floor(this.maxHealth/2)) {
             if (this.currentStatus.indexOf(finalproject_Statuses.LOW_HEALTH) === -1){
@@ -117,7 +120,7 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
             this.owner.setAIActive(false, {});
             this.owner.isCollidable = false;
             this.owner.visible = false;
-
+            this.owner.animation.playIfNotAlready("dying",false);
             this.emitter.fireEvent("enemyDied", {enemy: this.owner})
 
             if (Math.random() < 0.2) {
@@ -165,8 +168,12 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
                 }
             }
         }
-
-        return pos;
+        if(start.distanceTo(pos)<this.inRange){
+            return pos;
+        }
+        else{ 
+            return null;
+        }
     }
 
     getPlayerPosition(): Vec2 {

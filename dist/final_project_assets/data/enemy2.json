@@ -1,38 +1,80 @@
 {
-    "numEnemies": 5,
+    "numEnemies": 11,
     "enemies": [
       {
-        "position": [800,176],
+        "position": [464,208],
         "mode": "patrol",
         "route": [0, 1],
         "health": 5,
         "type": "ranged_enemy"
       },
       {
-        "position": [1408,336],
+        "position": [624,368],
         "mode": "patrol",
         "route": [2, 3],
         "health": 5,
         "type": "melee_enemy"
       },
       {
-        "position": [1664,80],
+        "position": [848,144],
         "mode": "patrol",
         "route": [4, 5],
         "health": 5,
-        "type": "melee_enemy"
+        "type": "ranged_enemy"
       },
       {
-        "position": [2720,240],
+        "position": [1488,144],
         "mode": "patrol",
         "route": [6, 7],
         "health": 5,
         "type": "melee_enemy"
       },
       {
-        "position": [3264,176],
+        "position": [1616,208],
         "mode": "patrol",
         "route": [8, 9],
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [1744,464],
+        "mode": "patrol",
+        "route": [10, 11],
+        "health": 5,
+        "type": "melee_enemy"
+      },
+      {
+        "position": [1904,464],
+        "mode": "patrol",
+        "route": [12, 13],
+        "health": 5,
+        "type": "ranged_enemy"
+      },
+      {
+        "position": [2064,464],
+        "mode": "patrol",
+        "route": [14, 15],
+        "health": 5,
+        "type": "melee_enemy"
+      },
+      {
+        "position": [2400,96],
+        "mode": "patrol",
+        "route": [16, 17],
+        "health": 5,
+        "type": "melee_enemy_air"
+      },
+      {
+        "position": [2944,160],
+        "mode": "patrol",
+        "route": [18, 19],
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position":[2896,400],
+        "mode": "patrol",
+        "route": [20, 21],
         "health": 5,
         "type": "melee_enemy"
       }
