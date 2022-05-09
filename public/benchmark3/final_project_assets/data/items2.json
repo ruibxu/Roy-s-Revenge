@@ -19,6 +19,30 @@
             "type": "weapon",
             "weaponType": "knife", 
             "position": [304, 112]
+        },
+        {
+            "type": "gear",
+            "position": [64, 80]
+        },
+        {
+            "type": "gear",
+            "position": [960, 48]
+        },
+        {
+            "type": "gear",
+            "position": [2224, 48]
+        },
+        {
+            "type": "gear",
+            "position": [1760, 80]
+        },
+        {
+            "type": "gear",
+            "position": [2976, 48]
+        },
+        {
+            "type": "gear",
+            "position": [3008, 304]
         }
     ]
 }

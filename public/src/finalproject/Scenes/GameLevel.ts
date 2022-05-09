@@ -38,12 +38,8 @@ import BattlerAI from "../Enemies/BattlerAI";
 import PositionGraph from "../../Wolfie2D/DataTypes/Graphs/PositionGraph";
 import Navmesh from "../../Wolfie2D/Pathfinding/Navmesh";
 import Gear from "../GameSystems/items/Gear";
-//import Level1 from "./Level1";
-//import Level2 from "./Level2";
-//import Level3 from "./Level3";
-//import Level4 from "./Level4";
-//import Level5 from "./Level5";
-//import Level6 from "./Level6";
+import Idle from "../Enemies/EnemyActions/Idle";
+import Decision from "./Decision";
 
 
 
@@ -64,10 +60,13 @@ export default class GameLevel extends Scene {
     protected hintLayer: Layer;
 
 
+    protected item: Item;
+
 
     protected inventory: InventoryManager;
 
     protected ispaused: boolean;
+    protected isInvincible: boolean;
 
     // Labels for the UI
     protected static livesCount: number = 20;
@@ -104,21 +103,28 @@ export default class GameLevel extends Scene {
 
     //Timer for invincible time
     private damageTimer: Timer;
+    private msgTimer: Timer;
 
     //Player is dead
-    private isDead: number = 0;
+    private isDead: boolean;
+    private levelCount: number;
 
 
     protected bullets:Array<CanvasNode>;
+    protected enemy_bullets:Array<CanvasNode>;
+    private invinciblebtn: Button;
+    levelnumber: number;
+    private msglayer: Layer;
+    private msglayer2: Layer;
 
-    private currentLevelLabel: String;
 
+
+    initScene(init: Record<string, any>):void {
+        this.isInvincible = init.isInvincible;
+        this.levelCount=init.levelCount;
+    }
     startScene(): void {
         // Do the game level standard initializations
-
-        if(this.currentLevel.name=="Level1" || this.currentLevel.name=="Level2"){this.currentLevelLabel = "level1";}
-        else if(this.currentLevel.name=="Level3" || this.currentLevel.name=="Level4"){this.currentLevelLabel = "level3";}
-        else {this.currentLevelLabel = "level5";}
      
         this.initWeapons();
         this.initLayers();
@@ -139,9 +145,10 @@ export default class GameLevel extends Scene {
         this.initEnemies();
 
         this.bullets = new Array();
+        this.enemy_bullets = new Array();
         this.ispaused=false;
         // Send the player and enemies to the battle manager
-        this.battleManager.setPlayers([<BattlerAI>this.player._ai]);
+        this.battleManager.setPlayers(<BattlerAI>this.player._ai);
         this.battleManager.setEnemies(this.enemies.map(enemy => <BattlerAI>enemy._ai));
 
         this.ispaused=false;
@@ -149,10 +156,10 @@ export default class GameLevel extends Scene {
 
         //1 second timer for player invincible
         this.damageTimer = new Timer(1000);
-        this.damageTimer.start();
+        this.msgTimer = new Timer(1000);
         this.respawnTimer = new Timer(3000);
 
-        //this.isDead = false;
+        this.isDead = false;
 
         this.levelTransitionScreen.tweens.play("fadeOut");
 
@@ -163,8 +170,7 @@ export default class GameLevel extends Scene {
         });
 
         this.levelTransitionScreen.tweens.play("fadeOut");
-
-
+        
 
         // Initialize the timers
         /*
@@ -203,6 +209,9 @@ export default class GameLevel extends Scene {
         for(let bullet of this.bullets){
 				this.handleScreenDespawn(bullet, viewportCenter, ViewportSize);
 		}
+        for(let bullet of this.enemy_bullets){
+            this.handleScreenDespawn(bullet, viewportCenter, ViewportSize);
+        }
         this.handleCollisions();
         
         while(this.receiver.hasNextEvent()){
@@ -214,9 +223,7 @@ export default class GameLevel extends Scene {
                 this.ingamemenu.enable();
                 this.controls.disable();
                 this.help.disable();
-                ///////
                 this.hintLayer.disable();
-                ///////
                 this.viewport.setBounds(0, 0, 1200, 800);
                 this.viewport.setZoomLevel(1);
                 console.log(this.viewport.getZoomLevel());
@@ -229,8 +236,6 @@ export default class GameLevel extends Scene {
                     tilemap.getLayer().disable();
                 });
                 
-                //
-                //this.emitter.fireEvent("currentLevel",{level: this});
             }
             if(event.type === "back_to_game"){
                 this.ui_layer.enable();
@@ -238,36 +243,42 @@ export default class GameLevel extends Scene {
                 this.ingamemenu.disable();
                 this.getLayer("slots").enable();
                 this.getLayer("items").enable();
-                //////fix this
-                if(this.nextLevel!=null){
-                    this.hintLayer.enable();
-                }
-                ///////
                 this.viewport.setZoomLevel(2.25);
-                this.viewport.setBounds(0, 0, 128*32, 16*32);
+                if(this.levelnumber==1||this.levelnumber==2){
+                    this.viewport.setBounds(0, 0, 128*32, 16*32);
+                }
+                else{
+                    this.viewport.setBounds(0, 0, 128*32, 32*32);
+                }
+               
                 this.ispaused=false;
-
                 this.tilemaps.forEach(tilemap => {
                     tilemap.visible = true;
                     tilemap.getLayer().enable();
                 });
                 
-                //this.emitter.fireEvent("currentLevel",{level: this});
             }
-            if(event.isType("enemyDied")){
-                this.enemies = this.enemies.filter(enemy => enemy !== event.data.get("enemy"));
-                this.battleManager.enemies = this.battleManager.enemies.filter(enemy => enemy !== <BattlerAI>(event.data.get("enemy")._ai));
-            }
-
-
             if(event.type === "newgame"){
+                this.viewport.setZoomLevel(1);
                 this.respawnPlayer();
+            }
+            if(event.type === "select"){
+                this.viewport.setZoomLevel(1);
+                GameLevel.gearCount=0;
+                GameLevel.livesCount=20;
+                this.sceneManager.changeToScene(Decision, {
+                    isInvincible: this.isInvincible,
+                    levelCount: this.levelCount
+                });
             }
             if(event.type === "menu"){
                 this.viewport.setZoomLevel(1);
                 GameLevel.gearCount=0;
                 GameLevel.livesCount=20;
-                this.sceneManager.changeToScene(MainMenu, {});
+                this.sceneManager.changeToScene(MainMenu, {
+                    isInvincible: this.isInvincible,
+                    levelCount: this.levelCount
+                });
             }
             if(event.type === "resume"){
                 this.emitter.fireEvent("back_to_game");
@@ -288,34 +299,71 @@ export default class GameLevel extends Scene {
             if(Input.isKeyJustPressed("g")){
                 this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
             }
+            if(Input.isKeyJustPressed("c")){
+                let weapon = this.createWeapon("knife");
+                weapon.moveSprite(this.player.position);
+                this.items.push(weapon);
+                
+            }
+            if(Input.isKeyJustPressed("v")){
+                let weapon = this.createWeapon("pistol");
+                weapon.moveSprite(this.player.position);
+                this.items.push(weapon);
+            }
+            if(Input.isKeyJustPressed("b")){
+                let weapon = this.createWeapon("machineGun");
+                weapon.moveSprite(this.player.position);
+                this.items.push(weapon);
+            }
+            if(Input.isKeyJustPressed("n")){
+                let weapon = this.createWeapon("laserGun");
+                weapon.moveSprite(this.player.position);
+                this.items.push(weapon);
+            }
+            if(Input.isKeyJustPressed("m")){
+                let weapon = this.createWeapon("lightSaber");
+                weapon.moveSprite(this.player.position);
+                this.items.push(weapon);
+            }
             
             switch(event.type){
                 case finalproject_Events.PLAYER_HIT_SWITCH:
                     {
-                        // Hit a switch block, so update the label and count
-                        // this.switchesPressed++;
-                        // this.switchLabel.text = "Switches Left: " + (this.totalSwitches - this.switchesPressed)
-                        // this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "switch", loop: false, holdReference: false});
+                        this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "switch", loop: false, holdReference: false});
                     }
+                    break;
+                case finalproject_Events.PLAYER_HIT_GEAR:
+                        {
+                            this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "gear", loop: false, holdReference: false});
+                        }
                     break;
                 case finalproject_Events.PLAYER_DAMAGE:
                     {
                         //take damage
-                        this.incPlayerLife(-event.data.get("damage"));
+                        if(this.damageTimer.isStopped()&&this.isInvincible==false){
+                            this.damageTimer.start();
+                            this.incPlayerLife(-event.data.get("damage"));
+                            this.emitter.fireEvent("taking_damage");
+                        }
+                        
                     }
                     break;
-                // case finalproject_Events.PLAYER_HIT_LASER:
-                //     {
-                //         //take damage
-                //         this.incPlayerLife(-20);
-                //     }
-                //     break;
-                // case finalproject_Events.PLAYER_HIT_SPIKE:
-                //     {
-                //         //take damage
-                //         this.incPlayerLife(-10);
-                //     }
-                //     break;
+                case finalproject_Events.ENEMY_DEAD:
+                    {
+                        this.enemies = this.enemies.filter(enemy => enemy !== event.data.get("enemy"));
+                        this.battleManager.enemies = this.battleManager.enemies.filter(enemy => enemy !== <BattlerAI>(event.data.get("enemy")._ai));
+                    }
+                    break;
+                case finalproject_Events.HINT:
+                    {
+                        this.hintLayer.enable();
+                    }
+                    break;
+                case finalproject_Events.HINTDISABLE:
+                    {
+                        this.hintLayer.disable();
+                    }
+                    break;
                 case finalproject_Events.PLAYER_ENTERED_LEVEL_END:
                     {
                         //Check if the player has pressed all the switches and popped all of the balloons
@@ -337,7 +385,7 @@ export default class GameLevel extends Scene {
                 case finalproject_Events.LEVEL_PAUSED:
                         {
                             // Re-enable controls
-                            Input.disableInput();
+                        Input.disableInput();
                         }
                     break;
                 
@@ -346,6 +394,12 @@ export default class GameLevel extends Scene {
                         GameLevel.gearCount=0;
                         GameLevel.livesCount=20;
                         // Go to the next level
+
+
+                        if(this.levelnumber>=this.levelCount){
+                            this.levelCount=this.levelnumber+1;
+                        }
+
 
                         this.emitter.fireEvent("levelpassed",{level: this.currentLevel}); 
                     
@@ -361,17 +415,21 @@ export default class GameLevel extends Scene {
                                 }
                             }
                             
-                            this.sceneManager.changeToScene(this.nextLevel, {}, sceneOptions);
+                            this.sceneManager.changeToScene(this.nextLevel, {
+                                isInvincible: this.isInvincible,
+                                levelCount: this.levelCount
+                            }, sceneOptions);
                             //this.emitter.fireEvent("menu");   
                         }
                         else{
-                            this.emitter.fireEvent("menu");
+                            this.emitter.fireEvent("select");
                             
                         }
                     }
                     break;
                 case finalproject_Events.PLAYER_KILLED:
                     {
+                        this.player.animation.stop();
                         this.player.animation.play("DEAD",false,"newgame");
                         //this.respawnPlayer;
 
@@ -393,6 +451,12 @@ export default class GameLevel extends Scene {
                         this.bullets.push(asset);
                         }
                         break;
+                    case finalproject_Events.ENEMY_SHOOT_BULLET:
+                        {
+                        let asset = this.sceneGraph.getNode(event.data.get("node"));
+                        this.enemy_bullets.push(asset);
+                        }
+                        break;
                     case finalproject_Events.UNLOAD_ASSET:
                         {
                         let asset = this.sceneGraph.getNode(event.data.get("node"));
@@ -402,17 +466,6 @@ export default class GameLevel extends Scene {
             }
         }
 
-        /*
-            if (Input.isKeyJustPressed("1")) {
-                this.emitter.fireEvent(HW5_Events.SUIT_COLOR_CHANGE, {color: HW5_Color.RED});
-                this.suitChangeTimer.start();
-            }
-            if (Input.isKeyJustPressed("2")) {
-                this.emitter.fireEvent(HW5_Events.SUIT_COLOR_CHANGE, {color: HW5_Color.BLUE});
-                this.suitChangeTimer.start();
-            }
-            
-        */
         if(Input.isKeyJustPressed("escape" )&& this.ingamemenu.isHidden()==true){
             this.emitter.fireEvent("ingame_menu");
         }
@@ -430,6 +483,60 @@ export default class GameLevel extends Scene {
         }
 
 
+
+        if(this.isInvincible==true){
+            this.invinciblebtn.text="ON";
+            this.invinciblebtn.backgroundColor = Color.GREEN;
+            this.invinciblebtn.onClick = () => {
+                this.isInvincible=false;
+                this.invinciblebtn.backgroundColor = Color.RED;
+                this.invinciblebtn.text ="OFF";
+            }
+        }
+        else{
+            this.invinciblebtn.backgroundColor = Color.RED;
+            this.invinciblebtn.onClick = () => {
+                this.isInvincible=true;
+                this.invinciblebtn.backgroundColor = Color.GREEN;
+                this.invinciblebtn.text ="ON";
+            }
+        }
+        if(Input.isKeyJustPressed("i" ) &&this.isInvincible==true){
+            const imsg1 = <Label>this.add.uiElement(UIElementType.LABEL, "msg", {position: new Vec2(275,25), text: "invincible state turned off"});
+            this.msgTimer.start();
+            this.msglayer2.disable();
+            this.msglayer.enable();
+            this.isInvincible=false;
+            this.invinciblebtn.backgroundColor = Color.RED;
+            this.invinciblebtn.text ="OFF";
+        }
+        else if(Input.isKeyJustPressed("i") &&this.isInvincible==false){
+            const imsg1 = <Label>this.add.uiElement(UIElementType.LABEL, "msg2", {position: new Vec2(275,25), text: "invincible state turned on"});
+            this.msgTimer.start();
+            this.msglayer.disable();
+            this.msglayer2.enable();
+            this.isInvincible=true;
+            this.invinciblebtn.backgroundColor = Color.GREEN;
+            this.invinciblebtn.text ="ON";
+        }
+        if(this.msgTimer.isStopped()){
+            this.msglayer.disable();
+            this.msglayer2.disable();
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // if((<Weapon>(<PlayerController>this.player._ai).inventory.getItem()).type===)
         // {this.handleScreenDespawn((<Weapon>(<PlayerController>this.player._ai).inventory.getItem()).type.bullets[0],this.viewport.getCenter(),this.viewport.getHalfSize().scaled(2));}
     }
@@ -440,35 +547,35 @@ export default class GameLevel extends Scene {
     protected initLayers(): void {
         // Add a layer for UI
         this.ui_layer=this.addUILayer("UI");    
-       this.game=this.addLayer("primary", 1);
+        this.game=this.addLayer("primary", 1);
         this.ingamemenu=this.addLayer("ingame",0);
         this.ingamemenu.disable();
 
+
+        this.msglayer=this.addUILayer("msg");
+        this.msglayer2=this.addUILayer("msg2");
+        this.msglayer.disable();
+        this.msglayer2.disable();
         
 
         let size = this.viewport.getHalfSize();
         let center = this.viewport.getCenter();
 
 
-//////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////
         //////////////////hints layer/////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////
         this.hintLayer=this.addLayer("hints");
         //////fix this//////////
-        if(this.nextLevel==null){
-            this.hintLayer.disable();
-        }
+        this.hintLayer.disable();
         
 
         let hint1 = "a to move left, d to move right";
         let hint2 = "w or space to jump, be careful with the spikes";
         let hint3= "e to pick up weapons,1 and 2 to change to each slots";
-
         let hint4 = "Q to cast the skill, which will reverse gravity and Roy will walk on the ceiling";
         let hint5 = "every 3 gears you collected will give you a random weapon";
-
         let hint6 = "Sometimes laser will block the way, and try to find a switch and step on it to turn off the laser";
-        
         let hint7 = "Kill the enemies and try to get to the endpoint";
        
 
@@ -574,7 +681,7 @@ export default class GameLevel extends Scene {
         controlsBack.borderWidth = 2;
         controlsBack.borderColor = Color.BLACK;
         controlsBack.textColor = Color.BLACK;
-        controlsBack.backgroundColor = new Color(142,142,142);
+        controlsBack.backgroundColor = new Color(99,202,253);
         controlsBack.onClickEventId = "ingame_menu";
 
        
@@ -583,37 +690,31 @@ export default class GameLevel extends Scene {
 
         controlsHeader.fontSize = 70;
         controlsHeader.textColor=Color.WHITE;
-        const texta = "a to move left";
-        const textb = "d to move right";
-        const text="space and w to jump";
+        const texta = "a to move left, d to move right";
+        const text="space and w to jump, left click to attack";
         const textc = "e to pick up weapons, 1 and 2 to change to each slots";
         const textd = "Q to cast the skill";
         const textd2 ="(which will reverse gravity, and Roy will be able to walk on the ceiling)";
-        const texte = "left click to attack";
 
-        const linea = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 150), text: texta});
-        const lineb = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y-100), text: textb});
-        const line = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y-50), text: text});
-        const linec = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: textc});
-        const lined = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y+50), text: textd});
-        const lined2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y+100), text: textd2});
-        const linee = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y+150), text: texte});
-
-        linea.fontSize=40;
-        lineb.fontSize=40;
-        line.fontSize=40;
-        linec.fontSize=40;
-        lined.fontSize=40;
-        lined2.fontSize=40;
-        linee.fontSize=40;
+        const linea = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 200), text: texta});
+        const line = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y-150), text: text});
+        const linec = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y-100), text: textc});
+        const lined = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y-50), text: textd});
+        const lined2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: textd2});
 
         linea.textColor=Color.WHITE;
-        lineb.textColor=Color.WHITE;
         line.textColor=Color.WHITE;
         linec.textColor=Color.WHITE;
         lined.textColor=Color.WHITE;
         lined2.textColor=Color.WHITE;
-        linee.textColor=Color.WHITE;
+
+        const txt1= "press esc ingame to enter the ingame menu. ";
+        const txt2= "press esc or click the resume button to return back to the game";
+        const testmsg1=<Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + 100), text: txt1});
+        const testmsg2=<Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + 150), text: txt2});
+
+        testmsg1.textColor=Color.WHITE;
+        testmsg2.textColor=Color.WHITE;
 
 
         // in game help
@@ -636,7 +737,7 @@ export default class GameLevel extends Scene {
         helpBack.borderWidth = 2;
         helpBack.borderColor = Color.BLACK;
         helpBack.textColor = Color.BLACK;
-        helpBack.backgroundColor = new Color(142,142,142);
+        helpBack.backgroundColor = new Color(99,202,253);
         helpBack.onClickEventId = "ingame_menu";
 
         const storya = "Roy is a robot created by Dr. G that is used to help people in daily lives. Dr. G is a nice,";
@@ -689,16 +790,64 @@ export default class GameLevel extends Scene {
         const cheat_code = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-450, center.y +75), text: "Cheat codes"});
         cheat_code.fontSize = 30;
         cheat_code.textColor=Color.WHITE;
-        const cheata = "\"cheating\" : Unlock all the levels ";
-        const cheatb = "\"invincible\" : Player will be invincible ";
-        const cheat1 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y +100), text: cheata});
-        const cheat2 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y +125), text: cheatb});
+        const cheata = "Unlock all the levels ";
+        const cheatb = "Player becomes invincible ";
+        const cheatb2 = "Or you can press i ingame to turn invincible on and off ";
+        const cheatc = "Press the level number in the main menu to access the level you want, ex. press 1 to enter level 1";
+        const cheatd = "Press c in game to spawn a knife at your current location";
+        const cheate = "Press v in game to spawn a pistol at your current location";
+        const cheatf = "Press b in game to spawn a machine gun at your current location";
+        const cheatg = "Press n in game to spawn a laser gun at your current location";
+        const cheath = "Press m in game to spawn a lightsaber at your current location";
+        const cheat1 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-325, center.y +100), text: cheata});
+        const cheat2 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-300, center.y +125), text: cheatb});
+        const cheat22 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x+300, center.y +125), text: cheatb2});
+        const cheat3 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-17, center.y +150), text: cheatc});
+        const cheat4 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-180, center.y +175), text: cheatd});
+        const cheat5 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-178, center.y +200), text: cheate});
+        const cheat6 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-147, center.y +225), text: cheatf});
+        const cheat7 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-162, center.y +250), text: cheatg});
+        const cheat8 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-158, center.y +275), text: cheath});
 
         cheat1.textColor=Color.WHITE;
         cheat2.textColor=Color.WHITE;
+        cheat22.textColor=Color.WHITE;
+        cheat3.textColor=Color.WHITE;
+        cheat4.textColor=Color.WHITE;
+        cheat5.textColor=Color.WHITE;
+        cheat6.textColor=Color.WHITE;
+        cheat7.textColor=Color.WHITE;
+        cheat8.textColor=Color.WHITE;
+
         cheat1.fontSize=18;
         cheat2.fontSize=18;
+        cheat22.fontSize=18;
+        cheat3.fontSize=18;
+        cheat4.fontSize=18;
+        cheat5.fontSize=18;
+        cheat6.fontSize=18;
+        cheat7.fontSize=18;
+        cheat8.fontSize=18;
 
+        this.invinciblebtn=<Button>this.add.uiElement(UIElementType.BUTTON, "help", {position: new Vec2(center.x, center.y +125), text: "OFF"});
+        this.invinciblebtn.size.set(100, 25);
+        this.invinciblebtn.fontSize=18;
+        this.invinciblebtn.borderWidth = 2;
+        this.invinciblebtn.borderColor = Color.BLACK;
+        this.invinciblebtn.textColor = Color.BLACK;
+        this.invinciblebtn.backgroundColor = Color.RED;
+
+        const unlockLevelbtn=<Button>this.add.uiElement(UIElementType.BUTTON, "help", {position: new Vec2(center.x, center.y +100), text: "Unlock"});
+        unlockLevelbtn.size.set(100, 25);
+        unlockLevelbtn.fontSize=18;
+        unlockLevelbtn.borderWidth = 2;
+        unlockLevelbtn.borderColor = Color.BLACK;
+        unlockLevelbtn.textColor = Color.BLACK;
+        unlockLevelbtn.backgroundColor = new Color(142,142,142);
+        unlockLevelbtn.onClick = () => {
+            this.levelCount=6;
+            unlockLevelbtn.text ="Unlocked";
+        }
 
 
         const developers = "Developed by Ruibo Xu, Simon Wang, Hua Lin. ";
@@ -727,9 +876,7 @@ export default class GameLevel extends Scene {
             finalproject_Events.ENEMY_DEAD,
             finalproject_Events.PLAYER_HIT_SWITCH,
             finalproject_Events.PLAYER_HIT_WEAPON,
-            // finalproject_Events.PLAYER_HIT_TRAP,
-            // finalproject_Events.PLAYER_HIT_LASER,
-            // finalproject_Events.PLAYER_HIT_SPIKE,
+            finalproject_Events.PLAYER_HIT_GEAR,
             finalproject_Events.PLAYER_DAMAGE,
             finalproject_Events.PLAYER_ENTERED_LEVEL_END,
             finalproject_Events.LEVEL_START,
@@ -743,11 +890,9 @@ export default class GameLevel extends Scene {
             finalproject_Events.PLAYER_WEAPON_CHANGE,
             finalproject_Events.UNLOAD_ASSET,
             finalproject_Events.SHOOT_BULLET,
-            finalproject_Events.HINT1,
-            finalproject_Events.HINT2,
-            finalproject_Events.HINT3,
-            finalproject_Events.HINT4,
-            finalproject_Events.HINT5,
+            finalproject_Events.ENEMY_SHOOT_BULLET,
+            finalproject_Events.HINT,
+            finalproject_Events.HINTDISABLE
             
 
         ]);
@@ -760,42 +905,21 @@ export default class GameLevel extends Scene {
             finalproject_Events.NEWGAME,
             finalproject_Events.CONTROL,
             finalproject_Events.HELP,
-            finalproject_Events.MENU
+            finalproject_Events.MENU,
+            finalproject_Events.SELECT,
             
         ])
     }
 
-    /**
-     * Adds in any necessary UI to the game
-     */
+
     protected addUI(){
-        // In-game labels
-        /*    
-        this.balloonLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(80, 30), text: "Balloons Left: " + (this.totalBalloons - this.balloonsPopped)});
-        this.balloonLabel.textColor = Color.BLACK
-        this.balloonLabel.font = "PixelSimple";
-
-        this.switchLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(80, 50), text: "Switches Left: " + (this.totalSwitches - this.switchesPressed)});
-        this.switchLabel.textColor = Color.BLACK;
-        this.switchLabel.font = "PixelSimple";
-
-        */
-
+        //UI labels
         this.gearCountLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(500, 15), text: "Gears: " + GameLevel.gearCount});
         this.gearCountLabel.textColor = Color.BLACK;
         this.gearCountLabel.font = "PixelSimple";
         this.livesCountLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(500, 30), text: "Lives: " + GameLevel.livesCount});
         this.livesCountLabel.textColor = Color.BLACK;
         this.livesCountLabel.font = "PixelSimple";
-
-
-
-
-
-
-
-
-
 
         // End of level label (start off screen)
         this.levelEndLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(-300, 200), text: "Level Complete"});
@@ -819,6 +943,8 @@ export default class GameLevel extends Scene {
                 }
             ]
         });
+
+
 
         // Create our particle system and initialize the pool
         this.system = new HW5_ParticleSystem(100, new Vec2((5 * 32), (10 * 32)), 2000, 3, 1, 100);
@@ -864,8 +990,6 @@ export default class GameLevel extends Scene {
         //add inventory
         this.inventory = new InventoryManager(this, 2, "inventorySlot", new Vec2(32, 32), 4, "slots", "items");
         
-        
-
         let startingWeapon = this.createWeapon("pistol");
         this.inventory.addItem(startingWeapon);
         
@@ -889,7 +1013,7 @@ export default class GameLevel extends Scene {
             back:"background",
             inventory: this.inventory,
             items: this.items,
-            currentLevelLabel: this.currentLevelLabel,
+            levelnumber: this.levelnumber
             });
 
         this.player.setGroup("player");
@@ -930,8 +1054,17 @@ export default class GameLevel extends Scene {
         // let actionsRange = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
         // new Move(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 100})];
      
-        let actionsMelee = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
-         new Move(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 20})];
+        let actionsmelee = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
+         new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 60})];
+        let actionsrange = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
+         new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 150})];
+        let actionsplatform = [new AttackAction(2, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
+         new Idle(1, [], [finalproject_Statuses.IN_RANGE], {inRange: 2})];
+        /*let actionsBerserk = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
+        new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 20})];
+        let actionsRetreat = [new AttackAction(1, [finalproject_Statuses.IN_RANGE], [finalproject_Statuses.REACHED_GOAL]),
+        new Idle(2, [], [finalproject_Statuses.IN_RANGE], {inRange: 20})];*/
+         
      
 
         const enemyData = this.load.getObject("enemyData");
@@ -946,10 +1079,17 @@ export default class GameLevel extends Scene {
             this.enemies[i].position.set(data.position[0],data.position[1]);
             this.enemies[i].animation.play("IDLE",true);
 
-
-            
             //Activate physics
-            this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(16,16)));
+            if (data.type=="platform"){
+                this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(48,16)));
+            }
+            else if (data.type=="boss"){
+                this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(32,32)));
+            }
+            else{ 
+                this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(16,16)));
+            }
+            
 
             if(data.route){
                 //console.log(this.graph);
@@ -966,18 +1106,45 @@ export default class GameLevel extends Scene {
             let weapon;
             let actions;
             let range;
+            let speed;
 
             if (data.type === "melee_enemy"){
                 weapon = this.createWeapon("knife")
-                actions = actionsMelee;
-                range = 20;
+                actions = actionsmelee;
+                range = 60;
+                speed = 20;
             }
-            // else if (data.type === "range_enemy") {
-            //     weapon = this.createWeapon("pistol")
-            //     //actions = actionsRange;
-            //     range = 200;
-            // }
+            else if (data.type === "ranged_enemy") {
+                weapon = this.createWeapon("weak_pistol")
+                actions = actionsrange;
+                range = 150;
+                speed = 20;
+            }
+            else if (data.type === "melee_enemy_air") {
+                weapon = this.createWeapon("knife")
+                actions = actionsmelee;
+                range = 60;
+                speed = 30;
+            }
+            else if (data.type === "ranged_enemy_air") {
+                weapon = this.createWeapon("weak_pistol")
+                actions = actionsrange;
+                range = 150;
+                speed = 30;
+            }
+            else if (data.type === "platform") {
+                weapon = this.createWeapon("knife")
+                actions = actionsplatform;
+                range = 2;
+                speed = 50;
 
+            }
+            else if(data.type === "boss"){
+                weapon = this.createWeapon("weak_laserGun")
+                actions = actionsrange;
+                speed = 50;
+                range = 150;
+            }
             let enemyOptions = {
                 defaultMode: data.mode,
                 patrolRoute: data.route,            // This only matters if they're a patroller
@@ -985,10 +1152,11 @@ export default class GameLevel extends Scene {
                 health: data.health,
                 player: this.player,
                 weapon: weapon,
+                actions: actions,
                 goal: finalproject_Statuses.REACHED_GOAL,
                 status: statusArray,
-                actions: actions,
-                inRange: range
+                inRange: range,
+                speed: speed
             }
 
             this.enemies[i].addAI(EnemyAI, enemyOptions);
@@ -996,7 +1164,7 @@ export default class GameLevel extends Scene {
 /*
         this.enemy = this.add.animatedSprite("boss", "primary");
         this.enemy.scale.set(1, 1);
-        let enemyPosition=new Vec2(1216,384);
+        let enemyPosition=new Vec2(1216 ,384);
         this.enemy.position.copy(enemyPosition);
         this.enemy.addPhysics(new AABB(Vec2.ZERO, new Vec2(32, 32)));
         this.enemy.colliderOffset.set(0, 2);
@@ -1049,9 +1217,6 @@ export default class GameLevel extends Scene {
         this.levelEndArea.color = new Color(0, 0, 0, 0);
     }
 
-    protected isInvincable(): boolean {
-        return true;
-    }
 
     /**
      * Increments the amount of life the player has
@@ -1060,27 +1225,28 @@ export default class GameLevel extends Scene {
     protected incPlayerLife(amt: number): void {
         //taking damage
         if (GameLevel.livesCount > 0){
-            if(amt<=0){
-                if (this.damageTimer.isStopped()){
-                    GameLevel.livesCount += amt;
-                    this.damageTimer.start();
-                }
-            }
-            //gaining life
-            else{
-                GameLevel.livesCount += amt;
+            GameLevel.livesCount += amt;
+            if(GameLevel.livesCount<0){
+                GameLevel.livesCount=0;
             }
             this.livesCountLabel.text = "Lives: " + GameLevel.livesCount;
+            if(GameLevel.livesCount<=0){
+                Input.disableInput();
+                this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "player_death", loop: false, holdReference: false});
+                (<PlayerController>this.player._ai).changeState("fall");
+                this.emitter.fireEvent(finalproject_Events.PLAYER_KILLED);
+                this.isDead=true;
+                this.player.disablePhysics();
+               
+            }
         }else{
             Input.disableInput();
-            if(this.isDead<=2){
-                this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "player_death", loop: false, holdReference: false});
-                this.emitter.fireEvent(finalproject_Events.PLAYER_KILLED);
-                this.isDead+=1;
-                console.log("killed");
-            }
+            this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "player_death", loop: false, holdReference: false});
+            this.emitter.fireEvent(finalproject_Events.PLAYER_KILLED);
+            this.isDead=true;
             this.player.disablePhysics();
         }
+       
     }
 
     /**
@@ -1109,7 +1275,10 @@ export default class GameLevel extends Scene {
         GameLevel.gearCount=0;
         GameLevel.livesCount=20;
         //this.emitter.fireEvent(GameEventType.STOP_SOUND, {key: "level_music"});
-        this.sceneManager.changeToScene(this.currentLevel, {}, sceneOptions);
+        this.sceneManager.changeToScene(this.currentLevel, {
+            isInvincible: this.isInvincible,
+            levelCount: this.levelCount
+        }, sceneOptions);
         Input.enableInput();
         this.system.stopSystem();
     }
@@ -1214,6 +1383,9 @@ export default class GameLevel extends Scene {
             this.bullets.forEach((element,index)=>{
                 if(element.id==node.id) this.bullets.splice(index,1);
              });
+             this.enemy_bullets.forEach((element,index)=>{
+                if(element.id==node.id) this.enemy_bullets.splice(index,1);
+             });
             this.emitter.fireEvent(finalproject_Events.UNLOAD_ASSET,{"node":node.id});
 
         }
@@ -1241,45 +1413,21 @@ export default class GameLevel extends Scene {
                     }
 				}				
             }   
+        for(let bullet of this.enemy_bullets){
+                
+            if(bullet.boundary.overlaps(this.player.boundary)){
+                // A collision happened - destroy the bullet
+                console.log("bullet hit");
+                this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE,{"damage":2});
+                this.enemy_bullets.forEach((element,index)=>{
+                    if(element.id==bullet.id) this.enemy_bullets.splice(index,1);
+                });
+                this.emitter.fireEvent(finalproject_Events.UNLOAD_ASSET,{"node":bullet.id})
+                // Increase the hp of the enemy
+            }   
+        }   
         
-      
-            for(let enemy of this.enemies)
-            {   
-                if(this.player.boundary.overlaps(enemy.boundary)&&(!this.player.animation.isPlaying("TAKING_DAMAGE")||
-                !this.player.animation.isPlaying("KNIFE_TAKING_DAMAGE")||!this.player.animation.isPlaying("PISTOL_TAKING_DAMAGE")||
-                !this.player.animation.isPlaying("MACHINEGUN_TAKING_DAMAGE")||!this.player.animation.isPlaying("LIGHTSABER_TAKING_DAMAGE")||
-                !this.player.animation.isPlaying("LASERGUN_TAKING_DAMAGE")
-                ))
-                {   this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE,{"damage":2});
-                    // A collision happened - destroy the bullet
-                    // if((<PlayerController>this.player._ai).inventory.getItem())
-                    // {   console.log("got damage");
-                    //     if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="pistol"){
-                    //         console.log("got damage1");
-                    //         this.player.animation.play("PISTOL_TAKING_DAMAGE");
-                    //     }
-                    //     else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="knife"){
-                    //         this.player.animation.playIfNotAlready("KNIFE_TAKING_DAMAGE");
-                    //     }
-                    //     else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="machineGun"){
-                    //         this.player.animation.playIfNotAlready("MACHINEGUN_TAKING_DAMAGE");
-                    //     }
-                    //     else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="laserGun"){
-                    //         this.player.animation.playIfNotAlready("LASERGUN_TAKING_DAMAGE");
-                    //     }
-                    //     else if((<PlayerController>this.player._ai).inventory.getItem().sprite.imageId==="lightSaber"){
-                    //         this.player.animation.playIfNotAlready("LIGHTSABER_TAKING_DAMAGE");
-                    //     }
-                    // }
-                    // else{
-                    //    console.log("dama");
-                    //     this.player.animation.playIfNotAlready("TAKING_DAMAGE", true);
-                    // }
-                    
-                    
-                    // Increase the hp of the enemy
-                }
-            }			
+      		
     }   
     
 }

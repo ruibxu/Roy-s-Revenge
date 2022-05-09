@@ -17,7 +17,10 @@ import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import Level2 from "./Level2";
 import GameLevel from "./GameLevel";
 import Level3 from "./Level3";
+import Level6 from "./Level6";
+import Level5 from "./Level5";
 import Level4 from "./Level4";
+import Decision from "./Decision";
 
 export default class MainMenu extends Scene {
 
@@ -33,21 +36,35 @@ export default class MainMenu extends Scene {
     private levelBtn: Button;
     private CtrlBtn: Button;
     private helpBtn: Button;
-    private levelCount: number =0;
+    private levelCount: number;
+    private isInvincible: boolean;
 
     
 
 
     loadScene(): void {
         // Load the menu song
-        this.load.audio("menu", "final_project_assets/music/menu.mp3");
         this.load.image("logo", "final_project_assets/images/banner.png");
         this.load.image("back", "final_project_assets/images/background.png");
         this.load.image("level1", "final_project_assets/images/level1.png");
+        this.load.image("level2", "final_project_assets/images/level2.png");
+        this.load.image("level3", "final_project_assets/images/level3.png");
+        this.load.image("level4", "final_project_assets/images/level4.png");
+        this.load.image("level5", "final_project_assets/images/level5.png");
+        this.load.image("level6", "final_project_assets/images/level6.png");
+        this.load.audio("menu", "final_project_assets/music/mainmenu.mp3");
+    }
+
+
+    initScene(init: Record<string, any>):void {
+        this.isInvincible = init.isInvincible;
+        this.levelCount=init.levelCount;
     }
 
     startScene(): void {
         // Center the viewport
+        this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "menu", loop: true, holdReference: true});
+
         let size = this.viewport.getHalfSize();
         let center = this.viewport.getCenter();
 
@@ -147,23 +164,23 @@ export default class MainMenu extends Scene {
         level1pic.position.set(center.x-400, center.y-130);
         level1pic.scale.set(0.2,0.2);
 
-        let level2pic=this.add.sprite("level1","level");
+        let level2pic=this.add.sprite("level2","level");
         level2pic.position.set(center.x, center.y-130);
         level2pic.scale.set(0.2,0.2);
 
-        let level3pic=this.add.sprite("level1","level");
+        let level3pic=this.add.sprite("level3","level");
         level3pic.position.set(center.x+400, center.y-130);
         level3pic.scale.set(0.2,0.2);
 
-        let level4pic=this.add.sprite("level1","level");
+        let level4pic=this.add.sprite("level4","level");
         level4pic.position.set(center.x-400, center.y+170);
         level4pic.scale.set(0.2,0.2);
 
-        let level5pic=this.add.sprite("level1","level");
+        let level5pic=this.add.sprite("level5","level");
         level5pic.position.set(center.x, center.y+170);
         level5pic.scale.set(0.2,0.2);
 
-        let level6pic=this.add.sprite("level1","level");
+        let level6pic=this.add.sprite("level6","level");
         level6pic.position.set(center.x+400, center.y+170);
         level6pic.scale.set(0.2,0.2);
 
@@ -176,7 +193,7 @@ export default class MainMenu extends Scene {
         levelBack.borderWidth = 2;
         levelBack.borderColor = Color.BLACK;
         levelBack.textColor = Color.BLACK;
-        levelBack.backgroundColor = new Color(142,142,142);
+        levelBack.backgroundColor = new Color(99,202,253);
         levelBack.onClickEventId = "menu";
 
         level1.backgroundColor = new Color(99,202,253);
@@ -187,49 +204,63 @@ export default class MainMenu extends Scene {
         level1.textColor = Color.BLACK;
         level1.onClickEventId="level1";
 
-        level2.backgroundColor = new Color(99,202,253);
+        level2.backgroundColor = new Color(142,142,142);
         level2.borderColor = Color.BLACK;
         level2.borderRadius = 10;
         level2.setPadding(new Vec2(50, 10));
         level2.font = "PixelSimple";
         level2.textColor = Color.BLACK;
-        level2.onClickEventId="level2";
-        /*if(this.levelCount >=1){
+        if(this.levelCount >=2){
+            level2.backgroundColor = new Color(99,202,253);
             level2.onClickEventId="level2";
-        }*/
+        }
         
 
-        level3.backgroundColor = new Color(99,202,253);
+        level3.backgroundColor = new Color(142,142,142);
         level3.borderColor = Color.BLACK;
         level3.borderRadius = 10;
         level3.setPadding(new Vec2(50, 10));
         level3.font = "PixelSimple";
         level3.textColor = Color.BLACK;
-        level3.onClickEventId="level3";
+        if(this.levelCount >=3){
+            level3.backgroundColor = new Color(99,202,253);
+            level3.onClickEventId="level3";
+        }
 
-        level4.backgroundColor = new Color(99,202,253);
+
+        level4.backgroundColor = new Color(142,142,142);
         level4.borderColor = Color.BLACK;
         level4.borderRadius = 10;
         level4.setPadding(new Vec2(50, 10));
         level4.font = "PixelSimple";
         level4.textColor = Color.BLACK;
-        level4.onClickEventId="level4";
+        if(this.levelCount >=4){
+            level4.backgroundColor = new Color(99,202,253);
+            level4.onClickEventId="level4";
+        }
 
-        level5.backgroundColor = new Color(99,202,253);
+        level5.backgroundColor =new Color(142,142,142);
         level5.borderColor = Color.BLACK;
         level5.borderRadius = 10;
         level5.setPadding(new Vec2(50, 10));
         level5.font = "PixelSimple";
         level5.textColor = Color.BLACK;
-        level5.onClickEventId="level5";
+        if(this.levelCount >=5){
+            level5.backgroundColor = new Color(99,202,253);
+            level5.onClickEventId="level5";
+        }
 
-        level6.backgroundColor = new Color(99,202,253);
+        
+        level6.backgroundColor = new Color(142,142,142);
         level6.borderColor = Color.BLACK;
         level6.borderRadius = 10;
         level6.setPadding(new Vec2(50, 10));
         level6.font = "PixelSimple";
         level6.textColor = Color.BLACK;
-        level6.onClickEventId="level6";
+        if(this.levelCount >=6){
+            level6.backgroundColor = new Color(99,202,253);
+            level6.onClickEventId="level6";
+        }
         
 
 
@@ -243,20 +274,6 @@ export default class MainMenu extends Scene {
         while(this.receiver.hasNextEvent()){
             let event = this.receiver.getNextEvent();
             if(event.type === "level1"){
-                /*
-                    Init the next scene with physics collisions:
-
-                            ground  player  balloon 
-                    ground    No      --      -- 
-                    player    Yes      No      --  
-                    balloon   Yes      No      No  
-
-                    Each layer becomes a number. In this case, 4 bits matter for each
-
-                    ground:  self - 000, collisions - 011
-                    player:  self - 001, collisions - 100
-                    balloon: self - 010, collisions - 000
-                */
 
                 let sceneOptions = {
                     physics: {
@@ -268,7 +285,10 @@ export default class MainMenu extends Scene {
                         ]
                     }
                 }
-                this.sceneManager.changeToScene(Level1, {}, sceneOptions);
+                this.sceneManager.changeToScene(Level1, {
+                    isInvincible: this.isInvincible,
+                    levelCount: this.levelCount
+                }, sceneOptions);
             }
             if(event.type === "level2"){
                 let sceneOptions = {
@@ -281,7 +301,10 @@ export default class MainMenu extends Scene {
                         ]
                     }
                 }
-                this.sceneManager.changeToScene(Level2, {}, sceneOptions);
+                this.sceneManager.changeToScene(Level2, {
+                    isInvincible: this.isInvincible,
+                    levelCount: this.levelCount
+                }, sceneOptions);
             }
             if(event.type === "level3"){
                 let sceneOptions = {
@@ -294,7 +317,10 @@ export default class MainMenu extends Scene {
                         ]
                     }
                 }
-                this.sceneManager.changeToScene(Level3, {}, sceneOptions);
+                this.sceneManager.changeToScene(Level3, {
+                    isInvincible: this.isInvincible,
+                    levelCount: this.levelCount
+                }, sceneOptions);
             }
             if(event.type === "level4"){
 
@@ -308,9 +334,12 @@ export default class MainMenu extends Scene {
                         ]
                     }
                 }
-                this.sceneManager.changeToScene(Level4, {}, sceneOptions);
+                this.sceneManager.changeToScene(Level4, {
+                    isInvincible: this.isInvincible,
+                    levelCount: this.levelCount
+                }, sceneOptions);
             }
-            /*if(event.type === "level5"){
+            if(event.type === "level5"){
 
 
                 let sceneOptions = {
@@ -323,7 +352,10 @@ export default class MainMenu extends Scene {
                         ]
                     }
                 }
-                this.sceneManager.changeToScene(Level5, {}, sceneOptions);
+                this.sceneManager.changeToScene(Level5, {
+                    isInvincible: this.isInvincible,
+                    levelCount: this.levelCount
+                }, sceneOptions);
             }
             if(event.type === "level6"){
 
@@ -337,30 +369,12 @@ export default class MainMenu extends Scene {
                         ]
                     }
                 }
-                this.sceneManager.changeToScene(Leve6, {}, sceneOptions);
+                this.sceneManager.changeToScene(Level6, {
+                    isInvincible: this.isInvincible,
+                    levelCount: this.levelCount
+                }, sceneOptions);
             }
-            */
-            if(event.type === "levelpassed"){
-                if(event.data.get("level")==Level1&&this.levelCount<1){
-                    this.levelCount+=1;
-                }
-                else if(event.data.get("level")==Level2&&this.levelCount<2){
-                    this.levelCount+=1;
-                }
-                else if(event.data.get("level")==Level3&&this.levelCount<3){
-                    this.levelCount+=1;
-                }
-                else if(event.data.get("level")==Level4&&this.levelCount<4){
-                    this.levelCount+=1;
-                }
-                /*else if(event.data.get("level")==Level5&&this.levelCount<5){
-                    this.levelCount+=1;
-                }
-                else if(event.data.get("level")==Level6&&this.levelCount<6){
-                    this.levelCount+=1;
-                }*/
-                
-            }
+            
             if(event.type === "level"){
                 this.level.setHidden(false);
                 this.mainMenu.setHidden(true);
@@ -372,23 +386,56 @@ export default class MainMenu extends Scene {
                 this.background.setHidden(false);
             }
             if(event.type === "controls"){
-                this.sceneManager.changeToScene(Controls, {});
+                this.sceneManager.changeToScene(Controls, { 
+                    isInvincible: this.isInvincible,
+                    levelCount: this.levelCount
+                });
                 
             }
             if(event.type === "help"){
-                this.sceneManager.changeToScene(Help, {});
+                this.sceneManager.changeToScene(Help, {
+                    isInvincible: this.isInvincible,
+                    levelCount: this.levelCount
+                });
                 
             }
-
         }
-        /*
-        if(Input.isMouseJustPressed()&& this.splash.isHidden()==false){
-            this.splash.setHidden(true);
-            this.mainMenu.setHidden(false);
-        }
-        if(this.mainMenu.isHidden()==false){
 
-        }*/
+        ///implement more when we have 6 levels
+        if(Input.isKeyJustPressed("1")){
+            console.log("????");
+            this.emitter.fireEvent("level1");
+        }
+        if(Input.isKeyJustPressed("2")){
+            if(this.levelCount<2){
+                this.levelCount=2;
+            }
+            this.emitter.fireEvent("level2");
+        }
+        if(Input.isKeyJustPressed("3")){
+            if(this.levelCount<3){
+                this.levelCount=3;
+            }
+            this.emitter.fireEvent("level3");
+        }
+        if(Input.isKeyJustPressed("4")){
+            if(this.levelCount<4){
+                this.levelCount=4;
+            }
+            this.emitter.fireEvent("level4");
+        }
+        if(Input.isKeyJustPressed("5")){
+            if(this.levelCount<5){
+                this.levelCount=5;
+            }
+            this.emitter.fireEvent("level5");
+        }
+        if(Input.isKeyJustPressed("6")){
+            if(this.levelCount<6){
+                this.levelCount=6;
+            }
+            this.emitter.fireEvent("level6");
+        }
     }
     unloadScene(): void {
         // The scene is being destroyed, so we can stop playing the song

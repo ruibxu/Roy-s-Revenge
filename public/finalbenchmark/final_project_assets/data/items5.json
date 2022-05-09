@@ -1,0 +1,56 @@
+{
+    "items": [
+        {
+            "type": "gear",
+            "position": [248, 496]
+        },
+        {
+            "type": "gear",
+            "position": [1504, 688]
+        },
+        {
+            "type": "gear",
+            "position": [864, 464]
+        },
+        {
+            "type": "gear",
+            "position": [1792, 176]
+        },
+        {
+            "type": "gear",
+            "position": [1952, 880]
+        },
+        {
+            "type": "gear",
+            "position": [2752, 1040]
+        },
+        {
+            "type": "gear",
+            "position": [672, 784]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "machineGun", 
+            "position": [1504, 1040]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "laserGun", 
+            "position": [2624, 976]
+        },
+        {
+            "type": "gear",
+            "position": [1072, 976]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "pistol", 
+            "position": [3264, 272]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "knife", 
+            "position": [320, 496]
+        }
+    ]
+}

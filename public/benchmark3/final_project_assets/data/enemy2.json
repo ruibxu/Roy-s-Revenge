@@ -6,7 +6,7 @@
         "mode": "patrol",
         "route": [0, 1],
         "health": 5,
-        "type": "melee_enemy"
+        "type": "ranged_enemy"
       },
       {
         "position": [1408,336],

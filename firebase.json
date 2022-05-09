@@ -13,7 +13,11 @@
       },
       {
         "source": "/",
-        "destination": "/index.html"
+        "destination": "/finalbenchmark/index.html"
+      },
+      {
+        "source": "/final",
+        "destination": "/finalbenchmark/index.html"
       },
       {
         "source": "/benchmark1",

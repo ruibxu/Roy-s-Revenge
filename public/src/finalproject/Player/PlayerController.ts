@@ -20,6 +20,8 @@ import Item from "../GameSystems/items/Item";
 import GameLevel from "../Scenes/Gamelevel";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import Timer from "../../Wolfie2D/Timing/Timer";
+import { GameEventType } from "../../Wolfie2D/Events/GameEventType";
+
 
 export enum PlayerType {
     PLATFORMER = "platformer",
@@ -57,25 +59,17 @@ export default class PlayerController extends StateMachineAI {
     skillmode: boolean;
     skillcooldown: Timer;
     gravity: number;
-    
-    taking_damage:boolean;
 
-    currentLevelLabel : String;
+    hintopened: boolean = false;
+    
+    is_taking_damage:boolean;
+
+    levelnumber : number;
     private laserReds : Vec2[] = [];
     private laserGreens : Vec2[] = [];
     private laserBlues : Vec2[] = [];
     switchTimer : Timer;
 
-    // HOMEWORK 5 - TODO
-    /**
-     * Implement a death animation for the player using tweens. The animation rotate the player around itself multiple times
-     * over the tween duration, as well as fading out the alpha value of the player. The tween should also make use of the
-     * onEnd field to send out a PLAYER_KILLED event.
-     * 
-     * Tweens MUST be used to create this new animation, although you can add to the spritesheet if you want to add some more detail.
-     * 
-     * Look at incPlayerLife() in GameLevel to see where this animation would be called.
-     */
     initializeAI(owner: GameNode, options: Record<string, any>){
         this.owner = owner;
     
@@ -89,11 +83,12 @@ export default class PlayerController extends StateMachineAI {
         this.receiver = new Receiver();
 		this.emitter = new Emitter();
 
-        
         this.receiver.subscribe(finalproject_Events.SKILLMODE);
         this.receiver.subscribe(finalproject_Events.ATTACK);
         this.receiver.subscribe(finalproject_Events.PLAYER_DAMAGE);
-
+        this.receiver.subscribe("taking_damage");
+        this.receiver.subscribe("damagefinish");
+        
         this.health = 3;
         this.items = options.items;
         this.inventory = options.inventory;
@@ -103,58 +98,28 @@ export default class PlayerController extends StateMachineAI {
         this.skillmode=false;
 		this.skillcooldown=new Timer(2000);
         this.gravity=1000;
-        this.taking_damage=false;
-        this.currentLevelLabel=options.currentLevelLabel;
+        this.is_taking_damage=false;
+        this.levelnumber=options.levelnumber;
         this.switchTimer = new Timer(1000);
-    }
 
-
-    // handleInput(event: GameEvent): void {
-	// 	// We need to handle animations when we get hurt
-	// 	if(event.type === finalproject_Events.PLAYER_DAMAGE){
-	// 		if(event.data.get("health") === 0){
-	// 			// Play animation and queue event to end game
-	// 			this.isDead=true;
-
-	// 			this.emitter.fireEvent( finalproject_Events.PLAYER_DEAD);
-	// 		} else {
-	// 		}
-	// 	}
-    
-        
-	// }
-
-
-    initializePlatformer(): void {
-        this.speed = 400;
-
-        let idle = new Idle(this, this.owner);
-		this.addState(PlayerStates.IDLE, idle);
-		let walk = new Walk(this, this.owner);
-		this.addState(PlayerStates.WALK, walk);
-		let jump = new Jump(this, this.owner);
-        this.addState(PlayerStates.JUMP, jump);
-        let fall = new Fall(this, this.owner);
-        this.addState(PlayerStates.FALL, fall);
-        
-        this.initialize(PlayerStates.IDLE);
-    }
-
-    changeState(stateName: string): void {
-        // If we jump or fall, push the state so we can go back to our current state later
-        // unless we're going from jump to fall or something
-        this.state = stateName;
-        if((stateName === PlayerStates.JUMP || stateName === PlayerStates.FALL) && !(this.stack.peek() instanceof InAir)){
-            this.stack.push(this.stateMap.get(stateName));
-        }
-
-        super.changeState(stateName);
+        owner.tweens.add("damage", {
+            startDelay: 0,
+            duration: 800,
+            effects: [
+                {
+                    property: "alpha",
+                    start: 0.2,
+                    end: 1,
+                    ease: EaseFunctionType.IN_OUT_QUAD
+                }
+            ]
+        });
     }
 
     handleLaserOnOFF (tileLayer : OrthogonalTilemap , turnOn : boolean) : void {
         let level;
-        if(this.currentLevelLabel=="level1"){level = level1_tiles;}
-        else if(this.currentLevelLabel=="level3"){level = level3_tiles;}
+        if(this.levelnumber==1 || this.levelnumber==2){level = level1_tiles;}
+        else if(this.levelnumber==3 || this.levelnumber==4){level = level3_tiles;}
         else {level = level5_tiles;}
 
         if(tileLayer==this.tilemap_laser_red){
@@ -241,17 +206,31 @@ export default class PlayerController extends StateMachineAI {
         }
     }
 
-    // HOMEWORK 5 - TODO
-    /**
-     * We want to detect when our player is moving over one of the switches in the world, and along with the sound
-     * and label changes, we also visually want to change the tile.
-     * 
-     * You'll have to figure out when the player is over a tile, and then change that tile to the ON tile that you see in
-     * tileset.png in tilemaps. You also need to send the PLAYER_HIT_SWITCH event so elements can be handled in GameLevel.ts
-     * 
-     * Make use of the tilemap field in the PlayerController and the methods at it's disposal.
-     * 
-     */
+    initializePlatformer(): void {
+        this.speed = 400;
+
+        let idle = new Idle(this, this.owner);
+		this.addState(PlayerStates.IDLE, idle);
+		let walk = new Walk(this, this.owner);
+		this.addState(PlayerStates.WALK, walk);
+		let jump = new Jump(this, this.owner);
+        this.addState(PlayerStates.JUMP, jump);
+        let fall = new Fall(this, this.owner);
+        this.addState(PlayerStates.FALL, fall);
+        this.initialize(PlayerStates.IDLE);
+    }
+
+    changeState(stateName: string): void {
+        // If we jump or fall, push the state so we can go back to our current state later
+        // unless we're going from jump to fall or something
+        this.state = stateName;
+        if((stateName === PlayerStates.JUMP || stateName === PlayerStates.FALL) && !(this.stack.peek() instanceof InAir)){
+            this.stack.push(this.stateMap.get(stateName));
+        }
+
+        super.changeState(stateName);
+    }
+
     update(deltaT: number): void {
 		super.update(deltaT);
         
@@ -262,14 +241,20 @@ export default class PlayerController extends StateMachineAI {
         let left_player_location=new Vec2(this.owner.position.x-32, this.owner.position.y);
 
         let level;
-        if(this.currentLevelLabel=="level1"){level = level1_tiles;}
-        else if(this.currentLevelLabel=="level3"){level = level3_tiles;}
+        if(this.levelnumber==1 || this.levelnumber==2){level = level1_tiles;}
+        else if(this.levelnumber==3 || this.levelnumber==4){level = level3_tiles;}
         else {level = level5_tiles;}
+        
+        //handle if player hit hint
+        if(this.background.getTileAtWorldPosition(player_location)==100&&this.hintopened==false){
+            this.emitter.fireEvent(finalproject_Events.HINT);
+            this.hintopened=true;
+        }
+        else if (this.background.getTileAtWorldPosition(player_location)!=100){
+            this.emitter.fireEvent(finalproject_Events.HINTDISABLE);
+            this.hintopened=false;
+        }
 
-        //console.log("spike layer: ",this.tilemap_spike.getTileAtWorldPosition(below_player_location));
-        //console.log("laser layer: ",this.tilemap_laser.getTileAtWorldPosition(player_location));
-
-        //handle if player on switch
         //red lasers
         //turn off red lasers from above
         if(this.tilemap.getTileAtWorldPosition(below_player_location)==level.SWITCH_RED_ON && this.switchTimer.isStopped()){
@@ -350,28 +335,20 @@ export default class PlayerController extends StateMachineAI {
             }
         }
 
-        //handle if player hit trap
-        // if(this.tilemap_laser.getTileAtWorldPosition(player_location)==16 || this.tilemap_spike.getTileAtWorldPosition(below_player_location)==4 || this.tilemap_spike.getTileAtWorldPosition(above_player_location)==15){
-        //     this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_TRAP);
-        // }
         //handle if player hit laser
         if(this.tilemap_laser_red.getTileAtWorldPosition(player_location)==level.LASER_RED)
-            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":20});}
+            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":100});}
         if(this.tilemap_laser_green){
             if(this.tilemap_laser_green.getTileAtWorldPosition(player_location)==level.LASER_GREEN)
-            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":20});}
+            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":100});}
         }
         if(this.tilemap_laser_blue){
             if(this.tilemap_laser_blue.getTileAtWorldPosition(player_location)==level.LASER_BLUE)
-            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":20});}
+            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":100});}
         }
         //handle if player hit spike
-        console.log("above player: ",this.tilemap.getTileAtWorldPosition(above_player_location));
-        console.log("at player: ",this.tilemap.getTileAtWorldPosition(player_location));
-        console.log("below player: ",this.tilemap.getTileAtWorldPosition(below_player_location));
         if(this.tilemap_spike.getTileAtWorldPosition(below_player_location)==level.SPIKE_DOWN || this.tilemap_spike.getTileAtWorldPosition(above_player_location)==level.SPIKE_UP)
-            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":10});}
-
+            {this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE, {"damage":100});}
 
         let gamelevel = <GameLevel> this.owner.getScene();
         if(gamelevel.isPaused()){
@@ -384,6 +361,7 @@ export default class PlayerController extends StateMachineAI {
 			this.skillmode=!this.skillmode;
             this.gravity=-this.gravity;
 			this.emitter.fireEvent(finalproject_Events.SKILLMODE);
+            this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "skill", loop: false, holdReference: false});
 		}
 
         // Check for slot change
@@ -414,6 +392,7 @@ export default class PlayerController extends StateMachineAI {
                 else if(item.sprite.imageId==="gear"){
                     //If it is a gear, don't put into inventory, but use it directly by firing PickupGear event
                     console.log("pick up gear event fired.");
+                    this.emitter.fireEvent(finalproject_Events.PLAYER_HIT_GEAR);
                     item.removeSprite();
                     this.items.splice(this.items.indexOf(item),1);
                     this.emitter.fireEvent(finalproject_Events.PICKUP_GEAR);
@@ -426,23 +405,6 @@ export default class PlayerController extends StateMachineAI {
         if (Input.isJustPressed("interact")) {
                     // We overlap it, try to pick it up
                     //console.log(this.inventory.getItem().sprite.imageId);
-            if(this.background.getTileAtWorldPosition(player_location)==14){
-                this.emitter.fireEvent(finalproject_Events.HINT1);
-            }
-            if(this.background.getTileAtWorldPosition(player_location)==21){
-                this.emitter.fireEvent(finalproject_Events.HINT2); 
-            }
-            if(this.background.getTileAtWorldPosition(player_location)==22){
-                this.emitter.fireEvent(finalproject_Events.HINT3);
-
-            }
-            if(this.background.getTileAtWorldPosition(player_location)==24){
-                this.emitter.fireEvent(finalproject_Events.HINT4);
-            }
-            if(this.background.getTileAtWorldPosition(player_location)==25){
-                this.emitter.fireEvent(finalproject_Events.HINT5);
-            }
-
             for (let item of this.items) {
                 if (this.owner.collisionShape.overlaps(item.sprite.boundary)) {
                     // We overlap it, try to pick it up
@@ -459,7 +421,6 @@ export default class PlayerController extends StateMachineAI {
                         break;
                     }
                 }
-
             }
         }
         if(Input.isPressed("left")&& !(this.state === PlayerStates.JUMP) && !(this.state === PlayerStates.FALL)){
@@ -471,26 +432,18 @@ export default class PlayerController extends StateMachineAI {
         
         if(Input.isMouseJustPressed()){	
             let weapon = this.inventory.getItem();  
-            if(this.inventory.getItem()){
-                weapon.use(this.owner,"player",this.faceDirection);}
-            }
+            if(this.inventory.getItem()){weapon.use(this.owner,"player",this.faceDirection);}
+        }
             
-
-
-            if(this.currentState instanceof Jump){
-                Debug.log("playerstate", "Player State: Jump");
-            } else if (this.currentState instanceof Walk){
-                Debug.log("playerstate", "Player State: Walk");
-            } else if (this.currentState instanceof Idle){
-                Debug.log("playerstate", "Player State: Idle");
-            } else if(this.currentState instanceof Fall){
-                Debug.log("playerstate", "Player State: Fall");
-            }
-
-
-		}
-
-
-
+        if(this.currentState instanceof Jump){
+            Debug.log("playerstate", "Player State: Jump");
+        } else if (this.currentState instanceof Walk){
+            Debug.log("playerstate", "Player State: Walk");
+        } else if (this.currentState instanceof Idle){
+            Debug.log("playerstate", "Player State: Idle");
+        } else if(this.currentState instanceof Fall){
+            Debug.log("playerstate", "Player State: Fall");
+        }
+    }
 } 
     

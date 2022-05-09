@@ -65,12 +65,12 @@
 
 	{
             "name": "TAKING_DAMAGE",
-            "frames":[ {"index": 10, "duration": 10}]
+            "frames":[ {"index": 10, "duration": 50}]
         },
 	
 	{
             "name": "DEAD",
-            "frames":[ {"index": 11, "duration": 100}]
+            "frames":[ {"index": 11, "duration": 50}]
         },
 
 

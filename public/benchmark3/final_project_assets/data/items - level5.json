@@ -1,0 +1,58 @@
+{
+    "items": [
+        {
+            "type": "gear",
+            "position": [256, 480]
+        },
+        {
+            "type": "gear",
+            "position": [1504, 441]
+        },
+        {
+            "type": "gear",
+            "position": [864, 448]
+        },
+        {
+            "type": "gear",
+            "position": [1792, 160]
+        },
+        {
+            "type": "gear",
+            "position": [1952, 864]
+        },
+        {
+            "type": "gear",
+            "position": [2752, 1024]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "lightSaber", 
+            "position": [576, 576]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "machineGun", 
+            "position": [1504, 1024]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "laserGun", 
+            "position": [2624, 960]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "lightSaber", 
+            "position": [1072, 944]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "knife", 
+            "position": [3264, 256]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "pistol", 
+            "position": [256, 510]
+        }
+    ]
+}

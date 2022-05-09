@@ -12,10 +12,13 @@ export default class Walk extends OnGround {
 		this.parent.speed = this.parent.MIN_SPEED;
 	}
 
-	updateSuit() {
-		if(this.parent.taking_damage==false){		
-		if(this.parent.inventory.getItem())
-			{
+	updateSuit() {	
+		if(this.parent.is_taking_damage==true){
+			this.owner.animation.playIfNotAlready("TAKING_DAMAGE",false,"damagefinish");
+			
+		}
+		else{
+			if(this.parent.inventory.getItem()){
 				if(this.parent.inventory.getItem().sprite.imageId==="pistol"){
 					this.owner.animation.playIfNotAlready("PISTOL_WALK", true);
 				}
@@ -36,10 +39,6 @@ export default class Walk extends OnGround {
 				this.owner.animation.playIfNotAlready("WALK", true);
 			}
 		}
-        else{
-             this.owner.animation.playIfNotAlready("TAKING_DAMAGE",false);
-             this.parent.taking_damage=false;
-            }
 
 	}
 
@@ -61,6 +60,7 @@ export default class Walk extends OnGround {
 
 	onExit(): Record<string, any> {
 		this.owner.animation.stop();
+		this.parent.is_taking_damage=false;
 		return {};
 	}
 }

@@ -24,6 +24,7 @@ export default class Alert extends EnemyState {
     // Receives options.target
     onEnter(options: Record<string, any>): void {
         this.alertTimer.start();
+        this.path = this.owner.getScene().getNavigationManager().getPath(finalproject_Names.NAVMESH, this.owner.position, options.target, true);
     }
 
     handleInput(event: GameEvent): void {
@@ -37,13 +38,18 @@ export default class Alert extends EnemyState {
             return;
         }
         else{
-            this.owner.rotation = Vec2.UP.angleToCCW(this.path.getMoveDirection(this.owner));
+            //console.log(this.path);
+            //this.owner.moveOnPath(this.parent.speed * deltaT, this.path);
+            //this.owner.rotation = Vec2.UP.angleToCCW(this.path.getMoveDirection(this.owner));
         }
 
         // If we see one of the players, target them and move into active mode
         this.parent.lastPlayerPos = this.parent.getPlayerPosition();
         if(this.parent.lastPlayerPos !== null){
             this.finished(EnemyStates.TARGETING);
+        }
+        if(this.parent.lastPlayerPos == null){
+            this.finished(EnemyStates.DEFAULT);
         }
     }
 

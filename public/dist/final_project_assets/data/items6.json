@@ -1,0 +1,46 @@
+{
+    "items": [
+        {
+            "type": "gear",
+            "position": [2080, 144]
+        },
+        {
+            "type": "gear",
+            "position": [544, 112]
+        },
+        {
+            "type": "gear",
+            "position": [600, 944]
+        },
+        {
+            "type": "gear",
+            "position": [640, 528]
+        },
+        {
+            "type": "gear",
+            "position": [1024, 912]
+        },
+        {
+            "type": "gear",
+            "position": [1552, 208]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "lightSaber", 
+            "position": [1260, 912]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "machineGun", 
+            "position": [544, 560]
+        },
+        {
+            "type": "gear",
+            "position": [1450, 208]
+        },
+        {
+            "type": "gear",
+            "position": [800, 528]
+        }
+    ]
+}

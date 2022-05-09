@@ -1,0 +1,100 @@
+{
+  "numEnemies": 14,
+  "enemies": [
+    {
+      "position": [576, 576],
+      "mode": "patrol",
+      "route": [0, 1, 0],
+      "health": 5,
+      "type": "ranged_enemy_air"
+    },
+    {
+      "position": [1056, 688],
+      "mode": "patrol",
+      "route": [2, 3, 2],
+      "health": 5,
+      "type": "melee_enemy"
+    },
+    {
+      "position": [1280, 1040],
+      "mode": "patrol",
+      "route": [4, 5, 4],
+      "health": 5,
+      "type": "melee_enemy"
+    }, {
+      "position": [1792, 878],
+      "mode": "patrol",
+      "route": [6, 7, 6],
+      "health": 5,
+      "type": "ranged_enemy"
+    }, {
+      "position": [2432, 976],
+      "mode": "patrol",
+      "route": [8, 9, 8],
+      "health": 5,
+      "type": "melee_enemy"
+    }, {
+      "position": [3264, 272],
+      "mode": "patrol",
+      "route": [10, 11, 10],
+      "health": 5,
+      "type": "ranged_enemy"
+    }, {
+      "position": [3680, 528],
+      "mode": "patrol",
+      "route": [12, 13, 12],
+      "health": 5,
+      "type": "melee_enemy"
+    },
+    {
+      "position": [96, 416],
+      "mode": "patrol",
+      "route": [14, 15, 14],
+      "health": 5,
+      "type": "melee_enemy_air"
+    },
+    {
+      "position": [384, 240],
+      "mode": "patrol",
+      "route": [16, 17, 16],
+      "health": 5,
+      "type": "ranged_enemy_air"
+    },
+    {
+      "position": [2112, 416],
+      "mode": "patrol",
+      "route": [18, 19, 18],
+      "health": 5,
+      "type": "ranged_enemy_air"
+    },
+    {
+      "position": [3232, 480],
+      "mode": "patrol",
+      "route": [20, 21, 20],
+      "health": 5,
+      "type": "ranged_enemy_air"
+    },
+    {
+      "position": [2304, 480],
+      "mode": "patrol",
+      "route": [22, 23, 22],
+      "health": 5,
+      "type": "ranged_enemy_air"
+    },
+    {
+      "position": [1440, 768],
+      "mode": "patrol",
+      "route": [24, 25, 24],
+      "health": 5,
+      "type": "ranged_enemy_air"
+    },
+    {
+      "position": [768, 352],
+      "mode": "patrol",
+      "route": [26, 27, 26],
+      "health": 5,
+      "type": "melee_enemy_air"
+    }
+  
+  ]
+}

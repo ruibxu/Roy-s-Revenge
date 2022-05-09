@@ -38,18 +38,11 @@ export default class Active extends EnemyState {
 
     handleInput(event: GameEvent): void { }
 
-    // HOMEWORK 4 - TODO
-    /**
-     * This function is called whenever we're defining a path towards the player, and it should create a path that moves
-     * in the complete opposite direction. For example, if the path to the player is moving straight left, this method should create 
-     * a retreat path that moves straight right. This path should then be set to retreatPath in EnemyAI.
-     * 
-     * You'll have to implement this function so you can use retreatPath in the Retreat action.
-     */
+
     pickRetreatPath(pathToPlayer: NavigationPath){    
         let x =new Vec2(-(this.parent.path.getMoveDirection(this.owner).x),-(this.parent.path.getMoveDirection(this.owner).y));
         x=x.scale(1000);
-        //this.parent.retreatPath= this.owner.getScene().getNavigationManager().getPath(finalproject_Names.NAVMESH, this.owner.position, x.add(this.owner.position), true);
+        this.parent.retreatPath= this.owner.getScene().getNavigationManager().getPath(finalproject_Names.NAVMESH, this.owner.position, x.add(this.owner.position), true);
     }
 
     update(deltaT: number): void {
@@ -73,7 +66,7 @@ export default class Active extends EnemyState {
             // We haven't seen the player in a while, go check out where we last saw them, if possible
             if (this.parent.lastPlayerPos !== null) {
                 this.retObj = { target: this.parent.lastPlayerPos }
-                this.finished(EnemyStates.ALERT);
+                    this.finished(EnemyStates.ALERT);
             } else {
                 this.finished(EnemyStates.DEFAULT);
             }
@@ -82,7 +75,7 @@ export default class Active extends EnemyState {
         //Add in range to status if close enough to a player
         if (this.parent.playerPos !== null) {
             let distance = this.owner.position.distanceTo(this.parent.playerPos);
-            if (distance > this.parent.inRange) {
+            if (distance >this.parent.inRange) {
                 let index = this.parent.currentStatus.indexOf(finalproject_Statuses.IN_RANGE);
                 if (index != -1) {
                     this.parent.currentStatus.splice(index, 1);

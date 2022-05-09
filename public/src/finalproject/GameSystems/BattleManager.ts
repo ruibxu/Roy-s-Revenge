@@ -1,11 +1,15 @@
+import Emitter from "../../Wolfie2D/Events/Emitter";
 import GameNode from "../../Wolfie2D/Nodes/GameNode";
 import BattlerAI from "../Enemies/BattlerAI";
+import { finalproject_Events } from "../finalproject_constants";
+import PlayerController from "../Player/PlayerController";
 import Weapon from "./items/Weapon";
 
 export default class BattleManager {
-    players: Array<BattlerAI>;
+    player: BattlerAI;
 
     enemies: Array<BattlerAI>;
+    emitter: Emitter;
 
     handleInteraction(attackerType: string, weapon: Weapon) {
         if (attackerType === "player") {
@@ -18,15 +22,16 @@ export default class BattleManager {
             }
         } else {
             //Check for collision with player
-
-                if (weapon.hits(this.players[0].owner)) {
-                    this.players[0].damage(weapon.type.damage);
+                if (weapon.hits(this.player.owner)) {
+                    this.emitter = new Emitter();
+                    this.emitter.fireEvent(finalproject_Events.PLAYER_DAMAGE,{"damage":weapon.type.damage});
+                    //this.player.damage(weapon.type.damage);
                 }
             }
     }
 
-    setPlayers(player: Array<BattlerAI>): void {
-        this.players = player;
+    setPlayers(player: BattlerAI): void {
+        this.player = player;
     }
 
     setEnemies(enemies: Array<BattlerAI>): void {

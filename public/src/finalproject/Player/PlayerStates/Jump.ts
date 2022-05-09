@@ -14,33 +14,35 @@ export default class Jump extends InAir {
 	}
 
 	updateSuit() {
-		if(this.parent.taking_damage==false){	
-			if(this.parent.inventory.getItem())
-				{
-					if(this.parent.inventory.getItem().sprite.imageId==="pistol"){
-						this.owner.animation.playIfNotAlready("PISTOL_JUMP", true);
-					}
-					else if(this.parent.inventory.getItem().sprite.imageId==="knife"){
-						this.owner.animation.playIfNotAlready("KNIFE_JUMP", true);
-					}
-					else if(this.parent.inventory.getItem().sprite.imageId==="machineGun"){
-						this.owner.animation.playIfNotAlready("MACHINEGUN_JUMP", true);
-					}
-					else if(this.parent.inventory.getItem().sprite.imageId==="laserGun"){
-						this.owner.animation.playIfNotAlready("LASERGUN_JUMP", true);
-					}
-					else if(this.parent.inventory.getItem().sprite.imageId==="lightSaber"){
-						this.owner.animation.playIfNotAlready("LIGHTSABER_JUMP", true);
-					}
-				}
-				else{
-					this.owner.animation.playIfNotAlready("JUMP", true);
-				}
+		if(this.parent.is_taking_damage==true){
+			this.owner.animation.playIfNotAlready("TAKING_DAMAGE",false,"damagefinish");
+			
 		}
 		else{
-			 this.owner.animation.playIfNotAlready("TAKING_DAMAGE",false);
-			 this.parent.taking_damage=false;
+			if(this.parent.inventory.getItem())
+			{
+				if(this.parent.inventory.getItem().sprite.imageId==="pistol"){
+					this.owner.animation.playIfNotAlready("PISTOL_JUMP", true);
+				}
+				else if(this.parent.inventory.getItem().sprite.imageId==="knife"){
+					this.owner.animation.playIfNotAlready("KNIFE_JUMP", true);
+				}
+				else if(this.parent.inventory.getItem().sprite.imageId==="machineGun"){
+					this.owner.animation.playIfNotAlready("MACHINEGUN_JUMP", true);
+				}
+				else if(this.parent.inventory.getItem().sprite.imageId==="laserGun"){
+					this.owner.animation.playIfNotAlready("LASERGUN_JUMP", true);
+				}
+				else if(this.parent.inventory.getItem().sprite.imageId==="lightSaber"){
+					this.owner.animation.playIfNotAlready("LIGHTSABER_JUMP", true);
+				}
 			}
+			else{
+				this.owner.animation.playIfNotAlready("JUMP", true);
+			}
+
+		}
+		
 		
 	}
 
@@ -65,6 +67,7 @@ export default class Jump extends InAir {
 
 	onExit(): Record<string, any> {
 		this.owner.animation.stop();
+		this.parent.is_taking_damage=false;
 		return {};
 	}
 }

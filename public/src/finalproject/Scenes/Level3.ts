@@ -5,28 +5,33 @@ import GameLevel from "./GameLevel";
 import Level4 from "./Level4";
 
 export default class Level3 extends GameLevel {
-    // HOMEWORK 5 - TODO
-    /**
-     * Decide which resource to keep and which to cull.
-     * 
-     * Not all of these loads are needed. Decide which to remove and handle keeping resources in Level1
-     */
     loadScene(): void {
         // Load resources
         this.load.tilemap("level3", "final_project_assets/tilemaps/level3.tmj");
         this.load.spritesheet("player", "final_project_assets/spritesheets/roy.json");
-        this.load.spritesheet("boss", "final_project_assets/spritesheets/boss.json");
         this.load.spritesheet("slice", "final_project_assets/spritesheets/slice.json");
         this.load.spritesheet("melee_enemy","final_project_assets/spritesheets/melee_enemy.json");
-   
-        this.load.object("weaponData", "final_project_assets/data/weaponData.json");
+        this.load.spritesheet("melee_enemy_air","final_project_assets/spritesheets/melee_enemy_air.json");
+        this.load.spritesheet("ranged_enemy","final_project_assets/spritesheets/ranged_enemy.json");
+        this.load.spritesheet("ranged_enemy_air","final_project_assets/spritesheets/ranged_enemy_air.json");
 
+        //Load audio
+        this.load.audio("jump", "final_project_assets/sounds/jump.wav");
+        this.load.audio("switch", "final_project_assets/sounds/switch.wav");
+        this.load.audio("fire","final_project_assets/sounds/fire.wav")
+        this.load.audio("player_death", "final_project_assets/sounds/death.wav");
+        this.load.audio("lasergun", "final_project_assets/sounds/lasergun.wav");
+        this.load.audio("slice", "final_project_assets/sounds/slice.wav");
+        this.load.audio("skill", "final_project_assets/sounds/skill.wav");
+        this.load.audio("gear", "final_project_assets/sounds/gear.wav");
+        this.load.audio("level_music", "final_project_assets/music/level3music.mp3");
+        // Load the scene info
+        //Load the weapon data
+        this.load.object("weaponData", "final_project_assets/data/weaponData.json");
         // Load the nav mesh
         this.load.object("navmesh", "final_project_assets/data/navmesh3.json");
-
         // Load in the enemy info
         this.load.object("enemyData", "final_project_assets/data/enemy3.json");
-
         // Load in item info
         this.load.object("itemData", "final_project_assets/data/items3.json");
 
@@ -43,26 +48,27 @@ export default class Level3 extends GameLevel {
         
     }
 
+    unloadScene(){
+        this.emitter.fireEvent(GameEventType.STOP_SOUND, {key: "level_music"});
+    }
+
     startScene(): void {
-        // Add the level 2 tilemap
+        this.levelnumber=3;
+        // Add the level 1 tilemap
         this.add.tilemap("level3", new Vec2(1, 1));
-        this.viewport.setBounds(0, 0,  128*32, 32*32);
+        this.viewport.setBounds(0, 0, 128*32, 32*32);
         this.viewport.setZoomLevel(1);
 
         this.playerSpawn = new Vec2(6*32-16, 28*32+16);
 
         // Do generic setup for a GameLevel
-
-
         this.currentLevel = Level3;
         this.nextLevel = Level4;
 
         super.startScene();
+        this.addLevelEnd(new Vec2(15.5, 12.5), new Vec2(1.5, 1.5));
         
-
-        this.addLevelEnd(new Vec2(15, 12), new Vec2(3, 3));
-
-        //this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "level_music", loop: true, holdReference: true});
+        this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "level_music", loop: true, holdReference: true});
     }
 
     updateScene(deltaT: number): void {

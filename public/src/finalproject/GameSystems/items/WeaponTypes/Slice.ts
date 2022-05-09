@@ -4,6 +4,8 @@ import AnimatedSprite from "../../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import Scene from "../../../../Wolfie2D/Scene/Scene";
 import MathUtils from "../../../../Wolfie2D/Utils/MathUtils";
 import WeaponType from "./WeaponType";
+import Emitter from "../../../../Wolfie2D/Events/Emitter";
+import { GameEventType } from "../../../../Wolfie2D/Events/GameEventType";
 
 export default class Slice extends WeaponType {
 
@@ -13,9 +15,11 @@ export default class Slice extends WeaponType {
         this.displayName = options.displayName;
         this.spriteKey = options.spriteKey;
         this.useVolume = options.useVolume;
+        this.emitter = new Emitter();
     }
 
     doAnimation(attacker: GameNode, direction: Vec2, sliceSprite: AnimatedSprite): void {
+        this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "slice", loop: false, holdReference: false});
         // Rotate this with the game node
 
         sliceSprite.invertX= MathUtils.sign(direction.x) < 0;
@@ -37,7 +41,7 @@ export default class Slice extends WeaponType {
      
     }
 
-    createRequiredAssets(scene: Scene): [AnimatedSprite] {
+    createRequiredAssets(userType:String,scene: Scene): [AnimatedSprite] {
         let slice = scene.add.animatedSprite("slice", "primary");
         slice.animation.play("NORMAL", true);
 

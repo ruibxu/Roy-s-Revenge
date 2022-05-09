@@ -15,10 +15,19 @@ import GameLevel from "./GameLevel";
 
 export default class Help extends Scene {
     private help: Layer;
+    private isInvincible: boolean;
+    private levelCount:number;
+    private invinciblebtn :Button;
+
+
+    initScene(init: Record<string, any>):void {
+        this.isInvincible = init.isInvincible;
+        this.levelCount= init.levelCount;
+    }
+
 
     startScene(): void {
         // Center the viewport
-        
         this.help= this.addUILayer("help");
 
 
@@ -29,6 +38,8 @@ export default class Help extends Scene {
 
         this.receiver.subscribe("menu");
         this.receiver.subscribe("mainMenu");
+        this.receiver.subscribe("invincibleOn");
+        this.receiver.subscribe("invincibleOff");
 
         const helpHeader = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y - 300), text: "Help"});
         const backStory = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-450, center.y -225), text: "Backstory"});
@@ -42,7 +53,7 @@ export default class Help extends Scene {
         helpBack.borderWidth = 2;
         helpBack.borderColor = Color.BLACK;
         helpBack.textColor = Color.BLACK;
-        helpBack.backgroundColor = new Color(142,142,142);
+        helpBack.backgroundColor = new Color(99,202,253);
 
         helpBack.onClickEventId = "menu";
 
@@ -96,15 +107,74 @@ export default class Help extends Scene {
         const cheat_code = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-450, center.y +75), text: "Cheat codes"});
         cheat_code.fontSize = 30;
         cheat_code.textColor=Color.WHITE;
-        const cheata = "\"cheating\" : Unlock all the levels ";
-        const cheatb = "\"invincible\" : Player will be invincible ";
-        const cheat1 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y +100), text: cheata});
-        const cheat2 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x, center.y +125), text: cheatb});
+        const cheata = "Unlock all the levels ";
+        const cheatb = "Player becomes invincible ";
+        const cheatb2 = "Or you can press i ingame to turn invincible on and off ";
+        const cheatc = "Press the level number in the main menu to access the level you want, ex. press 1 to enter level 1";
+        const cheatd = "Press c in game to spawn a knife at your current location";
+        const cheate = "Press v in game to spawn a pistol at your current location";
+        const cheatf = "Press b in game to spawn a machine gun at your current location";
+        const cheatg = "Press n in game to spawn a laser gun at your current location";
+        const cheath = "Press m in game to spawn a lightsaber at your current location";
+        const cheat1 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-325, center.y +100), text: cheata});
+        const cheat2 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-300, center.y +125), text: cheatb});
+        const cheat22 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x+300, center.y +125), text: cheatb2});
+        const cheat3 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-17, center.y +150), text: cheatc});
+        const cheat4 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-180, center.y +175), text: cheatd});
+        const cheat5 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-178, center.y +200), text: cheate});
+        const cheat6 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-147, center.y +225), text: cheatf});
+        const cheat7 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-162, center.y +250), text: cheatg});
+        const cheat8 = <Label>this.add.uiElement(UIElementType.LABEL, "help", {position: new Vec2(center.x-158, center.y +275), text: cheath});
 
         cheat1.textColor=Color.WHITE;
         cheat2.textColor=Color.WHITE;
+        cheat22.textColor=Color.WHITE;
+        cheat3.textColor=Color.WHITE;
+        cheat4.textColor=Color.WHITE;
+        cheat5.textColor=Color.WHITE;
+        cheat6.textColor=Color.WHITE;
+        cheat7.textColor=Color.WHITE;
+        cheat8.textColor=Color.WHITE;
+
         cheat1.fontSize=18;
         cheat2.fontSize=18;
+        cheat22.fontSize=18;
+        cheat3.fontSize=18;
+        cheat4.fontSize=18;
+        cheat5.fontSize=18;
+        cheat6.fontSize=18;
+        cheat7.fontSize=18;
+        cheat8.fontSize=18;
+
+        this.invinciblebtn=<Button>this.add.uiElement(UIElementType.BUTTON, "help", {position: new Vec2(center.x, center.y +125), text: "OFF"});
+        this.invinciblebtn.size.set(100, 25);
+        this.invinciblebtn.fontSize=18;
+        this.invinciblebtn.borderWidth = 2;
+        this.invinciblebtn.borderColor = Color.BLACK;
+        this.invinciblebtn.textColor = Color.BLACK;
+        if(this.isInvincible==true){
+            this.invinciblebtn.text="ON";
+            this.invinciblebtn.backgroundColor = Color.GREEN;
+            this.invinciblebtn.onClickEventId = "invincibleOff";
+            
+        }
+        else{ 
+            this.invinciblebtn.backgroundColor = Color.RED;
+            this.invinciblebtn.onClickEventId = "invincibleOn";
+        }
+
+        const unlockLevelbtn=<Button>this.add.uiElement(UIElementType.BUTTON, "help", {position: new Vec2(center.x, center.y +100), text: "Unlock"});
+        unlockLevelbtn.size.set(100, 25);
+        unlockLevelbtn.fontSize=18;
+        unlockLevelbtn.borderWidth = 2;
+        unlockLevelbtn.borderColor = Color.BLACK;
+        unlockLevelbtn.textColor = Color.BLACK;
+        unlockLevelbtn.backgroundColor = new Color(142,142,142);
+        unlockLevelbtn.onClick = () => {
+            this.levelCount=6;
+            unlockLevelbtn.text ="Unlocked";
+        }
+
 
 
 
@@ -118,9 +188,27 @@ export default class Help extends Scene {
         while(this.receiver.hasNextEvent()){
             let event = this.receiver.getNextEvent();
             if(event.type === "menu"){
-                this.sceneManager.changeToScene(MainMenu, {});
+                this.sceneManager.changeToScene(MainMenu, 
+                    {
+                        isInvincible: this.isInvincible,
+                        levelCount: this.levelCount
+                    }
+                    
+                );
             }
-
+            if(event.type === "invincibleOn"){
+                this.isInvincible=true;
+                this.invinciblebtn.onClickEventId = "invincibleOff";
+                this.invinciblebtn.backgroundColor = Color.GREEN;
+                this.invinciblebtn.text ="On";
+            }
+            if(event.type === "invincibleOff"){
+                this.isInvincible=false;
+                this.invinciblebtn.onClickEventId = "invincibleOn";
+                this.invinciblebtn.backgroundColor = Color.RED;
+                this.invinciblebtn.text ="Off";
+            }
+                
         }
     }
 }

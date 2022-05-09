@@ -12,6 +12,8 @@ import WeaponType from "./WeaponType";
 import Rect from "../../../../Wolfie2D/Nodes/Graphics/Rect";
 import BulletBehavior from "../../../Player/BulletAI";
 import Circle from "../../../../Wolfie2D/DataTypes/Shapes/Circle";
+import Emitter from "../../../../Wolfie2D/Events/Emitter";
+import { GameEventType } from "../../../../Wolfie2D/Events/GameEventType";
 
 export default class SemiAutoGun extends WeaponType {
 
@@ -28,11 +30,13 @@ export default class SemiAutoGun extends WeaponType {
         this.displayName = options.displayName;
         this.spriteKey = options.spriteKey;
         this.useVolume = options.useVolume;
+        this.emitter = new Emitter();
         //this.MAX_BULLETS_SIZE=5;
         //this.bullets=new Array(this.MAX_BULLETS_SIZE);
     }
 
     doAnimation(shooter: GameNode, direction: Vec2, bullet: Rect): void {
+        this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "fire", loop: false, holdReference: false});
         // let start = shooter.position.clone();
         // start.y+=5;
         // let end = shooter.position.clone().add(direction.scaled(200));
@@ -79,11 +83,14 @@ export default class SemiAutoGun extends WeaponType {
        
         bullet.color=Color.YELLOW;
         bullet.position = shooter.position.clone();
-        bullet.setAIActive(true, {speed: 10*direction.x});
+        let r=0;
+        if(direction.x>0) {r=1;}
+        else if(direction.x<0) {r=-1;}
+        bullet.setAIActive(true, {speed: 10*r});
         bullet.tweens.play("fire");
     }
 
-    createRequiredAssets(scene: Scene): [Rect]{
+    createRequiredAssets(userType:String,scene: Scene): [Rect]{
         // let line = <Line>scene.add.graphic(GraphicType.LINE, "primary", {start: new Vec2(-1, 1), end: new Vec2(-1, -1)});
         // line.color = this.color;
 
@@ -104,9 +111,47 @@ export default class SemiAutoGun extends WeaponType {
         // });
 
         // return [line];
-       
-        let bullet = <Rect>scene.add.graphic(GraphicType.RECT, "primary", {position: new Vec2(100, 100), size: new Vec2(10, 5)});
-
+        let bullet;
+        if(userType==="player")  
+        {  
+            bullet = <Rect>scene.add.graphic(GraphicType.RECT, "primary", {position: new Vec2(100, 100), size: new Vec2(10, 5)});
+            bullet.color=Color.YELLOW;
+            bullet.tweens.add("fire", {
+                startDelay: 0,
+                duration: 1,
+                effects: [
+                    {
+                        property: "rotation",
+                        start: 0,
+                        end: 0.0,
+                        ease: EaseFunctionType.IN_OUT_QUAD
+                    }
+                ],
+                onEnd:  finalproject_Events.SHOOT_BULLET
+            });
+            bullet.addAI(BulletBehavior, {speed: 1});
+           
+        }
+        
+        else if (userType==="enemy")
+        {
+                bullet = <Rect>scene.add.graphic(GraphicType.RECT, "primary", {position: new Vec2(100, 100), size: new Vec2(5, 5)});
+                bullet.color=Color.BLUE;
+                bullet.tweens.add("fire", {
+                    startDelay: 0,
+                    duration: 1,
+                    effects: [
+                        {
+                            property: "rotation",
+                            start: 0,
+                            end: 0.0,
+                            ease: EaseFunctionType.IN_OUT_QUAD
+                        }
+                    ],
+                    onEnd:  finalproject_Events.ENEMY_SHOOT_BULLET
+                });
+                bullet.addAI(BulletBehavior, {speed: 0.5});
+            }
 
         // Currently bullets use the base custom gradient circle shader, 
         // you'll need to change this to the Linear Gradient Circle once you get that shader working. 
@@ -114,25 +159,25 @@ export default class SemiAutoGun extends WeaponType {
         // This is the color each bullet is set to by default, you can change this if you like a different color
         // Add AI to our bullet
         
-        bullet.addAI(BulletBehavior, {speed: 0});
+        
 
         // Add a collider to our bullet
         // let collider = new Circle(Vec2.ZERO, 5);
         // bullet.setCollisionShape(collider);
 
-        bullet.tweens.add("fire", {
-            startDelay: 0,
-            duration: 1,
-            effects: [
-                {
-                    property: "rotation",
-                    start: 0,
-                    end: 0.1,
-                    ease: EaseFunctionType.IN_OUT_QUAD
-                }
-            ],
-            onEnd:  finalproject_Events.SHOOT_BULLET
-        });
+        // bullet.tweens.add("fire", {
+        //     startDelay: 0,
+        //     duration: 1,
+        //     effects: [
+        //         {
+        //             property: "rotation",
+        //             start: 0,
+        //             end: 0.1,
+        //             ease: EaseFunctionType.IN_OUT_QUAD
+        //         }
+        //     ],
+        //     onEnd:  finalproject_Events.SHOOT_BULLET
+        // });
    
         return [bullet];
 

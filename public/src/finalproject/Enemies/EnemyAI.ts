@@ -16,8 +16,8 @@ import { finalproject_Events, finalproject_Names, finalproject_Statuses } from "
 import BattlerAI from "./BattlerAI";
 import Alert from "./EnemyStates/Alert";
 import Active from "./EnemyStates/Active";
-//import Guard from "./EnemyStates/Guard";
 import Patrol from "./EnemyStates/Patrol";
+import Guard from "./EnemyStates/Guard";
 
 
 export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
@@ -31,7 +31,7 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
     health: number;
 
     /** The default movement speed of this AI */
-    speed: number = 20;
+    speed: number ;
 
     /** The weapon this AI has */
     weapon: Weapon;
@@ -52,20 +52,30 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
     path: NavigationPath;
 
     // Path away from player
-    //retreatPath: NavigationPath;
+    retreatPath: NavigationPath;
 
-    gravity: number = 1000;
+    //gravity: number = 1000;
 
     velocity: Vec2;
 
 
+
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
-        this.addState(EnemyStates.DEFAULT, new Patrol(this, owner, options.patrolRoute));
+
+        if (options.defaultMode === "guard") {
+            // Guard mode
+            this.addState(EnemyStates.DEFAULT, new Guard(this, owner, options.guardPosition));
+        } else {
+            // Patrol mode
+            this.addState(EnemyStates.DEFAULT, new Patrol(this, owner, options.patrolRoute));
+        }
+
         this.addState(EnemyStates.ALERT, new Alert(this, owner));
         this.addState(EnemyStates.TARGETING, new Active(this, owner));
 
         this.maxHealth = options.health;
+
         this.health = options.health;
 
         this.weapon = options.weapon;
@@ -84,6 +94,8 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
 
         this.planner = new GoapActionPlanner();
 
+        this.speed=options.speed;
+
         // Initialize to the default state
         this.initialize(EnemyStates.DEFAULT);
 
@@ -94,28 +106,27 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
 
     damage(damage: number): void {
         this.health -= damage;
-        this.owner.animation.playIfNotAlready("TAKING DAMAGE", false);
-
+        this.owner.animation.playIfNotAlready("TAKING_DAMAGE",false);
+        this.owner.animation.playIfNotAlready("IDLE",false);
         // If we're low enough, add Low Health status to enemy
-        /*if (this.health <= Math.floor(this.maxHealth/2)) {
+        if (this.health <= Math.floor(this.maxHealth/2)) {
             if (this.currentStatus.indexOf(finalproject_Statuses.LOW_HEALTH) === -1){
                 this.currentStatus.push(finalproject_Statuses.LOW_HEALTH);
             }
-        }*/
+        }
 
         // If health goes below 0, disable AI and fire enemyDied event
         if (this.health <= 0) {
             this.owner.setAIActive(false, {});
             this.owner.isCollidable = false;
             this.owner.visible = false;
-
+            this.owner.animation.playIfNotAlready("dying",false);
             this.emitter.fireEvent("enemyDied", {enemy: this.owner})
 
-            if (Math.random() < 1) {
+            if (Math.random() < 0.5) {
                 // Spawn a healthpack
                 this.emitter.fireEvent("healthpack", { position: this.owner.position });
             }
-        
         }
     }
     isPlayerVisible(pos: Vec2): Vec2{
@@ -139,44 +150,45 @@ export default class EnemyAI extends StateMachineGoapAI implements BattlerAI {
 
         let tileSize = walls.getTileSize();
 
-        // for (let col = minIndex.x; col <= maxIndex.x; col++) {
-        //     for (let row = minIndex.y; row <= maxIndex.y; row++) {
-        //         if (walls.isTileCollidable(col, row)) {
-        //             // Get the position of this tile
-        //             let tilePos = new Vec2(col * tileSize.x + tileSize.x / 2, row * tileSize.y + tileSize.y / 2);
+        for (let col = minIndex.x; col <= maxIndex.x; col++) {
+            for (let row = minIndex.y; row <= maxIndex.y; row++) {
+                if (walls.isTileCollidable(col, row)) {
+                    // Get the position of this tile
+                    let tilePos = new Vec2(col * tileSize.x + tileSize.x / 2, row * tileSize.y + tileSize.y / 2);
 
-        //             // Create a collider for this tile
-        //             let collider = new AABB(tilePos, tileSize.scaled(1 / 2));
+                    // Create a collider for this tile
+                    let collider = new AABB(tilePos, tileSize.scaled(1 / 2));
 
-        //             let hit = collider.intersectSegment(start, delta, Vec2.ZERO);
+                    let hit = collider.intersectSegment(start, delta, Vec2.ZERO);
 
-        //             if (hit !== null && start.distanceSqTo(hit.pos) < start.distanceSqTo(pos)) {
-        //                 // We hit a wall, we can't see the player
-        //                 return null;
-        //             }
-        //         }
-        //     }
-        // }
-
-        // return pos;
-        return null;
+                    if (hit !== null && start.distanceSqTo(hit.pos) < start.distanceSqTo(pos)) {
+                        // We hit a wall, we can't see the player
+                        return null;
+                    }
+                }
+            }
+        }
+        if(start.distanceTo(pos)<this.inRange){
+            return pos;
+        }
+        else{ 
+            return null;
+        }
     }
 
     getPlayerPosition(): Vec2 {
         //Get the position of the closest player in sight
         let pos = this.player.position;
         let position = this.isPlayerVisible(pos);
-    
+        
 
         // Determine which player position to return
         if (position == null){
             return null;
         }
-
-        else{
+        else {
             return position;
         }
-
     }
 
     update(deltaT: number){

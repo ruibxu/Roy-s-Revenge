@@ -1,0 +1,217 @@
+{
+    "numEnemies": 30,
+    "enemies": [
+      {
+        "position": [3536,176],
+        "mode": "patrol",
+        "route": [0, 1],
+        "health": 9999,
+        "type": "platform"
+      },
+      {
+        "position": [1104, 720],
+        "mode": "patrol",
+        "route": [2, 3],
+        "health": 9999,
+        "type": "platform"
+      },
+      {
+        "position": [1552, 816],
+        "guardPosition": [1552, 816],
+        "mode": "guard",
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [2960, 464],
+        "mode": "patrol",
+        "route": [4, 5],
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [3280, 400],
+        "mode": "patrol",
+        "route": [6, 7],
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [3248, 528],
+        "mode": "patrol",
+        "route": [8, 9],
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [3312, 848],
+        "mode": "patrol",
+        "route": [10, 11],
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [3183, 815],
+        "mode": "patrol",
+        "route": [12, 13],
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [2864, 880],
+        "mode": "patrol",
+        "route": [14, 15],
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [2896, 752],
+        "mode": "patrol",
+        "route": [16, 17],
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [2832, 432],
+        "mode": "patrol",
+        "route": [18, 19],
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [3792, 496],
+        "guardPosition": [3792, 496],
+        "mode": "guard",
+        "health": 5,
+        "type": "melee_enemy_air"
+      },
+      {
+        "position": [3888, 496],
+        "guardPosition": [3888, 496],
+        "mode": "guard",
+        "health": 5,
+        "type": "melee_enemy_air"
+      },
+      {
+        "position": [3696, 400],
+        "guardPosition": [3696, 400],
+        "mode": "guard",
+        "health": 5,
+        "type": "ranged_enemy"
+      },
+      {
+        "position": [3984, 400],
+        "guardPosition": [3984, 400],
+        "mode": "guard",
+        "health": 5,
+        "type": "ranged_enemy"
+      },
+      {
+        "position": [3696, 560],
+        "guardPosition": [3696, 560],
+        "mode": "guard",
+        "health": 5,
+        "type": "ranged_enemy"
+      },
+      {
+        "position": [3984, 560],
+        "guardPosition": [3984, 560],
+        "mode": "guard",
+        "health": 5,
+        "type": "ranged_enemy"
+      },
+      {
+        "position": [3792, 720],
+        "guardPosition": [3792, 720],
+        "mode": "guard",
+        "health": 5,
+        "type": "melee_enemy"
+      },
+      {
+        "position": [3888, 720],
+        "guardPosition": [3888, 720],
+        "mode": "guard",
+        "health": 5,
+        "type": "melee_enemy"
+      },
+      {
+        "position": [2608, 272],
+        "mode": "patrol",
+        "route": [20, 21],
+        "health": 9999,
+        "type": "platform"
+      },
+      {
+        "position": [2000, 144],
+        "mode": "patrol",
+        "route": [22, 23],
+        "health": 9999,
+        "type": "platform"
+      },
+      {
+        "position": [1904, 144],
+        "mode": "patrol",
+        "route": [24, 25],
+        "health": 9999,
+        "type": "platform"
+      },
+      {
+        "position": [1392, 272],
+        "mode": "patrol",
+        "route": [26, 27],
+        "health": 9999,
+        "type": "platform"
+      }
+      
+      ,
+      {
+        "position": [1616, 976],
+        "mode": "patrol",
+        "route": [28, 29],
+        "health": 15,
+        "type": "ranged_enemy"
+      },
+      {
+        "position": [2096, 880],
+        "mode": "patrol",
+        "route": [30, 31, 32],
+        "health": 15,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [1072, 240],
+        "guardPosition": [1072, 240],
+        "mode": "guard",
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [1648, 112],
+        "guardPosition": [1648, 112],
+        "mode": "guard",
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [2320, 240],
+        "guardPosition": [2320, 240],
+        "mode": "guard",
+        "health": 5,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [2480, 112],
+        "mode": "patrol",
+        "route": [33, 34, 35, 36],
+        "health": 15,
+        "type": "ranged_enemy_air"
+      },
+      {
+        "position": [1840, 272],
+        "mode": "patrol",
+        "route": [37, 38, 39, 40, 41],
+        "health": 15,
+        "type": "ranged_enemy_air"
+      }
+    ]
+  }
