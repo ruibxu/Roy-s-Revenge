@@ -8,6 +8,7 @@ import Timer from "../../../Wolfie2D/Timing/Timer";
 import { finalproject_Names, finalproject_Statuses } from "../../finalproject_constants";
 import EnemyAI, { EnemyStates } from "../EnemyAI";
 import EnemyState from "./EnemyState";
+import GameLevel from "../../Scenes/GameLevel";
 
 export default class Active extends EnemyState {
     // Timers for managing this state
@@ -47,6 +48,10 @@ export default class Active extends EnemyState {
 
     update(deltaT: number): void {
         //Poll for player position
+        let gamelevel = <GameLevel> this.owner.getScene();
+        if(gamelevel.isPaused()){
+            return;
+        }
         if (this.pollTimer.isStopped()) {
             // Restart the timer
             this.pollTimer.start();

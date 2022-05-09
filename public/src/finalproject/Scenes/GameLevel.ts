@@ -1233,7 +1233,6 @@ export default class GameLevel extends Scene {
             if(GameLevel.livesCount<=0){
                 Input.disableInput();
                 this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "player_death", loop: false, holdReference: false});
-                (<PlayerController>this.player._ai).changeState("fall");
                 this.emitter.fireEvent(finalproject_Events.PLAYER_KILLED);
                 this.isDead=true;
                 this.player.disablePhysics();

@@ -5,6 +5,7 @@ import NavigationPath from "../../../Wolfie2D/Pathfinding/NavigationPath";
 import { finalproject_Events, finalproject_Names } from "../../finalproject_constants";
 import EnemyAI, { EnemyStates } from "../EnemyAI";
 import EnemyState from "./EnemyState";
+import GameLevel from "../../Scenes/GameLevel";
 
 export default class Guard extends EnemyState {
     private guardPosition: Vec2;
@@ -37,6 +38,10 @@ export default class Guard extends EnemyState {
     handleInput(event: GameEvent): void { }
 
     update(deltaT: number): void {
+        let gamelevel = <GameLevel> this.owner.getScene();
+        if(gamelevel.isPaused()){
+            return;
+        }
         if(this.awayFromGuardPosition){
             // Navigate back home
             if(this.route.isDone()){

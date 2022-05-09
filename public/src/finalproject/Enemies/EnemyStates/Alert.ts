@@ -6,6 +6,7 @@ import Timer from "../../../Wolfie2D/Timing/Timer";
 import { finalproject_Names } from "../../finalproject_constants";
 import EnemyAI, { EnemyStates } from "../EnemyAI";
 import EnemyState from "./EnemyState";
+import GameLevel from "../../Scenes/GameLevel";
 
 /** When an enemy has seen a player recently, it will move to the last known location they saw them, giving up after a certain time */
 export default class Alert extends EnemyState {
@@ -32,6 +33,10 @@ export default class Alert extends EnemyState {
     }
 
     update(deltaT: number): void {
+        let gamelevel = <GameLevel> this.owner.getScene();
+        if(gamelevel.isPaused()){
+            return;
+        }
         if(this.alertTimer.isStopped()){
             // The timer is up, return to the default state
             this.finished(EnemyStates.DEFAULT);

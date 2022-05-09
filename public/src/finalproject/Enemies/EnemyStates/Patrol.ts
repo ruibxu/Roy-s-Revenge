@@ -7,6 +7,7 @@ import MathUtils from "../../../Wolfie2D/Utils/MathUtils";
 import { finalproject_Events, finalproject_Names } from "../../finalproject_constants";
 import EnemyAI, { EnemyStates } from "../EnemyAI";
 import EnemyState from "./EnemyState";
+import GameLevel from "../../Scenes/GameLevel";
 
 export default class Patrol extends EnemyState {
 
@@ -36,6 +37,11 @@ export default class Patrol extends EnemyState {
     handleInput(event: GameEvent): void { }
 
     update(deltaT: number): void {
+        let gamelevel = <GameLevel> this.owner.getScene();
+        if(gamelevel.isPaused()){
+            return;
+        }
+
         // If the enemy sees the player, start attacking
         this.parent.lastPlayerPos = this.parent.getPlayerPosition();
         console.log(this.parent.lastPlayerPos);

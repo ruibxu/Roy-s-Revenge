@@ -1,13 +1,6 @@
 {
-    "numEnemies": 30,
+    "numEnemies": 28,
     "enemies": [
-      {
-        "position": [3536,848],
-        "mode": "patrol",
-        "route": [0, 1],
-        "health": 9999,
-        "type": "platform"
-      },
       {
         "position": [1104, 720],
         "mode": "patrol",
@@ -141,13 +134,7 @@
         "health": 9999,
         "type": "platform"
       },
-      {
-        "position": [2000, 144],
-        "mode": "patrol",
-        "route": [22, 23],
-        "health": 9999,
-        "type": "platform"
-      },
+
       {
         "position": [1904, 144],
         "mode": "patrol",
